@@ -859,7 +859,7 @@
   cursor: pointer;
 }
 
-/* The theme restyles every checkbox; bring back the native one GoKwik shows. */
+/* The theme restyles every checkbox; bring back the native one. */
 .ts-cd__terms input[type='checkbox'] {
   position: static;
   flex: none;
@@ -884,10 +884,10 @@
 .ts-cd__checkout {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   width: 100%;
   min-height: 52px;
-  padding: 8px 12px 8px 16px;
+  padding: 8px 16px;
   border: 0;
   border-radius: 8px;
   background: #000;
@@ -896,7 +896,6 @@
   font-weight: 700;
 }
 
-.ts-cd__checkout img { height: 26px; width: auto; }
 .ts-cd__checkout.is-busy { opacity: 0.7; pointer-events: none; }
 .ts-cd.is-updating .ts-cd__checkout { opacity: 0.7; pointer-events: none; }
 

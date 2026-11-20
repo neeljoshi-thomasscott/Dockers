@@ -219,8 +219,8 @@
     </a>
 
     {%- comment -%}
-      GoKwik reads the variant from the Buy Now button's closest form, so the
-      footer carries its own form; quick-add-atc.js keeps the id on the picked size.
+      The footer carries its own form so Buy Now submits the picked size;
+      quick-add-atc.js keeps the id on the picked size.
     {%- endcomment -%}
     <form action="{{ routes.cart_add_url }}" method="post" class="quick-add-atc__footer mt-6 flex gap-2 md:hidden" data-quick-add-footer>
       <input type="hidden" name="id" value="{{ first_available_variant.id }}" data-quick-add-variant-input>

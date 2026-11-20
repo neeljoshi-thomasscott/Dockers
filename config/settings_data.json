@@ -46,13 +46,6 @@
     "sale_timer_expired_message": "This sale has ended. Check back soon!",
     "sale_timer_restart_value": 18,
     "sale_timer_restart_unit": "hours",
-    "mid": "198cwqzl6qsm",
-    "envType": "production",
-    "goEnable": true,
-    "goBuynowEnable": true,
-    "buyNowKeepThemeLabel": true,
-    "buyNowText": "Buy It Now",
-    "enableIntlFlow": false,
     "sections": {
       "search-drawer": {
         "type": "search-drawer",
@@ -202,12 +195,12 @@
       },
       "1219337400145039034": {
         "type": "shopify://apps/kwikpass/blocks/kp_login/603e209b-d585-47ff-8592-837a4faa325b",
-        "disabled": false,
+        "disabled": true,
         "settings": {}
       },
       "1653648241919619285": {
         "type": "shopify://apps/kwik-cod-lite/blocks/app-embed/d190ec3c-2cdb-4033-b871-b04532749c31",
-        "disabled": false,
+        "disabled": true,
         "settings": {}
       },
       "8427013965518824103": {

@@ -19,13 +19,12 @@ class ProductForm extends HTMLElement {
     this.form.addEventListener('submit', (event) => this.onSubmit(event));
     this.addEventListener('click', (event) => {
       const buyNow = event.target.closest('[data-buy-now]');
-      if (buyNow && !buyNow.hasAttribute('data-gokwik-processed')) this.onBuyNow(buyNow);
+      if (buyNow) this.onBuyNow(buyNow);
     });
     this.initQuantityStepper();
     this.initVariantSubscriber();
   }
 
-  // GoKwik replaces the Buy Now button with a clone, so it is looked up on each use.
   get buyNowButton() {
     return this.querySelector('[data-buy-now]');
   }

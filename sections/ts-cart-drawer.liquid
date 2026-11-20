@@ -1,5 +1,5 @@
 {%- comment -%}
-  Thomas Scott cart drawer (replaces the GoKwik side cart).
+  Thomas Scott cart drawer.
   Rendered once from layout/theme.liquid via {% section 'ts-cart-drawer' %} and re-rendered
   through the Section Rendering API after every cart change. Only the elements carrying
   `data-hydration-key` are morphed, so the open dialog and UI state on the host survive.
@@ -163,8 +163,8 @@
                   <svg class="ts-cd__chev" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
                 <div class="ts-cd__account-menu" data-ts-cd-account-menu hidden>
-                  <a href="/pages/kp-account">My account</a>
-                  <a href="/pages/kp-account/orders">My orders</a>
+                  <a href="{{ routes.account_url }}">My account</a>
+                  <a href="{{ routes.account_url }}">My orders</a>
                   <button type="button" data-ts-cd-action="logout">Logout</button>
                 </div>
               </div>
@@ -547,13 +547,8 @@
               <span>Read <a href="{{ terms_url }}" target="_blank" rel="noopener">Terms &amp; Conditions</a> here</span>
             </label>
 
-            {%- comment -%}
-              data-gokwik-processed stops snippets/gokwik.liquid from cloning and redecorating this
-              button; ts-cart-drawer.js opens GoKwik checkout itself.
-            {%- endcomment -%}
-            <button type="button" class="ts-cd__checkout" data-ts-cd-action="checkout" data-gokwik-processed="true">
+            <button type="button" class="ts-cd__checkout" data-ts-cd-action="checkout">
               <span>Checkout</span>
-              <img src="https://cdn.gokwik.co/v4/images/upi-icons.svg" alt="" width="64" height="22" loading="lazy">
             </button>
           {%- endunless -%}
         </div>

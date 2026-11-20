@@ -9,7 +9,7 @@ import { CartUpdateEvent, ThemeEvents } from '@theme/events';
  * - Opens after any add to cart made elsewhere on the page (fetch/XHR to /cart/add).
  * - Every cart change re-renders the section and morphs only the `data-hydration-key` nodes.
  * - Rotates the announcement banners while open; confetti when a tiered reward is reached.
- * - Login goes through KwikPass (`handleKpAndShopifyLogin`); checkout through the GoKwik SDK.
+ * - Login goes through KwikPass (`handleKpAndShopifyLogin`); checkout is Shopify's native /checkout.
  */
 
 const CART_MUTATION = /\/cart\/(add|change|update|clear)(?:\.js|\.json)?(?:[?#]|$)/;
@@ -662,7 +662,7 @@ class TsCartDrawer extends HTMLElement {
     if (!this.#kpPopupOpen) return;
     this.#kpPopupOpen = false;
 
-    // Popup dismissed without logging in: return to the cart, like the GoKwik drawer does.
+    // Popup dismissed without logging in: return to the cart.
     setTimeout(() => {
       if (!this.#loggedIn && this.#consumeReopen()) this.open();
     }, 300);
@@ -698,8 +698,8 @@ class TsCartDrawer extends HTMLElement {
 
   /* ── Checkout ─────────────────────────────────────────────────────────── */
 
-  /** @param {HTMLElement} button */
-  async #checkout(button) {
+  /** Sends the shopper to Shopify's native checkout. @param {HTMLElement} button */
+  #checkout(button) {
     const terms = this.querySelector('[data-ts-cd-terms]');
     if (terms instanceof HTMLInputElement && !terms.checked) {
       this.#toast('Please accept the Terms & Conditions to continue.');
@@ -707,17 +707,7 @@ class TsCartDrawer extends HTMLElement {
     }
 
     button.classList.add('is-busy');
-    try {
-      const sdk = (await useGoKwik()) ? await waitForGoKwikSdk() : null;
-      if (sdk) {
-        await this.close();
-        sdk.initCheckout(/** @type {any} */ (window).merchantInfo);
-      } else {
-        window.location.href = `${ROOT}checkout`;
-      }
-    } finally {
-      button.classList.remove('is-busy');
-    }
+    window.location.href = `${ROOT}checkout`;
   }
 
   /* ── Suggested products ───────────────────────────────────────────────── */
@@ -827,8 +817,8 @@ class TsCartDrawer extends HTMLElement {
   }
 
   /**
-   * Buy Now (taken over by GoKwik) adds to the cart before opening its checkout popup.
-   * pointerdown/keydown are used because GoKwik stops the click before it reaches the page.
+   * Buy Now adds to the cart and then leaves for checkout, so the drawer must not pop open.
+   * Recorded on pointerdown/keydown so it is set before the add request goes out.
    * @param {Event} event
    */
   #onBuyNowPress = (event) => {
@@ -867,36 +857,6 @@ async function fetchRecCards(url) {
   if (!response.ok) return [];
   const doc = new DOMParser().parseFromString(await response.text(), 'text/html');
   return Array.from(doc.querySelectorAll('.ts-cd-rec'));
-}
-
-/** GoKwik checkout unless it is switched off, or the international-flow gate says the shopper is abroad. */
-async function useGoKwik() {
-  const w = /** @type {any} */ (window);
-  if (!w.merchantInfo || w.gkBtnConfig?.checkoutEnabled === false) return false;
-  if (!w.gokwikIntlFlow) return true;
-  try {
-    const data = await fetch('/browsing_context_suggestions.json').then((r) => r.json());
-    return data?.detected_values?.country_name === 'India';
-  } catch {
-    return true;
-  }
-}
-
-/** Resolves with the GoKwik SDK, or null if it hasn't loaded within 3 s. */
-function waitForGoKwikSdk() {
-  const w = /** @type {any} */ (window);
-  const current = () => w.gokwikSdk || w.__gkSdkCache || null;
-  if (current()) return Promise.resolve(current());
-
-  return new Promise((resolve) => {
-    const done = () => {
-      window.removeEventListener('gokwikLoaded', done);
-      clearTimeout(timer);
-      resolve(current());
-    };
-    const timer = setTimeout(done, 3000);
-    window.addEventListener('gokwikLoaded', done);
-  });
 }
 
 /**
