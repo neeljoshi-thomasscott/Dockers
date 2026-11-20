@@ -1,0 +1,106 @@
+{% doc %}
+  Renders a single Editorial Split card: image and caption, plus body copy and the next card's image when the section is scroll-driven.
+
+  @param {block} block - Editorial Split Card block
+  @param {number} [card_index] - Position in the scroll sequence; blank when the card is not part of it
+  @param {block} [next_block] - Block whose image shows in the peek strip; blank when the card is not part of the sequence
+  @param {number} [next_index] - Scroll position of next_block; pairs the peek image with that card's image in the transition
+
+  @example
+  {% render 'editorial-split-card', block: block, card_index: 0, next_block: next_block, next_index: 1 %}
+{% enddoc %}
+
+{%- liquid
+  assign editorial_split_card_image = block.settings.editorial_split_image
+  assign editorial_split_card_caption = block.settings.editorial_split_caption
+  assign editorial_split_card_body = block.settings.editorial_split_body
+  assign editorial_split_card_mob_pos = block.settings.editorial_split_mob_pos
+
+  assign editorial_split_card_interactive = false
+  if next_block != blank
+    assign editorial_split_card_interactive = true
+  endif
+
+  assign editorial_split_card_show_body = false
+  if editorial_split_card_interactive and editorial_split_card_body != blank
+    assign editorial_split_card_show_body = true
+  endif
+
+  capture editorial_split_card_position_class
+    render 'object-position-class', position: editorial_split_card_mob_pos
+  endcapture
+  assign editorial_split_card_media_class = 'about-editorial-split__media block h-about-editorial-split-media-height-mobile w-full object-cover ' | append: editorial_split_card_position_class | append: ' md:h-about-editorial-split-media-height-desktop md:object-center md:group-data-split-active/card:absolute md:group-data-split-active/card:inset-0 md:group-data-split-active/card:h-full'
+
+  assign editorial_split_card_caption_wrap_class = 'flex'
+  if editorial_split_card_caption == blank
+    assign editorial_split_card_caption_wrap_class = 'hidden group-data-split-open/card:flex group-data-split-active/card:flex'
+  endif
+
+  if editorial_split_card_interactive
+    assign editorial_split_card_next_image = next_block.settings.editorial_split_image
+  endif
+-%}
+
+{%- if editorial_split_card_image != blank or editorial_split_card_caption != blank -%}
+  <li
+    class="about-editorial-split__card group/card relative flex min-w-0 flex-col border-b border-ink-10 md:border-b-0 md:data-split-active:grid md:data-split-active:h-full md:data-split-active:grid-cols-about-editorial-split-focus md:data-split-active:grid-rows-about-editorial-split-focus md:data-split-active:overflow-hidden"
+    data-editorial-split-card
+    {%- if editorial_split_card_interactive %}
+      data-editorial-split-index="{{ card_index }}"
+      style="--about-editorial-split-image-name: about-editorial-split-image-{{ card_index }}; --about-editorial-split-peek-name: about-editorial-split-image-{{ next_index }}; --about-editorial-split-text-name: about-editorial-split-text-{{ card_index }};"
+    {%- endif %}
+    {{ block.shopify_attributes }}
+  >
+    {%- if editorial_split_card_image != blank -%}
+      <div
+        class="about-editorial-split__media-wrap view-transition-editorial-split-image data-split-unnamed:view-transition-none md:group-data-split-active/card:relative"
+        data-editorial-split-media
+      >
+        {%- render 'image',
+          image: editorial_split_card_image,
+          alt: block.settings.editorial_split_img_alt,
+          class_name: editorial_split_card_media_class,
+          responsive_widths: '0:780,768:1280'
+        -%}
+      </div>
+    {%- endif -%}
+
+    {%- if editorial_split_card_caption != blank or editorial_split_card_show_body -%}
+      <div class="about-editorial-split__caption-wrap {{ editorial_split_card_caption_wrap_class }} flex-col justify-center px-about-editorial-split-caption-pad-x py-about-editorial-split-caption-pad-y-mobile bg-surface group-data-split-active/card:view-transition-editorial-split-text md:flex-1 md:py-about-editorial-split-caption-pad-y-desktop md:group-data-split-active/card:min-h-0 md:group-data-split-active/card:overflow-y-auto md:group-data-split-active/card:px-about-editorial-split-focus-pad-x-desktop md:group-data-split-active/card:py-about-editorial-split-focus-pad-y-desktop">
+        {%- if editorial_split_card_caption != blank -%}
+          <h2 class="about-editorial-split__caption w-full break-words text-center font-primary text-about-editorial-split-caption-mobile font-bold text-ink group-data-split-open/card:text-left group-data-split-open/card:text-about-editorial-split-heading-mobile md:text-about-editorial-split-caption-desktop md:group-data-split-active/card:text-center md:group-data-split-active/card:text-about-editorial-split-heading-desktop">
+            {{ editorial_split_card_caption | escape }}
+          </h2>
+        {%- endif -%}
+
+        {%- if editorial_split_card_show_body -%}
+          <div
+            class="about-editorial-split__body-wrap grid grid-rows-about-editorial-split-collapsed opacity-0 transition-about-editorial-split-expand duration-500 ease-out motion-reduce:transition-none group-data-split-instant/split:transition-none group-data-split-open/card:grid-rows-about-editorial-split-expanded group-data-split-open/card:opacity-100 md:transition-none md:group-data-split-active/card:grid-rows-about-editorial-split-expanded md:group-data-split-active/card:opacity-100"
+            data-editorial-split-body
+          >
+            <div class="about-editorial-split__body-clip min-h-0 overflow-hidden">
+              <div class="about-editorial-split__body space-y-about-editorial-split-body-gap-mobile pt-about-editorial-split-focus-gap-mobile font-primary text-about-editorial-split-body-mobile text-ink md:space-y-about-editorial-split-body-gap-desktop md:pt-about-editorial-split-focus-gap-desktop md:text-about-editorial-split-body-desktop md:text-ink-80">
+                {{ editorial_split_card_body }}
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if editorial_split_card_interactive -%}
+      <div
+        class="about-editorial-split__peek view-transition-editorial-split-peek data-split-unnamed:view-transition-none relative hidden w-full overflow-hidden md:col-start-3 md:group-data-split-active/card:block"
+        aria-hidden="true"
+        data-editorial-split-peek
+      >
+        {%- render 'image',
+          image: editorial_split_card_next_image,
+          alt: next_block.settings.editorial_split_img_alt,
+          class_name: 'about-editorial-split__peek-media absolute inset-0 block h-full w-full object-cover object-top md:object-center',
+          responsive_widths: '0:780,768:1280'
+        -%}
+      </div>
+    {%- endif -%}
+  </li>
+{%- endif -%}

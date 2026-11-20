@@ -1,0 +1,18 @@
+{% doc %}
+  Pincode Arrow Icon
+
+  @param {string} [class] - Additional CSS classes (optional)
+  @param {number} [size] - Icon size in pixels (default: 20)
+{% enddoc %}
+
+{%- assign icon_size = size | default: 20 -%}
+<svg
+  class="{{ class }}"
+  width="{{ icon_size }}"
+  height="{{ icon_size }}"
+  viewBox="0 0 24 24"
+  fill="currentColor"
+  aria-hidden="true"
+>
+  <path d="M12.9457 12L8.3457 7.4L9.39945 6.34625L15.0532 12L9.39945 17.6538L8.3457 16.6L12.9457 12Z"/>
+</svg>

@@ -1,0 +1,108 @@
+{%- liquid
+  if article == blank
+    break
+  endif
+
+  assign pair_first = article.metafields.custom.article_image_1.value
+  assign pair_second = article.metafields.custom.article_image_2.value
+  if pair_first == blank and pair_second == blank
+    break
+  endif
+
+  assign pair_width_class = 'lg:w-1/2'
+  if pair_first == blank or pair_second == blank
+    assign pair_width_class = 'lg:w-full'
+  endif
+-%}
+
+<div
+  class="article-image-pair flex flex-col bg-surface lg:flex-row pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)]"
+  style="
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+  "
+>
+  {%- for pair_image in (1..2) -%}
+    {%- liquid
+      if forloop.first
+        assign pair_item = pair_first
+      else
+        assign pair_item = pair_second
+      endif
+      assign pair_item_alt = pair_item.alt | default: article.title
+      if pair_item == blank
+        continue
+      endif
+    -%}
+    <div class="article-image-pair__item h-article-image-pair-height w-full overflow-hidden {{ pair_width_class }}">
+      {%- render 'image',
+        image: pair_item,
+        alt: pair_item_alt,
+        class_name: 'h-full w-full object-cover',
+        lazy: true,
+        base_width: 720,
+        mobile_width: 800
+      -%}
+    </div>
+  {%- endfor -%}
+</div>
+
+{% schema %}
+{
+  "name": "Article Image Pair",
+  "class": "article-pair-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Article Image Pair"
+    }
+  ]
+}
+{% endschema %}

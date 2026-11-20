@@ -1,0 +1,162 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "product",
+      "blocks": {
+        "title_price": {
+          "type": "title_price",
+          "settings": {
+            "tax_note": "Inclusive of all taxes"
+          }
+        },
+        "variant_selector": {
+          "type": "variant_selector",
+          "settings": {}
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "buy_now_label": "",
+            "add_to_bag_label": "",
+            "show_sticky_bar": true
+          }
+        },
+        "trust_builder": {
+          "type": "trust_builder",
+          "settings": {
+            "trust_builder_text_1": "<p>FREE<br>DELIVERY</p>",
+            "trust_builder_text_2": "<p>COD<br>AVAILABLE</p>",
+            "trust_builder_text_3": "<p>7 DAYS<br>RETURNS</p>"
+          }
+        },
+        "pincode": {
+          "type": "pincode",
+          "disabled": true,
+          "settings": {}
+        },
+        "description": {
+          "type": "description",
+          "settings": {
+            "open_by_default": true
+          }
+        },
+        "fit": {
+          "type": "fit",
+          "settings": {
+            "open_by_default": false
+          }
+        },
+        "materials_care": {
+          "type": "materials_care",
+          "settings": {
+            "open_by_default": false
+          }
+        },
+        "details": {
+          "type": "details",
+          "settings": {
+            "open_by_default": false
+          }
+        }
+      },
+      "block_order": [
+        "title_price",
+        "variant_selector",
+        "buy_buttons",
+        "trust_builder",
+        "pincode",
+        "description",
+        "fit",
+        "materials_care",
+        "details"
+      ],
+      "settings": {
+        "enable_full_screen_viewer": true,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0
+      }
+    },
+    "style_with": {
+      "type": "style-with",
+      "settings": {
+        "style_with_heading": "Style With",
+        "style_with_count": 3,
+        "style_with_atc_label": "Add to Bag",
+        "style_with_collection": "",
+        "padding_top_mobile": 16,
+        "padding_bottom_mobile": 24,
+        "padding_top_desktop": 62,
+        "padding_bottom_desktop": 60
+      }
+    },
+    "featured_image": {
+      "type": "product-image-feature",
+      "settings": {
+        "feat_img_desk_count": 2,
+        "feat_img_mob_count": 2,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 0
+      }
+    },
+    "179178724246015e0e": {
+      "type": "apps",
+      "blocks": {
+        "judge_me_reviews_review_widget_7GVAYY": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "sample_data",
+            "max_width": 1200,
+            "show_shop_reviews": true,
+            "empty_state": "empty_widget"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_review_widget_7GVAYY"
+      ],
+      "settings": {}
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "yml_heading": "You May Also Like",
+        "yml_count": 8,
+        "yml_collection": "",
+        "padding_top_mobile": 16,
+        "padding_bottom_mobile": 40,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 0
+      }
+    },
+    "quick_links": {
+      "type": "quick-links",
+      "settings": {
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40
+      }
+    }
+  },
+  "order": [
+    "main",
+    "style_with",
+    "featured_image",
+    "179178724246015e0e",
+    "recommendations",
+    "quick_links"
+  ]
+}

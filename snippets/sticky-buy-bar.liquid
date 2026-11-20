@@ -1,0 +1,49 @@
+{% doc %}
+  Sticky Buy Bar
+
+  Mobile-only (< md) fixed-to-viewport-bottom Buy Now / Add to Bag bar,
+  visible from first paint. Renders its own <product-form> instance (qty
+  hardcoded to 1, no visible stepper) sharing the same product-form.js
+  Web Component logic as the desktop buttons in product-form.liquid.
+
+  @param {object} product - Product object (required)
+  @param {string} buy_now_label - Resolved "Buy Now" label (required)
+  @param {string} add_to_bag_label - Resolved "Add to Bag" label (required)
+
+  @example
+  {% render 'sticky-buy-bar', product: product, buy_now_label: buy_now_label, add_to_bag_label: add_to_bag_label %}
+{% enddoc %}
+
+{%- liquid
+  assign product = product | default: blank
+
+  unless product != blank
+    break
+  endunless
+
+  assign selected_variant = product.selected_or_first_available_variant
+-%}
+
+<product-form
+  class="fixed inset-x-0 bottom-0 z-30 block translate-y-0 transition-transform duration-300 md:hidden"
+  data-sticky-buy-bar
+  data-product-id="{{ product.id }}"
+  data-product-title="{{ product.title | escape }}"
+  data-product-url="{{ product.url }}"
+>
+  {%- comment -%}
+    z-30: below the header (z-50), collection toolbar (z-40), and all
+    drawer/overlay layers (z-[110]+).
+  {%- endcomment -%}
+  <form
+    action="{{ routes.cart_add_url }}"
+    method="post"
+    data-product-form
+    class="flex w-full gap-pdp-buy-gap bg-surface p-4 shadow-sticky"
+  >
+    <input type="hidden" name="id" value="{{ selected_variant.id }}" data-variant-select>
+    <input type="hidden" name="quantity" value="1">
+    {% render 'buy-buttons', product: product, buy_now_label: buy_now_label, add_to_bag_label: add_to_bag_label %}
+    <div data-form-error class="mt-2 text-sm text-error" hidden></div>
+  </form>
+</product-form>

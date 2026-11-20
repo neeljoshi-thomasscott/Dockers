@@ -1,0 +1,67 @@
+<section
+  class="page-width pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] text-center lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)]"
+  style="
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+  "
+>
+  <h1 class="mb-4 text-6xl font-bold text-primary">{{ '404.title' | t }}</h1>
+  <p class="mb-8 text-lg text-muted">{{ '404.not_found' | t }}</p>
+  <a
+    href="{{ routes.root_url }}"
+    class="inline-block rounded bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-all duration-200 hover:shadow-md"
+  >
+    {{ '404.back_to_shopping' | t }}
+  </a>
+</section>
+
+{% schema %}
+{
+  "name": "404",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 128,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 128,
+      "unit": "px"
+    }
+  ]
+}
+{% endschema %}

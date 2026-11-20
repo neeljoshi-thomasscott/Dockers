@@ -1,0 +1,22 @@
+{% doc %}
+  @param {string} href - Link target (required)
+  @param {string} label - Pill text (required)
+  @param {boolean} [active] - Whether this pill represents the current state (default: false)
+{% enddoc %}
+
+{%- liquid
+  assign href = href | default: ''
+  assign label = label | default: ''
+  assign active = active | default: false
+-%}
+{%- if active -%}
+  <a
+    href="{{ href }}"
+    class="shrink-0 whitespace-nowrap bg-ink px-pill-pad-active-x py-pill-pad-active-y text-pill uppercase font-secondary text-surface"
+  >{{ label | escape }}</a>
+{%- else -%}
+  <a
+    href="{{ href }}"
+    class="shrink-0 whitespace-nowrap border border-pill-border px-pill-pad-idle-x py-pill-pad-idle-y text-pill uppercase font-secondary"
+  >{{ label | escape }}</a>
+{%- endif -%}

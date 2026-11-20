@@ -1,0 +1,55 @@
+{% doc %}
+  Size Guide Modal
+
+  Global size-guide dialog rendered once from layout/theme.liquid, before
+  any specific product is known (the PLP renders many products on one
+  page). This snippet is therefore a static, product-agnostic shell with
+  no image src baked in — assets/size-guide-modal.js reads the clicked
+  trigger's own `data-size-guide-desktop`/`data-size-guide-mobile`
+  attributes (each trigger resolves its own product's images, e.g.
+  snippets/variant-selector.liquid or snippets/quick-add-atc.liquid) and
+  sets this modal's images at open-time. A slot with no URL falls back to
+  a placeholder icon.
+{% enddoc %}
+
+<size-guide-modal class="size-guide-modal">
+  <dialog
+    class="size-guide-modal__dialog m-auto flex h-size-guide-height w-size-guide-width max-w-none max-h-none flex-col border-0 bg-surface p-0"
+    data-size-guide-modal-dialog
+    aria-label="{{ 'products.size_guide_modal_label' | t }}"
+  >
+    <div class="size-guide-modal__header flex h-size-guide-header-height shrink-0 items-center gap-size-guide-header-gap pl-5 pr-4">
+      <div class="size-guide-modal__heading flex-1">
+        <p class="size-guide-modal__title font-primary text-size-guide-title font-medium uppercase text-ink">
+          {{ 'products.size_guide' | t }}
+        </p>
+        <p class="size-guide-modal__subtitle font-primary text-size-guide-subtitle font-normal text-ink/60">
+          {{ 'products.size_guide_subtitle' | t }}
+        </p>
+      </div>
+      <button
+        type="button"
+        class="size-guide-modal__close flex h-10 w-10 shrink-0 items-center justify-center text-ink"
+        data-size-guide-modal-close
+        aria-label="{{ 'general.close' | t }}"
+      >
+        {% render 'icon-close', size: 17 %}
+      </button>
+    </div>
+
+    <div class="size-guide-modal__body min-h-0 flex-1 overflow-y-auto">
+      <div class="size-guide-modal__image-wrap hidden md:block" data-size-guide-desktop-wrap>
+        <img class="size-guide-modal__image w-full h-auto" data-size-guide-desktop-img alt="{{ 'products.size_guide' | t }}" width="600" height="800" loading="lazy" hidden>
+        <div class="flex h-full min-h-size-guide-placeholder-height w-full items-center justify-center text-muted" data-size-guide-desktop-placeholder>
+          {%- render 'icon-image', size: 32 -%}
+        </div>
+      </div>
+      <div class="size-guide-modal__image-wrap md:hidden" data-size-guide-mobile-wrap>
+        <img class="size-guide-modal__image w-full h-auto" data-size-guide-mobile-img alt="{{ 'products.size_guide' | t }}" width="400" height="600" loading="lazy" hidden>
+        <div class="flex h-full min-h-size-guide-placeholder-height w-full items-center justify-center text-muted" data-size-guide-mobile-placeholder>
+          {%- render 'icon-image', size: 32 -%}
+        </div>
+      </div>
+    </div>
+  </dialog>
+</size-guide-modal>

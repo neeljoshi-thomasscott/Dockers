@@ -1,0 +1,104 @@
+{% doc %}
+  Price Row
+
+  Renders a product price row (compare-at, price, discount badge) shared by
+  the PLP product card and the PDP price block. Both callers keep their own
+  breakpoint convention and data-attribute contract — this snippet only
+  changes which markup/classes it emits based on `size`.
+
+  @param {number} price - Current price in cents
+  @param {number} [compare_at_price] - Compare-at price in cents (optional)
+  @param {boolean} [show_discount_label] - Show computed discount percentage when a compare-at price exists (default: false)
+  @param {string} [size] - Layout variant: 'card' or 'pdp' (default: 'card')
+  @param {string} [class] - Additional wrapper CSS classes (optional)
+  @param {string} [price_class] - Font-size utilities for the compare-at and current price ('pdp' size only)
+  @param {string} [discount_class] - Font-size utilities for the discount label ('pdp' size only)
+  @param {string} [gap_class] - Horizontal gap utility between price parts ('pdp' size only)
+  @param {string} [card_discount_class] - Size class for the mobile discount in the card layout (default: 'text-price')
+  @param {boolean} [card_discount_long] - Mobile card discount reads "(25% OFF)" instead of "25%" (default: false)
+  @param {boolean} [card_compact] - Keep the mobile discount at every width, for cards in narrow containers (default: false)
+
+  Theme settings `show_compare_price` and `show_discount_percent` switch the
+  MRP slash and the discount % off store-wide. When off, the element is not
+  rendered, so the variant price updaters skip it.
+
+  @example
+  {% render 'price-row', price: current_variant.price, compare_at_price: current_variant.compare_at_price, show_discount_label: true, size: 'pdp' %}
+{% enddoc %}
+
+{%- liquid
+  assign price = price | default: 0
+  assign show_discount_label = show_discount_label | default: false
+  assign size = size | default: 'card'
+  assign row_class = class | default: ''
+
+  assign render_compare = settings.show_compare_price
+  assign render_discount = settings.show_discount_percent
+
+  assign show_compare = false
+  if compare_at_price > price
+    assign show_compare = true
+  endif
+
+  assign discount_pct = 0
+  if show_compare
+    assign discount_pct = compare_at_price | minus: price | times: 100.0 | divided_by: compare_at_price | round
+  endif
+
+  assign show_discount = false
+  if show_discount_label and show_compare and render_discount
+    assign show_discount = true
+  endif
+
+  assign price_class = price_class | default: 'text-pdp-price-mobile md:text-pdp-price-desktop'
+  assign discount_class = discount_class | default: 'text-pdp-discount-mobile md:text-pdp-discount-desktop'
+  assign gap_class = gap_class | default: 'gap-2'
+-%}
+{%- if size == 'pdp' -%}
+  <div class="price-row flex items-center {{ gap_class }} {{ row_class }}" data-product-price-row>
+    {%- if render_compare -%}
+      <s
+        class="font-primary {{ price_class }} text-muted{% unless show_compare %} hidden{% endunless %}"
+        data-product-compare-price
+      >
+        {%- if show_compare -%}
+          {%- render 'format-price', cents: compare_at_price -%}
+        {%- endif -%}
+      </s>
+    {%- endif -%}
+    <span class="font-primary {{ price_class }} font-semibold text-ink" data-product-price>
+      {%- render 'format-price', cents: price -%}
+    </span>
+    {%- if render_discount -%}
+      <span
+        class="font-primary {{ discount_class }} whitespace-nowrap text-sale{% unless show_compare %} hidden{% endunless %}"
+        data-product-discount
+      >
+        {%- if show_compare -%}
+          ({{ discount_pct }}% OFF)
+        {%- endif -%}
+      </span>
+    {%- endif -%}
+  </div>
+{%- else -%}
+  <div class="product-card__price flex items-center gap-1 {{ row_class }}" data-product-card-price-row>
+    {%- if render_compare -%}
+      <s class="text-price text-text-muted{% unless show_compare %} hidden{% endunless %}" data-product-card-compare-price>
+        {%- render 'format-price', cents: compare_at_price -%}
+      </s>
+    {%- endif -%}
+    <span class="text-price font-semibold" data-product-card-price>
+      {%- render 'format-price', cents: price -%}
+    </span>
+    {%- if show_discount -%}
+      <span class="{{ card_discount_class | default: 'text-price' }} font-normal text-sale{% unless card_compact %} md:hidden{% endunless %}" data-product-card-discount-mobile>
+        {%- if card_discount_long -%}({{ discount_pct }}% OFF){%- else -%}{{ discount_pct }}%{%- endif -%}
+      </span>
+      {%- unless card_compact -%}
+        <span class="hidden text-price font-medium text-sale md:inline" data-product-card-discount-desktop>
+          ({{ discount_pct }}% OFF)
+        </span>
+      {%- endunless -%}
+    {%- endif -%}
+  </div>
+{%- endif -%}

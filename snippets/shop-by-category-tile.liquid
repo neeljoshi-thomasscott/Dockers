@@ -1,0 +1,50 @@
+{% doc %}
+  Renders a single Shop By Category tile: stacked image over label.
+
+  @param {object} block - The `tile` block object
+  @param {string} variant - "light" or "dark", matches the parent section's background setting
+{% enddoc %}
+
+{%- liquid
+  assign tile_link = block.settings.link
+  assign tile_label = block.settings.label
+  assign tile_label_color = 'text-ink'
+  if variant == 'dark'
+    assign tile_label_color = 'text-surface'
+  endif
+-%}
+
+<div class="shop-by-category-tile w-full" {{ block.shopify_attributes }}>
+  {%- if tile_link != blank -%}
+    <a href="{{ tile_link }}" class="shop-by-category-tile__link block">
+  {%- else -%}
+    <div class="shop-by-category-tile__link block">
+  {%- endif -%}
+
+    <div class="shop-by-category-tile__image h-shop-category-tile-height-mobile lg:h-auto lg:aspect-shop-category-tile overflow-hidden">
+      {%- if block.settings.image == blank and request.design_mode -%}
+        <div class="flex h-full w-full items-center justify-center border border-dashed border-border bg-background-alt text-meta text-muted">
+          Select an image
+        </div>
+      {%- elsif block.settings.image != blank -%}
+        {%- render 'image',
+          image: block.settings.image,
+          class_name: 'h-full w-full object-cover',
+          lazy: true,
+          alt: tile_label,
+          width: 134,
+          height: 200
+        -%}
+      {%- endif -%}
+    </div>
+
+    {%- if tile_label != blank -%}
+      <span class="shop-by-category-tile__label block pt-shop-category-label-gap text-center uppercase font-plex-mono text-shop-category-label-mobile lg:text-promo-subheading {{ tile_label_color }}">{{ tile_label | escape }}</span>
+    {%- endif -%}
+
+  {%- if tile_link != blank -%}
+    </a>
+  {%- else -%}
+    </div>
+  {%- endif -%}
+</div>

@@ -1,0 +1,322 @@
+{% doc %}
+  Variant Selector
+
+  Renders the PDP's real Shopify variant selector: a color swatch row and a
+  size tile grid, both wrapped in a <variant-selector> Web Component that
+  resolves the matching variant client-side and publishes variant:change
+  events (price, gallery, URL, Add to Bag state all react to this event
+  elsewhere).
+
+  @param {product} product - Product object (required)
+  @param {string} [model_note] - Model caption rendered under the size grid (optional)
+
+  @example
+  {% render 'variant-selector', product: product, model_note: product.metafields.custom.model_note %}
+{% enddoc %}
+
+{%- liquid
+  assign product = product | default: blank
+
+  unless product != blank
+    break
+  endunless
+
+  if product.has_only_default_variant
+    break
+  endif
+
+  assign selected_variant = product.selected_or_first_available_variant
+  assign selected_options = selected_variant.options
+  assign size_order = 'XS,S,M,L,XL,2XL,3XL,4XL,5XL,6XL' | split: ','
+
+  assign size_guide = product.metafields.custom.size_guide.value
+  if size_guide != blank
+    assign size_guide_desktop_url = size_guide.desktop_image.value.preview_image | image_url: width: 600
+    assign size_guide_mobile_url = size_guide.mobile_image.value.preview_image | image_url: width: 400
+  endif
+-%}
+
+<variant-selector
+  class="block"
+  data-product-id="{{ product.id }}"
+  data-low-stock-threshold="{{ settings.low_stock_threshold | default: 30 }}"
+>
+  <script type="application/json" data-variant-data>
+    {
+      "variants": [
+        {%- for variant in product.variants -%}
+          {%- liquid
+            # display_* fields mirror price-row's markup exactly (same snippet,
+            # same discount formula) so a client-side variant change never
+            # swaps the price into a different format. price_formatted stays
+            # in the store's money format for the cart's optimistic line item.
+            capture variant_display_price
+              render 'format-price', cents: variant.price
+            endcapture
+
+            assign variant_display_compare_price = ''
+            assign variant_discount_label = ''
+            if variant.compare_at_price > variant.price
+              capture variant_display_compare_price
+                render 'format-price', cents: variant.compare_at_price
+              endcapture
+              assign variant_discount_pct = variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round
+              assign variant_discount_label = '(' | append: variant_discount_pct | append: '% OFF)'
+            endif
+          -%}
+          {
+            "id": {{ variant.id | json }},
+            "available": {{ variant.available | json }},
+            "options": {{ variant.options | json }},
+            "price": {{ variant.price | json }},
+            "compare_at_price": {{ variant.compare_at_price | default: 0 | json }},
+            "price_formatted": {{ variant.price | money_without_trailing_zeros | strip_html | json }},
+            "compare_at_price_formatted": {% if variant.compare_at_price %}{{ variant.compare_at_price | money_without_trailing_zeros | strip_html | json }}{% else %}null{% endif %},
+            "display_price": {{ variant_display_price | json }},
+            "display_compare_at_price": {{ variant_display_compare_price | json }},
+            "discount_label": {{ variant_discount_label | json }},
+            "image": {% if variant.featured_image %}{{ variant.featured_image | image_url: width: 500 | json }}{% else %}""{% endif %},
+            "featured_media_id": {% if variant.featured_media %}{{ variant.featured_media.id | json }}{% else %}null{% endif %},
+            "inventory_quantity": {{ variant.inventory_quantity | json }},
+            "inventory_management": {{ variant.inventory_management | json }},
+            "title": {{ variant.title | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "options": {{ product.options_with_values | json }}
+    }
+  </script>
+
+  {%- liquid
+    assign option_names_lower = product.options | join: ',' | downcase | split: ','
+    unless option_names_lower contains 'color' or option_names_lower contains 'colour'
+      render 'colour-siblings', product: product
+    endunless
+  -%}
+
+  {%- for option in product.options_with_values -%}
+    {%- liquid
+      assign option_name_lower = option.name | downcase | strip
+      assign option_index = forloop.index0
+
+      assign is_color = false
+      assign is_size = false
+      if option_name_lower == 'color' or option_name_lower == 'colour'
+        assign is_color = true
+      elsif option_name_lower == 'size'
+        assign is_size = true
+      endif
+    -%}
+
+    {%- if is_color -%}
+      <div class="pt-3 pb-3 md:pt-0 md:pb-4" data-option-group="{{ option_index }}" data-variant-color-group>
+        <p class="font-primary text-control font-normal text-ink">
+          {{ option.name }} :
+          <span class="font-normal" data-selected-option="{{ option_index }}">{{ selected_options[option_index] | escape }}</span>
+        </p>
+
+        <div class="mt-3.5 flex min-h-6 flex-wrap items-center gap-2">
+          {%- for value in option.values -%}
+            {%- liquid
+              assign is_selected = false
+              if value == selected_options[option_index]
+                assign is_selected = true
+              endif
+
+              # Same rule as variant-selector.js updateAvailability(): a value
+              # is available if some in-stock variant has it together with the
+              # current selection of the options BEFORE it. So a colour is never
+              # greyed out by the chosen size — only sizes depend on colour.
+              assign value_available = false
+              for v in product.variants
+                unless v.available and v.options[option_index] == value
+                  continue
+                endunless
+
+                assign earlier_options_match = true
+                for earlier_index in (0..option_index)
+                  if earlier_index == option_index
+                    break
+                  endif
+                  if v.options[earlier_index] != selected_options[earlier_index]
+                    assign earlier_options_match = false
+                    break
+                  endif
+                endfor
+
+                if earlier_options_match
+                  assign value_available = true
+                  break
+                endif
+              endfor
+
+              comment
+                Swatch resolution order (matches snippets/product-card.liquid):
+                native swatch color -> native swatch image -> merchant
+                custom.swatch_colors hex map -> a variant's featured image ->
+                letter-initial fallback.
+              endcomment
+              assign swatch_image = null
+              assign swatch_color = null
+
+              if value.swatch.color != blank
+                assign swatch_color = value.swatch.color
+              endif
+
+              if value.swatch.image != blank
+                assign swatch_image = value.swatch.image
+              endif
+
+              if swatch_color == null and swatch_image == null
+                assign swatch_color = product.metafields.custom.swatch_colors.value[value]
+              endif
+
+              if swatch_color == null and swatch_image == null
+                for variant in product.variants
+                  case option_index
+                    when 0
+                      assign variant_option_value = variant.option1
+                    when 1
+                      assign variant_option_value = variant.option2
+                    when 2
+                      assign variant_option_value = variant.option3
+                  endcase
+                  if variant_option_value == value and variant.featured_image != blank
+                    assign swatch_image = variant.featured_image
+                    break
+                  endif
+                endfor
+              endif
+            -%}
+            <button
+              type="button"
+              class="variant-option variant-option--color relative flex h-[22px] w-[22px] items-center justify-center transition-colors hover:ring-1 hover:ring-border aria-pressed:ring-1 aria-pressed:ring-ink aria-pressed:ring-offset-[3px]"
+              data-option-value="{{ value | escape }}"
+              data-option-index="{{ option_index }}"
+              data-is-color="true"
+              aria-label="{{ value | escape }}"
+              aria-pressed="{% if is_selected %}true{% else %}false{% endif %}"
+              title="{{ value | escape }}"
+              {% unless value_available %}
+                disabled
+              {% endunless %}
+            >
+              {%- if swatch_image != blank -%}
+                <img
+                  src="{{ swatch_image | image_url: width: 36 }}"
+                  alt="{{ value | escape }}"
+                  width="18"
+                  height="18"
+                  loading="lazy"
+                  class="h-[18px] w-[18px] object-cover"
+                >
+              {%- elsif swatch_color != blank -%}
+                <span class="h-[18px] w-[18px]" style="background-color: {{ swatch_color | escape }};"></span>
+              {%- else -%}
+                <span class="flex h-[18px] w-[18px] items-center justify-center bg-muted/30 text-xs font-medium uppercase leading-none text-muted">
+                  {{- value | slice: 0 | escape -}}
+                </span>
+              {%- endif -%}
+            </button>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if is_size -%}
+      {%- liquid
+        comment
+          Render in the fixed XS-6XL order, then any value the product has
+          that isn't in that canonical list (e.g. a future "Free Size"),
+          in the product's own order — see plan.md Decision D2.
+        endcomment
+        assign ordered_values_string = ''
+        for target_size in size_order
+          if option.values contains target_size
+            assign ordered_values_string = ordered_values_string | append: target_size | append: '||'
+          endif
+        endfor
+        for value in option.values
+          unless size_order contains value
+            assign ordered_values_string = ordered_values_string | append: value | append: '||'
+          endunless
+        endfor
+        assign ordered_values = ordered_values_string | split: '||'
+      -%}
+
+      <div class="pt-3 pb-3 md:pt-4 md:pb-0" data-option-group="{{ option_index }}" data-variant-size-group>
+        <p class="font-primary text-control font-normal text-ink">
+          {{ option.name }} :
+          <span class="font-normal" data-selected-option="{{ option_index }}">{{ selected_options[option_index] | escape }}</span>
+          <span class="ml-1 text-sale" data-low-stock-warning hidden>{{ 'products.low_in_stock' | t }}</span>
+        </p>
+
+        {%- if size_guide != blank -%}
+          <button
+            type="button"
+            data-size-guide-trigger
+            data-size-guide-desktop="{{ size_guide_desktop_url }}"
+            data-size-guide-mobile="{{ size_guide_mobile_url }}"
+            class="flex w-full items-center justify-end gap-1 font-primary text-control text-ink"
+          >
+            {{ 'products.size_guide' | t }}
+            {% render 'icon-chevron-right', size: 16 %}
+          </button>
+        {%- endif -%}
+
+        <div class="mt-3 flex gap-1.5 overflow-x-auto md:flex-wrap md:gap-y-2 md:overflow-visible">
+          {%- for value in ordered_values -%}
+            {%- liquid
+              assign is_selected = false
+              if value == selected_options[option_index]
+                assign is_selected = true
+              endif
+
+              # Same availability rule as the colour loop above.
+              assign value_available = false
+              for v in product.variants
+                unless v.available and v.options[option_index] == value
+                  continue
+                endunless
+
+                assign earlier_options_match = true
+                for earlier_index in (0..option_index)
+                  if earlier_index == option_index
+                    break
+                  endif
+                  if v.options[earlier_index] != selected_options[earlier_index]
+                    assign earlier_options_match = false
+                    break
+                  endif
+                endfor
+
+                if earlier_options_match
+                  assign value_available = true
+                  break
+                endif
+              endfor
+            -%}
+            <button
+              type="button"
+              class="variant-option relative flex h-12 w-14 shrink-0 items-end justify-start px-3 py-2 font-secondary text-control transition-colors md:w-[55px] border border-border hover:border-ink aria-pressed:border-ink aria-pressed:font-medium{% unless value_available %} variant-sold-out bg-surface-alt border-surface-alt text-ink-20 cursor-not-allowed{% endunless %}"
+              data-option-value="{{ value | escape }}"
+              data-option-index="{{ option_index }}"
+              data-size-tile
+              aria-pressed="{% if is_selected %}true{% else %}false{% endif %}"
+              {% unless value_available %}
+                disabled
+              {% endunless %}
+            >
+              {{ value | escape }}
+              <span class="absolute right-2.5 top-2.5 h-1 w-1 bg-sale" data-low-stock-dot hidden></span>
+            </button>
+          {%- endfor -%}
+        </div>
+
+        {%- if model_note != blank -%}
+          <p class="mt-4 text-right font-primary text-control text-ink" data-model-note>{{ model_note }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+</variant-selector>

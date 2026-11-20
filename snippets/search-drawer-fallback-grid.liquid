@@ -1,0 +1,25 @@
+{% doc %}
+  Search Drawer Fallback Grid
+
+  Renders the merchant-picked fallback collection's products as the 220px
+  drawer-card grid, reused unchanged by the drawer's empty state (no heading
+  above it) and no-results state ("Featured Products" heading above it).
+
+  @param {collection} [collection] - Fallback collection (optional; renders nothing if blank or empty)
+  @param {number} [products_limit] - Max products to render (default: 4). This grid is server-rendered into every page's closed drawer, so it must stay small.
+
+  @example
+  {% render 'search-drawer-fallback-grid', collection: section.settings.fallback_collection, products_limit: section.settings.search_fallback_shown %}
+{% enddoc %}
+
+{%- liquid
+  assign fallback_collection = collection | default: blank
+  assign fallback_products_limit = products_limit | default: 4
+-%}
+{%- if fallback_collection != blank and fallback_collection.products.size > 0 -%}
+  <div class="grid grid-cols-2 gap-0">
+    {%- for fallback_product in fallback_collection.products limit: fallback_products_limit -%}
+      {%- render 'product-card', card_product: fallback_product, view: 'column', aspect_ratio: '2:3', show_discount_label: true, compact: true -%}
+    {%- endfor -%}
+  </div>
+{%- endif -%}

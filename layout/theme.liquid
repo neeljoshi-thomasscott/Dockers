@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    {% render 'ts-cart-redirect' %}
+    {% render 'google-tag-manager' %}
+    {% render 'meta-tags' %}
+    <meta name="google-site-verification" content="wSAOfzW7SQvee-WWAQz9zweXv6r8CIIqtDvk7wOVCWU">
+    {% render 'favicon' %}
+    {% render 'image-preloads' %}
+    {% render 'css-variables' %}
+    {%- comment -%}
+      The TS cart drawer imports Horizon's @theme modules; this theme isn't
+      Horizon, so both resolve to the kit's compat shim.
+    {%- endcomment -%}
+    <script type="importmap">
+      {
+        "imports": {
+          "@theme/section-renderer": "{{ 'ts-theme-compat.js' | asset_url }}",
+          "@theme/events": "{{ 'ts-theme-compat.js' | asset_url }}"
+        }
+      }
+    </script>
+    {% render 'core-assets' %}
+
+    {{ content_for_header }}
+    <link rel="dns-prefetch" href="https://pdp.gokwik.co/">
+    <link rel="dns-prefetch" href="https://api.gokwik.co">
+    {% render 'gokwik' %}
+
+    {% comment %} <style>
+      button[aria-label="Wishlist"], button[type="button"][aria-label="Add to wishlist"]{
+display: none !important;
+}
+    </style> {% endcomment %}
+  </head>
+
+  {%- comment -%}
+    Prefixed so a template suffix (e.g. `grid`) never collides with a Tailwind
+    utility on <body>.
+  {%- endcomment -%}
+  {%- liquid
+    assign body_class = 'template-' | append: template.name
+    if template.suffix != blank
+      assign body_class = body_class | append: ' template-suffix-' | append: template.suffix
+    endif
+
+    # Same condition as sections/header.liquid's has_overlay_header: lets
+    # base.css make the header group transparent only when a hero image sits
+    # under it.
+    if template.name == 'product' and product.media.size > 0
+      assign body_class = body_class | append: ' has-overlay-header'
+    endif
+  -%}
+  <body class="{{ body_class }}">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[1000] focus:bg-background focus:px-4 focus:py-2 focus:text-foreground"
+    >
+      {{- 'accessibility.skip_to_content' | t -}}
+    </a>
+
+    {% sections 'header-group' %}
+
+    {%- unless template.name == 'cart' -%}
+      {% section 'ts-cart-drawer' %}
+    {%- endunless -%}
+
+    {% section 'search-drawer' %}
+
+    {% render 'size-guide-modal' %}
+
+    <main id="main-content" class="flex-1 focus:outline-none" tabindex="-1">
+      {%- comment -%}
+        Visually hidden H1: the homepage's sections output no heading.
+      {%- endcomment -%}
+      {%- if template.name == 'index' -%}
+        <h1 class="sr-only">{{ shop.name | escape }}</h1>
+      {%- endif -%}
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    {% render 'global-variables' %}
+    <script>
+  console.log('Customer ID:', {{ customer.id | json }});
+</script>
+  </body>
+</html>

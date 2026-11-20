@@ -1,0 +1,250 @@
+{% doc %}
+  Quick Add ATC
+
+  Drop-in replacement for the compact `add-to-cart-button` render call on PLP
+  product cards. When the product has a Size option with more than one
+  value, renders a size-selection panel that slides up from the bottom of
+  the product card on click (both mobile and desktop — no hover behavior)
+  wrapping the real add-to-cart-button form — picking a size sets that
+  variant into the form and submits it, so the existing add-to-cart pipeline
+  (cart drawer, checkmark confirmation) runs unchanged. Products with no
+  Size option (or a single variant) fall back to rendering add-to-cart-button
+  directly, with no wrapper and no behavior change.
+
+  The mobile sheet also carries a "Size Guide" trigger (opens the shared
+  size-guide-modal, see snippets/size-guide-modal.liquid) and a "Product Details"
+  link to the product's own PDP. Both are mobile-only — the desktop panel is
+  just the size grid. The "Low in stock" flag is driven by the selected
+  variant's real `inventory_quantity` against the `low_stock_threshold` theme
+  setting (Product card → Quick Add).
+
+  The panel is absolutely positioned on desktop, so it measures itself against
+  the nearest POSITIONED ancestor — which is the caller's button-cluster
+  wrapper, not `.product-card`. Both of product-card.liquid's call sites
+  therefore stretch that wrapper across the full card width between its side
+  insets (buttons stay right-aligned via `items-end`); a wrapper that only
+  hugs its buttons collapses this panel to ~24px wide.
+
+  @param {product} product - Product object (required)
+  @param {string} [button_class] - Additional CSS classes for the compact trigger button
+  @param {string} [compact_pad_class] - Padding class for the compact trigger button (default: 'p-card-button-pad')
+  @param {string} [panel_position_class] - Desktop anchoring classes for the size panel (default: 'md:absolute md:inset-x-0 md:bottom-0')
+
+  @example
+  {% render 'quick-add-atc', product: card_product, button_class: image_atc_class %}
+{% enddoc %}
+
+{%- liquid
+  assign product = product | default: blank
+
+  unless product != blank
+    break
+  endunless
+
+  assign button_class = button_class | default: ''
+  assign compact_pad_class = compact_pad_class | default: 'p-card-button-pad'
+  assign panel_position_class = panel_position_class | default: 'md:absolute md:inset-x-0 md:bottom-0'
+
+  assign size_option = null
+  assign size_option_index = null
+  for option in product.options_with_values
+    assign option_name_lower = option.name | downcase | strip
+    if option_name_lower == 'size'
+      assign size_option = option
+      assign size_option_index = forloop.index0
+      break
+    endif
+  endfor
+
+  assign has_size_selector = false
+  if size_option != blank and product.has_only_default_variant == false
+    assign size_values_count = size_option.values | size
+    if size_values_count > 1
+      assign has_size_selector = true
+    endif
+  endif
+
+  unless has_size_selector
+    render 'add-to-cart-button', product: product, compact: true, button_class: button_class, compact_pad_class: compact_pad_class
+    break
+  endunless
+
+  # Merchant-controlled via the theme editor (Product card → Quick Add). `default`
+  # only substitutes nil/false, so an explicit 0 is preserved and disables the flag.
+  assign low_stock_threshold = settings.low_stock_threshold | default: 30
+
+  assign size_guide = product.metafields.custom.size_guide.value
+  if size_guide != blank
+    assign size_guide_desktop_url = size_guide.desktop_image.value.preview_image | image_url: width: 600
+    assign size_guide_mobile_url = size_guide.mobile_image.value.preview_image | image_url: width: 400
+  endif
+
+  assign first_available_value = null
+  assign first_available_variant = null
+  for value in size_option.values
+    for variant in product.variants
+      case size_option_index
+        when 0
+          assign variant_size_value = variant.option1
+        when 1
+          assign variant_size_value = variant.option2
+        when 2
+          assign variant_size_value = variant.option3
+      endcase
+      if variant_size_value == value and variant.available
+        assign first_available_value = value
+        assign first_available_variant = variant
+        break
+      endif
+    endfor
+    if first_available_value != blank
+      break
+    endif
+  endfor
+
+  assign header_current_size = first_available_value | default: size_option.values.first
+
+  # The header flag reflects the default-selected variant's real inventory.
+  assign header_is_low_stock = false
+  if low_stock_threshold > 0 and first_available_variant != blank and first_available_variant.inventory_management == 'shopify' and first_available_variant.inventory_quantity > 0 and first_available_variant.inventory_quantity <= low_stock_threshold
+    assign header_is_low_stock = true
+  endif
+
+-%}
+
+<quick-add-atc class="quick-add-atc" data-product-id="{{ product.id }}">
+  {%- render 'add-to-cart-button', product: product, compact: true, button_class: button_class, compact_pad_class: compact_pad_class -%}
+
+  <div
+    class="quick-add-atc__scrim fixed inset-0 z-[120] bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"
+    data-quick-add-scrim
+  ></div>
+
+  <div
+    class="quick-add-atc__panel pointer-events-none fixed inset-x-0 bottom-0 z-[121] flex translate-y-full flex-col gap-size-panel-gap bg-surface p-size-panel-pad opacity-0 transition-[transform,opacity] duration-300 {{ panel_position_class }} md:z-10 md:flex"
+    data-quick-add-panel
+  >
+    <div class="quick-add-atc__header md:hidden" data-quick-add-header>
+      <div class="quick-add-atc__header-row flex items-center gap-3">
+        <span class="text-control">
+          {{ 'products.size' | t }} : <span data-quick-add-current-size>{{ header_current_size }}</span>
+        </span>
+        <span class="text-control text-sale" data-quick-add-stock-flag{% unless header_is_low_stock %} hidden{% endunless %}>
+          {{ 'products.low_in_stock' | t }}
+        </span>
+      </div>
+
+      {%- if size_guide != blank -%}
+        <button
+          type="button"
+          class="quick-add-atc__size-guide flex w-full items-center justify-end gap-1.5 text-control text-ink"
+          data-size-guide-trigger
+          data-quick-add-size-guide
+          data-size-guide-desktop="{{ size_guide_desktop_url }}"
+          data-size-guide-mobile="{{ size_guide_mobile_url }}"
+        >
+          {{ 'products.size_guide' | t }}
+          {%- render 'icon-chevron-right', size: 14 -%}
+        </button>
+      {%- endif -%}
+    </div>
+
+    <div class="quick-add-atc__grid mt-1 grid grid-cols-size-options gap-size-option-gap md:mt-0" data-quick-add-grid role="radiogroup" aria-label="{{ 'products.select_size' | t }}">
+      {%- for value in size_option.values -%}
+        {%- liquid
+          assign value_is_available = false
+          assign resolved_variant = null
+          for variant in product.variants
+            case size_option_index
+              when 0
+                assign variant_size_value = variant.option1
+              when 1
+                assign variant_size_value = variant.option2
+              when 2
+                assign variant_size_value = variant.option3
+            endcase
+            if variant_size_value == value
+              if variant.available
+                assign resolved_variant = variant
+                assign value_is_available = true
+                break
+              endif
+              unless resolved_variant
+                assign resolved_variant = variant
+              endunless
+            endif
+          endfor
+
+          assign value_is_low_stock = false
+          if low_stock_threshold > 0 and resolved_variant != blank and resolved_variant.inventory_management == 'shopify' and resolved_variant.inventory_quantity > 0 and resolved_variant.inventory_quantity <= low_stock_threshold
+            assign value_is_low_stock = true
+          endif
+
+          assign is_default_selected = false
+          if value == first_available_value
+            assign is_default_selected = true
+          endif
+        -%}
+        <button
+          type="button"
+          class="quick-add-atc__option relative flex h-size-option-height items-end justify-start pb-size-option-pad-bottom pl-size-option-pad-x font-secondary font-medium uppercase tracking-[0.28px] text-control transition-colors border border-ink-20 aria-checked:border-ink{% if value_is_available %} hover:border-ink{% endif %}{% unless value_is_available %} bg-ink-10 text-muted{% endunless %}"
+          data-quick-add-option
+          data-size-value="{{ value | escape }}"
+          {% if resolved_variant %}
+            data-variant-id="{{ resolved_variant.id }}"
+          {% endif %}
+          data-available="{{ value_is_available }}"
+          data-low-stock="{{ value_is_low_stock }}"
+          role="radio"
+          aria-checked="{{ is_default_selected }}"
+          {% unless value_is_available %}
+            disabled
+          {% endunless %}
+        >
+          {{ value }}
+          {%- if value_is_low_stock -%}
+            <span class="absolute right-size-option-dot-inset top-size-option-dot-inset h-1 w-1 bg-sale" aria-hidden="true"></span>
+          {%- endif -%}
+        </button>
+      {%- endfor -%}
+    </div>
+
+    <a
+      class="quick-add-atc__product-details mt-3 flex items-center gap-1.5 text-control text-ink md:hidden"
+      href="{{ product.url }}"
+      data-quick-add-product-details
+    >
+      {{ 'products.product_details' | t }}
+      {%- render 'icon-chevron-right', size: 14 -%}
+    </a>
+
+    {%- comment -%}
+      GoKwik reads the variant from the Buy Now button's closest form, so the
+      footer carries its own form; quick-add-atc.js keeps the id on the picked size.
+    {%- endcomment -%}
+    <form action="{{ routes.cart_add_url }}" method="post" class="quick-add-atc__footer mt-6 flex gap-2 md:hidden" data-quick-add-footer>
+      <input type="hidden" name="id" value="{{ first_available_variant.id }}" data-quick-add-variant-input>
+      <input type="hidden" name="quantity" value="1">
+      <button
+        type="button"
+        class="flex h-size-option-height flex-1 items-center justify-center border border-ink font-secondary uppercase text-card-label text-ink disabled:cursor-not-allowed disabled:opacity-50"
+        data-quick-add-buy-now
+        {% unless first_available_value -%}
+          disabled
+        {%- endunless %}
+      >
+        {{ 'products.buy_now' | t }}
+      </button>
+      <button
+        type="button"
+        class="flex h-size-option-height flex-1 items-center justify-center bg-ink font-secondary uppercase text-card-label text-surface disabled:cursor-not-allowed disabled:opacity-50"
+        data-quick-add-add-to-bag
+        {% unless first_available_value -%}
+          disabled
+        {%- endunless %}
+      >
+        {{ 'products.add_to_bag' | t }}
+      </button>
+    </form>
+  </div>
+</quick-add-atc>

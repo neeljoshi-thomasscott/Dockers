@@ -1,0 +1,26 @@
+{% doc %}
+  TS Cart Redirect
+
+  No cart page: sends /cart back to the previous page (or home) and flags the
+  cart drawer to open there. Render as the first thing inside <head>.
+
+  @example
+  {% render 'ts-cart-redirect' %}
+{% enddoc %}
+
+{%- if template.name == 'cart' and request.design_mode == false -%}
+  <style>html{visibility:hidden}</style>
+  <script>
+    (function () {
+      var target = {{ routes.root_url | json }};
+      try {
+        var ref = document.referrer ? new URL(document.referrer) : null;
+        if (ref && ref.origin === location.origin && !/\/(cart|checkouts?)(\/|$)/.test(ref.pathname)) {
+          target = ref.pathname + ref.search;
+        }
+        sessionStorage.setItem('tsCartOpenOnLoad', String(Date.now()));
+      } catch (e) {}
+      location.replace(target);
+    })();
+  </script>
+{%- endif -%}

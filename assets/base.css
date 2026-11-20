@@ -1,0 +1,342 @@
+/* Ensure [hidden] always wins over Tailwind utility display classes (flex, grid, block, etc.)
+   Tailwind preflight sets [hidden] { display: none } without !important, so utility classes
+   defined later in the cascade override it. */
+[hidden] {
+  display: none !important;
+}
+
+/* Cart loading state — applied to [data-cart-panel] while a remove is in-flight.
+   Panel is never morphed so this class survives the DOM update. */
+.cart-loading [data-cart-items],
+.cart-loading [data-cart-footer] {
+  pointer-events: none;
+  opacity: 0.4;
+  transition: opacity 200ms;
+}
+
+/* Add-to-cart success/loading state — [data-button-fill] (a solid layer
+   parked below the button, see snippets/add-to-cart-button.liquid) slides
+   up to cover it for both is-added and is-loading, rather than the button's
+   own background cross-fading instantly — a rise, not a color swap. */
+[data-add-to-cart].is-added [data-button-fill],
+[data-add-to-cart].is-loading [data-button-fill] {
+  transform: translateY(0);
+}
+
+/* The checkmark's stroke="currentColor" would otherwise inherit whatever
+   base text color the button variant happens to use (row-desktop's compact
+   button, for example, is text-ink/black at rest) — pin it independent of
+   that so the confirmation reads the same across every card variant. */
+[data-button-checkmark-icon] {
+  color: #0f0f0f !important;
+}
+
+/* setLoading() sets the native `disabled` attribute during the add-to-cart
+   request so the button can't be double-clicked — but disabled:opacity-50
+   (this button's sold-out styling) fades on that same attribute, washing
+   out the white/black loading spinner to a translucent gray. Force it back
+   to full opacity for just this transient state; the permanent sold-out
+   button (disabled with no is-loading class) keeps its normal fade. */
+[data-add-to-cart].is-loading,
+[data-add-to-bag].is-loading {
+  opacity: 1 !important;
+}
+
+/* atc_class_hover (product-card.liquid) collapses this button to zero
+   height/padding whenever the card isn't hovered/focused — but the spinner
+   or checkmark must stay visible for the whole loading/success window even
+   if the pointer leaves the card mid-request, not just while it happens to
+   still be hovering. height/padding here are hardcoded copies of that
+   class's own revealed values (Tailwind's h-6 = 1.5rem, and
+   tailwind.config.js spacing.card-button-pad = 4px) so forcing them open
+   doesn't shift anything relative to the hover-revealed state — if either
+   token changes, update both here too, there's no compiled link between
+   them. Once is-loading/is-added is removed (loading resolves, or the 2s
+   success window ends), atc_class_hover's ordinary hover-gated collapse
+   takes back over on its own — nothing here needs to hide it again. */
+[data-add-to-cart].is-loading,
+[data-add-to-cart].is-added {
+  height: 1.5rem !important;
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  pointer-events: auto !important;
+}
+
+/* Reset — https://www.joshwcomeau.com/css/custom-css-reset/ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+@supports (-webkit-touch-callout: none) {
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: var(--font-primary--family);
+  color: rgb(var(--color-foreground));
+  background-color: rgb(var(--color-background));
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border-width: 0;
+  border-style: solid;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+.page-width {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .page-width {
+    padding-inline: 2rem;
+  }
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.shopify-section-group-header-group {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgb(var(--color-background));
+}
+
+@media (max-width: 1023px) {
+  body.has-overlay-header .shopify-section-group-header-group {
+    background-color: transparent;
+  }
+}
+
+input[type='search']::-webkit-search-cancel-button,
+input[type='search']::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+
+.variant-option--color.variant-sold-out::after,
+.variant-option--color.variant-unavailable::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(45deg, transparent 47%, rgba(255, 255, 255, 0.9) 49%, rgba(255, 255, 255, 0.9) 51%, transparent 53%),
+    linear-gradient(-45deg, transparent 47%, rgba(255, 255, 255, 0.9) 49%, rgba(255, 255, 255, 0.9) 51%, transparent 53%);
+}
+
+image-viewer {
+  display: contents;
+}
+
+.image-viewer__dialog::backdrop {
+  background-color: transparent;
+}
+
+.image-viewer__dialog:not([open]) {
+  display: none;
+}
+
+size-guide-modal {
+  display: contents;
+}
+
+.size-guide-modal__dialog::backdrop {
+  background-color: rgba(15, 15, 15, 0.5);
+}
+
+.size-guide-modal__dialog:not([open]) {
+  display: none;
+}
+
+.product-gallery .product-gallery__progress-thumb {
+  width: calc(100% / var(--gallery-progress-steps, 1));
+  height: 100%;
+  background-color: rgba(15, 15, 15, 0.8);
+  transform: translateX(calc(var(--gallery-progress-index, 0) * 100%));
+  transition: transform 0.3s ease;
+}
+
+.loader {
+  width: 4px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: currentColor;
+  box-shadow: 19px 0 0 7px, 38px 0 0 3px, 57px 0 0 0;
+  transform: translateX(-38px);
+  animation: loader-dots 0.5s infinite alternate linear;
+}
+
+@keyframes loader-dots {
+  50% {
+    box-shadow: 19px 0 0 3px, 38px 0 0 7px, 57px 0 0 3px;
+  }
+
+  100% {
+    box-shadow: 19px 0 0 0, 38px 0 0 3px, 57px 0 0 7px;
+  }
+}
+
+.sr-only,
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.collection-banner .collection-banner__dot.is-active {
+  width: 4rem;
+}
+
+.collection-banner .collection-banner__dot.is-active .collection-banner__thumb {
+  display: block;
+}
+
+.collection-banner .collection-banner__thumb.is-animating {
+  animation: collection-banner-progress linear forwards;
+  animation-duration: var(--hero-carousel-interval, 5s);
+}
+
+@keyframes collection-banner-progress {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+.price-range__track::before,
+.price-range__track::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+.price-range__track::before {
+  left: 0;
+  right: 0;
+  background: rgb(var(--color-border));
+}
+.price-range__track::after {
+  left: var(--price-range-from, 0%);
+  right: calc(100% - var(--price-range-to, 100%));
+  background: #0f0f0f;
+}
+.price-range__input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.price-range__input:focus {
+  outline: none;
+}
+.price-range__input::-webkit-slider-runnable-track {
+  height: 100%;
+  background: transparent;
+}
+.price-range__input::-moz-range-track {
+  background: transparent;
+}
+.price-range__input::-webkit-slider-thumb {
+  width: 14px;
+  height: 14px;
+  margin-top: 3px;
+  border: 0;
+  border-radius: 0;
+  background: #0f0f0f;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-appearance: none;
+}
+.price-range__input::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 0;
+  background: #0f0f0f;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.price-range__input:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid #0f0f0f;
+  outline-offset: 2px;
+}
+.price-range__input:focus-visible::-moz-range-thumb {
+  outline: 2px solid #0f0f0f;
+  outline-offset: 2px;
+}
+
+/* Judge.me's inactive review tabs use #7b7b7b (4.2:1 on white); darken to pass 4.5:1. */
+.jdgm-tab {
+  --jm-tabs-item-text-color: #666666;
+}

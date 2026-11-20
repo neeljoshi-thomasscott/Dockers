@@ -1,0 +1,57 @@
+{% doc %}
+  Renders a single editorial band column: label + image.
+
+  @param {object} block - The `column` block object
+  @param {boolean} [paired] - This column is one half of a same-label mobile pair (see editorial-band-paired-column.liquid): below lg its own label is hidden (the pair shows one shared label) and the image takes the pair's taller height; from lg up it renders exactly like a solo column (default: false)
+{% enddoc %}
+
+{%- liquid
+  assign editorial_column_paired = false
+  if paired == true
+    assign editorial_column_paired = true
+  endif
+
+  assign editorial_column_class = 'flex'
+  assign editorial_label_class = 'block'
+  assign editorial_image_height_class = 'h-editorial-row-image-height-mobile'
+  if editorial_column_paired
+    assign editorial_column_class = 'flex flex-1'
+    assign editorial_label_class = 'hidden lg:block'
+    assign editorial_image_height_class = 'h-editorial-row-paired-image-height-mobile'
+  endif
+-%}
+
+<div class="editorial-band__column {{ editorial_column_class }} flex-col gap-editorial-row-label-gap lg:min-w-0 lg:max-w-editorial-column-width lg:flex-1" {{ block.shopify_attributes }}>
+  {%- if block.settings.label != blank -%}
+    <span class="editorial-band__label {{ editorial_label_class }} uppercase font-plex-mono font-bold text-editorial-label-mobile lg:text-editorial-label">{{ block.settings.label | escape }}</span>
+  {%- endif -%}
+
+  {%- if block.settings.link != blank -%}
+    <a href="{{ block.settings.link }}" class="editorial-band__link block">
+  {%- else -%}
+    <div class="editorial-band__link block">
+  {%- endif -%}
+
+    <div class="editorial-band__image {{ editorial_image_height_class }} lg:h-auto lg:aspect-editorial-column overflow-hidden">
+      {%- if block.settings.image == blank and request.design_mode -%}
+        <div class="flex h-full w-full items-center justify-center border border-dashed border-border bg-background-alt text-meta text-muted">
+          Select an image
+        </div>
+      {%- elsif block.settings.image != blank -%}
+        {%- render 'image',
+          image: block.settings.image,
+          class_name: 'h-full w-full object-cover',
+          lazy: true,
+          alt: block.settings.label,
+          width: 232,
+          height: 348
+        -%}
+      {%- endif -%}
+    </div>
+
+  {%- if block.settings.link != blank -%}
+    </a>
+  {%- else -%}
+    </div>
+  {%- endif -%}
+</div>

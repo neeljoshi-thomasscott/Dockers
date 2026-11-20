@@ -1,0 +1,56 @@
+{% doc %}
+  Colour swatches for catalogs that list each colour as its own product.
+  Each swatch links to a sibling from custom.colour_siblings (same style.code);
+  its colour comes from the sibling's custom.color_swatch_link entry.
+
+  @param {product} product - Current product
+{% enddoc %}
+{%- liquid
+  assign colour_siblings = product.metafields.custom.colour_siblings.value
+  assign current_colour = product.metafields.specs.colour.value
+-%}
+
+{%- if colour_siblings != blank and current_colour != blank -%}
+  <div class="pt-3 pb-3 md:pt-0 md:pb-4" data-colour-siblings>
+    <p class="font-primary text-control font-normal text-ink">
+      {{ 'products.color' | t }} :
+      <span class="font-normal">{{ current_colour | escape }}</span>
+    </p>
+
+    <div class="mt-3.5 flex min-h-6 flex-wrap items-center gap-2">
+      {%- for sibling in colour_siblings -%}
+        {%- liquid
+          assign sibling_colour = sibling.metafields.specs.colour.value | default: sibling.title
+          assign sibling_hex = blank
+          for sibling_swatch in sibling.metafields.custom.color_swatch_link.value limit: 1
+            assign sibling_hex = sibling_swatch.color.value
+          endfor
+          assign is_current = false
+          if sibling.id == product.id
+            assign is_current = true
+          endif
+        -%}
+        <a
+          href="{{ sibling.url }}"
+          class="flex h-[22px] w-[22px] shrink-0 items-center justify-center p-[2px] aria-[current=page]:h-6 aria-[current=page]:w-6 aria-[current=page]:border aria-[current=page]:border-ink"
+          aria-label="{{ sibling_colour | escape }}"
+          title="{{ sibling_colour | escape }}"
+          {% if is_current %}
+            aria-current="page"
+          {% endif %}
+        >
+          {%- if sibling_hex != blank -%}
+            <span
+              class="relative h-[18px] w-[18px] overflow-hidden{% unless sibling.available %} variant-option--color variant-sold-out{% endunless %}"
+              style="background-color: {{ sibling_hex | escape }};"
+            ></span>
+          {%- else -%}
+            <span class="relative flex h-[18px] w-[18px] items-center justify-center overflow-hidden bg-muted/30 text-xs font-medium uppercase leading-none text-muted{% unless sibling.available %} variant-option--color variant-sold-out{% endunless %}">
+              {{- sibling_colour | slice: 0 | escape -}}
+            </span>
+          {%- endif -%}
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}

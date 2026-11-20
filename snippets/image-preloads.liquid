@@ -1,0 +1,31 @@
+{% doc %}
+  Image Preloads
+
+  Preloads the first product image on product pages, using the same URLs as
+  the gallery: the mobile slider (390/780) below md, the desktop grid
+  (480/960) from md up, so each screen fetches one image early.
+{% enddoc %}
+
+{%- if template.name == 'product' -%}
+  {%- assign preload_media = product.media.first -%}
+  {%- if preload_media.media_type == 'image' -%}
+    {% # theme-check-disable AssetPreload %}
+    <link
+      rel="preload"
+      as="image"
+      href="{{ preload_media | image_url: width: 390 }}"
+      imagesrcset="{{ preload_media | image_url: width: 390 }} 1x, {{ preload_media | image_url: width: 780 }} 2x"
+      media="(max-width: 767px)"
+      fetchpriority="high"
+    >
+    <link
+      rel="preload"
+      as="image"
+      href="{{ preload_media | image_url: width: 480 }}"
+      imagesrcset="{{ preload_media | image_url: width: 480 }} 1x, {{ preload_media | image_url: width: 960 }} 2x"
+      media="(min-width: 768px)"
+      fetchpriority="high"
+    >
+    {% # theme-check-enable AssetPreload %}
+  {%- endif -%}
+{%- endif -%}

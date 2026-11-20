@@ -1,0 +1,190 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "header": {
+      "type": "blog-hub-header",
+      "settings": {
+        "hub_heading": "Insights on Style, Heritage, and the Art of Dressing Easy.",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0
+      }
+    },
+    "tabs": {
+      "type": "blog-hub-tabs",
+      "blocks": {
+        "tab_1": {
+          "type": "blog-hub-tab",
+          "settings": {
+            "hub_tab_blog": "heritage-history",
+            "hub_tab_label": ""
+          }
+        },
+        "tab_2": {
+          "type": "blog-hub-tab",
+          "settings": {
+            "hub_tab_blog": "style-guides",
+            "hub_tab_label": ""
+          }
+        },
+        "tab_3": {
+          "type": "blog-hub-tab",
+          "settings": {
+            "hub_tab_blog": "art-of-dressing-easy",
+            "hub_tab_label": ""
+          }
+        },
+        "tab_4": {
+          "type": "blog-hub-tab",
+          "disabled": true,
+          "settings": {
+            "hub_tab_blog": "sustainability",
+            "hub_tab_label": ""
+          }
+        },
+        "tab_5": {
+          "type": "blog-hub-tab",
+          "settings": {
+            "hub_tab_blog": "community",
+            "hub_tab_label": ""
+          }
+        }
+      },
+      "block_order": [
+        "tab_1",
+        "tab_2",
+        "tab_3",
+        "tab_4",
+        "tab_5"
+      ],
+      "settings": {
+        "hub_all_label": "All Stories",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0
+      }
+    },
+    "featured_1": {
+      "type": "blog-featured-article",
+      "settings": {
+        "featured_article": "heritage-history/how-casual-friday-quietly-rewrote-the-office-dress-code",
+        "featured_eyebrow": "New",
+        "featured_image_side": "right",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0,
+        "featured_image_eager": true
+      }
+    },
+    "featured_2": {
+      "type": "blog-featured-article",
+      "settings": {
+        "featured_article": "art-of-dressing-easy/how-casual-friday-quietly-rewrote-the-office-dress-code",
+        "featured_eyebrow": "Featured Article",
+        "featured_image_side": "left",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0,
+        "featured_image_eager": false
+      }
+    },
+    "row_heritage": {
+      "type": "blog-category-row",
+      "disabled": true,
+      "settings": {
+        "category_row_blog": "heritage-history",
+        "category_row_heading": "",
+        "category_row_link_label": "View Article",
+        "category_row_image_size": "standard",
+        "category_row_limit": 5,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40
+      }
+    },
+    "row_style": {
+      "type": "blog-category-row",
+      "disabled": true,
+      "settings": {
+        "category_row_blog": "style-guides",
+        "category_row_heading": "",
+        "category_row_link_label": "View Article",
+        "category_row_image_size": "standard",
+        "category_row_limit": 5,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40
+      }
+    },
+    "row_dressing": {
+      "type": "blog-category-row",
+      "disabled": true,
+      "settings": {
+        "category_row_blog": "art-of-dressing-easy",
+        "category_row_heading": "",
+        "category_row_link_label": "View Article",
+        "category_row_image_size": "standard",
+        "category_row_limit": 5,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40
+      }
+    },
+    "row_sustainability": {
+      "type": "blog-category-row",
+      "disabled": true,
+      "settings": {
+        "category_row_blog": "sustainability",
+        "category_row_heading": "",
+        "category_row_link_label": "View Articles",
+        "category_row_image_size": "tall",
+        "category_row_limit": 5,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40
+      }
+    },
+    "row_community": {
+      "type": "blog-category-row",
+      "disabled": true,
+      "settings": {
+        "category_row_blog": "community",
+        "category_row_heading": "",
+        "category_row_link_label": "View Articles",
+        "category_row_image_size": "tall",
+        "category_row_limit": 5,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40
+      }
+    }
+  },
+  "order": [
+    "header",
+    "tabs",
+    "featured_1",
+    "featured_2",
+    "row_heritage",
+    "row_style",
+    "row_dressing",
+    "row_sustainability",
+    "row_community"
+  ]
+}

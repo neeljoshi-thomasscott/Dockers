@@ -1,0 +1,42 @@
+{
+  "sections": {
+    "main": {
+      "type": "article",
+      "settings": {
+        "article_show_products": true,
+        "article_products_after": 28,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0
+      }
+    },
+    "image_pair": {
+      "type": "article-image-pair",
+      "settings": {
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 0,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 0
+      }
+    },
+    "keep_reading": {
+      "type": "article-keep-reading",
+      "settings": {
+        "keep_reading_heading": "Keep reading...",
+        "keep_reading_limit": 4,
+        "keep_reading_link_label": "All Blogs",
+        "keep_reading_link": "/blogs/stories",
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "padding_top_desktop": 40,
+        "padding_bottom_desktop": 40
+      }
+    }
+  },
+  "order": [
+    "main",
+    "image_pair",
+    "keep_reading"
+  ]
+}

@@ -1,0 +1,212 @@
+{%- paginate blog.articles by 12 -%}
+  {%- liquid
+    assign blog_show_tags = false
+    if section.settings.blog_show_tags and blog.all_tags.size > 0
+      assign blog_show_tags = true
+    endif
+    assign blog_show_sort = section.settings.blog_show_sort
+    assign blog_banner = section.settings.blog_banner_image
+    assign blog_banner_alt = section.settings.blog_banner_alt | default: blog_banner.alt | default: blog.title
+    if blog_show_sort
+      assign blog_listing_tag = 'blog-sort'
+    else
+      assign blog_listing_tag = 'div'
+    endif
+  -%}
+
+  <div
+    class="blog bg-surface pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)]"
+    style="
+      --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+      --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+      --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+      --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+    "
+  >
+    <div class="blog__header px-10 py-20 text-center lg:px-20">
+      <h1 class="font-primary text-blog-title-mobile font-bold text-ink lg:text-blog-title-desktop">{{ blog.title | escape }}</h1>
+    </div>
+
+    {%- if blog_banner != blank -%}
+      <div class="blog__banner h-blog-banner-mobile w-full overflow-hidden border-y border-ink-10 lg:h-blog-banner lg:border-0">
+        {%- render 'image',
+          image: blog_banner,
+          alt: blog_banner_alt,
+          class_name: 'h-full w-full object-cover',
+          lazy: false,
+          base_width: 1440,
+          mobile_width: 800
+        -%}
+      </div>
+    {%- endif -%}
+
+    <{{ blog_listing_tag }} class="blog__listing flex flex-col gap-10 py-10 lg:gap-6">
+      {%- if blog_show_tags or blog_show_sort -%}
+        <sticky-bar
+          class="blog__toolbar flex flex-col gap-6 bg-surface p-4 lg:flex-row lg:items-center lg:gap-16 lg:px-20"
+          data-blog-toolbar
+        >
+          {%- if blog_show_tags -%}
+            <nav
+              class="blog__tags -mr-4 flex flex-1 gap-pill-row-gap-mobile overflow-x-auto pr-4 scrollbar-hide lg:mr-0 lg:gap-pill-row-gap-desktop lg:pr-0"
+              aria-label="{{ 'blog.tags' | t }}"
+            >
+              {%- liquid
+                assign blog_all_label = 'collections.pill_all_label' | t
+                assign blog_all_active = false
+                if current_tags == blank
+                  assign blog_all_active = true
+                endif
+                render 'tag-pill', href: blog.url, label: blog_all_label, active: blog_all_active
+              -%}
+              {%- for blog_tag in blog.all_tags -%}
+                {%- liquid
+                  assign blog_tag_handle = blog_tag | handleize
+                  assign blog_tag_url = blog.url | append: '/tagged/' | append: blog_tag_handle
+                  assign blog_tag_active = false
+                  if current_tags contains blog_tag
+                    assign blog_tag_active = true
+                  endif
+                -%}
+                {%- render 'tag-pill', href: blog_tag_url, label: blog_tag, active: blog_tag_active -%}
+              {%- endfor -%}
+            </nav>
+          {%- endif -%}
+
+          {%- if blog_show_sort -%}
+            <div class="blog__sort flex justify-end lg:ml-auto">
+              <button type="button" class="flex items-center gap-2 text-ink" data-sort-trigger aria-haspopup="dialog">
+                <span class="font-primary text-blog-sort font-medium uppercase">{{ 'collections.sort' | t }}</span>
+                {%- render 'icon-sort', size: 24 -%}
+              </button>
+            </div>
+            {%- render 'sort-overlay', sort_blog: blog -%}
+          {%- endif -%}
+        </sticky-bar>
+      {%- endif -%}
+
+      {%- if blog.articles.size > 0 -%}
+        <ul
+          class="blog__grid grid grid-cols-1 gap-6 px-5 md:grid-cols-2 md:px-10 lg:grid-cols-4 lg:px-20"
+          role="list"
+          data-blog-sort-list
+        >
+          {%- for article in blog.articles -%}
+            <li
+              data-blog-sort-item
+              data-blog-sort-date="{{ article.published_at | date: '%s' }}"
+              data-blog-sort-title="{{ article.title | downcase | escape }}"
+            >
+              {%- render 'blog-article-card',
+                card_article: article,
+                category_label: blog.title,
+                image_height: 'grid',
+                lazy: true
+              -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- else -%}
+        <p class="px-5 py-10 text-center font-primary text-blog-body-desktop text-ink-muted">{{ 'blog.no_articles' | t }}</p>
+      {%- endif -%}
+
+      {%- if paginate.pages > 1 -%}
+        <div class="px-5 lg:px-20">
+          {%- render 'pagination', paginate: paginate -%}
+        </div>
+      {%- endif -%}
+    </{{ blog_listing_tag }}>
+  </div>
+{%- endpaginate -%}
+
+{%- if blog_show_tags or blog_show_sort -%}
+  <script src="{{ 'sticky-bar.js' | asset_url }}" type="module"></script>
+{%- endif -%}
+{%- if blog_show_sort -%}
+  <script src="{{ 'blog-sort.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Blog",
+  "class": "blog-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "blog_banner_image",
+      "label": "Blog Banner Image"
+    },
+    {
+      "type": "text",
+      "id": "blog_banner_alt",
+      "label": "Blog Banner Alt",
+      "info": "Defaults to the image alt text"
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_tags",
+      "label": "Blog Show Tag Filters",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_sort",
+      "label": "Blog Show Sort",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog"
+    }
+  ]
+}
+{% endschema %}

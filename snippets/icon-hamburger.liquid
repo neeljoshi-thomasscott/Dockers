@@ -1,0 +1,18 @@
+{% doc %}
+  Hamburger Menu Icon
+
+  @param {string} [class] - Additional CSS classes (optional)
+  @param {number} size - Icon size in pixels (default: 20)
+{% enddoc %}
+
+{%- assign icon_size = size | default: 20 -%}
+<svg
+  class="{{ class }}"
+  width="{{ icon_size }}"
+  height="{{ icon_size }}"
+  viewBox="0 0 20 20"
+  fill="none"
+  aria-hidden="true"
+>
+  <path d="M17 12.625H3V11.125H17V12.625ZM17 8.875H3V7.375H17V8.875Z" fill="currentColor"/>
+</svg>

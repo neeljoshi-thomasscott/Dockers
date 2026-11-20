@@ -1,0 +1,117 @@
+{% doc %}
+  Breadcrumb, page title and document nav (sidebar from lg, pills below).
+  Shared by legal-document and legal-faq.
+
+  @param {boolean} show_breadcrumb - Whether to show the breadcrumb trail
+  @param {string} parent_group_label - Breadcrumb's parent group label (e.g. "Legal")
+  @param {boolean} show_navigation - Whether to show the document nav
+  @param {string} [nav_menu] - Handle of the linklist powering the document nav
+{% enddoc %}
+
+{%- liquid
+    # The crumb uses the nav link's label for the current page (e.g. "FAQs"), so
+    # a page title written for the H1 ("Frequently Asked Questions") stays out of it.
+    assign legal_crumb_label = page.title
+    if nav_menu != blank
+      assign current_path_slash = request.path | append: '/'
+      for crumb_link in linklists[nav_menu].links
+        assign crumb_link_path_slash = crumb_link.url | append: '/'
+        if crumb_link.url == request.path or crumb_link_path_slash == current_path_slash or crumb_link.object.handle == page.handle
+          assign legal_crumb_label = crumb_link.title
+          break
+        endif
+      endfor
+    endif
+  -%}
+
+{%- if show_breadcrumb -%}
+  <nav
+    aria-label="{{ 'accessibility.breadcrumb' | t }}"
+    class="legal-nav__crumb order-1 lg:order-1 lg:col-span-full flex items-center justify-start lg:justify-center gap-legal-crumb-gap py-legal-crumb-pad-y px-legal-crumb-pad-x font-secondary text-crumb uppercase tracking-[0.02em] text-ink"
+  >
+    <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a>
+    <span>/</span>
+    <span>{{ parent_group_label | escape }}</span>
+    <span>/</span>
+    <span aria-current="page">{{ legal_crumb_label | escape }}</span>
+  </nav>
+{%- endif -%}
+
+{%- comment -%}
+  order-2/order-3 flip between mobile (pills above the H1, per Figma's mobile
+  stack) and from lg (H1 above the sidebar) — the grid/flex row this
+  participates in is declared on the calling section's own wrapper.
+{%- endcomment -%}
+<div class="legal-nav__title-band order-3 lg:order-2 lg:col-span-full px-4 pt-legal-title-band-pad-top-mobile pb-legal-title-band-pad-bottom-mobile text-center lg:px-0 lg:py-legal-title-band-pad-y-desktop">
+  <h1 class="legal-nav__title font-primary text-doc-title-mobile font-bold text-ink lg:text-doc-title-desktop">{{ page.title | escape }}</h1>
+</div>
+
+{%- if show_navigation -%}
+  {%- liquid
+    assign menu = linklists[nav_menu]
+  -%}
+  <nav aria-label="{{ 'accessibility.document_navigation' | t }}" class="legal-nav__nav order-2 lg:order-3 lg:px-4 lg:pt-legal-shell-pad-y-top">
+    <ul class="legal-nav__nav-list hidden lg:flex lg:w-full lg:flex-col lg:border lg:border-ink">
+      {%- if menu != blank -%}
+        {%- for link in menu.links -%}
+          {%- liquid
+            assign is_active = false
+            assign link_path_slash = link.url | append: '/'
+            assign current_path_slash = request.path | append: '/'
+            if link.url == request.path or link_path_slash == current_path_slash
+              assign is_active = true
+            elsif link.object.handle == page.handle
+              assign is_active = true
+            endif
+          -%}
+          <li class="legal-nav__nav-item border-b border-ink last:border-b-0">
+            <a
+              href="{{ link.url }}"
+              class="flex items-center justify-between px-legal-sidebar-item-pad-x py-legal-sidebar-item-pad-y font-secondary text-doc-nav uppercase{% if is_active %} font-bold{% endif %}"
+              {% if is_active %}
+                aria-current="page"
+              {% endif %}
+            >
+              <span>{{ link.title | escape }}</span>
+              {% render 'icon-chevron-right', size: 16 %}
+            </a>
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+
+    <ul class="legal-nav__nav-pills flex gap-legal-pill-gap overflow-x-auto scrollbar-hide px-4 py-4 lg:hidden" data-legal-nav-pills>
+      {%- if menu != blank -%}
+        {%- for link in menu.links -%}
+          {%- liquid
+            assign is_active = false
+            assign link_path_slash = link.url | append: '/'
+            assign current_path_slash = request.path | append: '/'
+            if link.url == request.path or link_path_slash == current_path_slash
+              assign is_active = true
+            elsif link.object.handle == page.handle
+              assign is_active = true
+            endif
+          -%}
+          <li class="shrink-0 whitespace-nowrap">
+            {%- if is_active -%}
+              <a
+                href="{{ link.url }}"
+                data-active="true"
+                aria-current="page"
+                class="inline-flex bg-ink px-legal-pill-pad-active-x py-legal-pill-pad-active-y font-secondary text-doc-nav uppercase text-surface"
+              >{{ link.title | escape }}</a>
+            {%- else -%}
+              <a
+                href="{{ link.url }}"
+                class="inline-flex border border-ink-20 px-legal-pill-pad-idle-x py-legal-pill-pad-idle-y font-secondary text-doc-nav uppercase"
+              >{{ link.title | escape }}</a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+  </nav>
+{%- endif -%}
+
+<script src="{{ 'legal-nav.js' | asset_url }}" defer></script>

@@ -1,0 +1,21 @@
+{% doc %}
+  Search Terms Param
+
+  Outputs the current search terms URL-encoded for a `q=` query parameter,
+  for the no-JS links (sort options, category pills) that have to carry the
+  search along.
+
+  `search.terms` arrives from Shopify already HTML-escaped (`a&b` is
+  `a&amp;b`), so URL-encoding it directly puts the entities into the URL —
+  the term comes back as `a&amp;b`. The entities are decoded first
+  (`&amp;` last, so an escaped entity like `&amp;lt;` stays literal), then
+  `url_encode` encodes it; unlike `url_param_escape` it also encodes `+`,
+  which a query string would otherwise read back as a space.
+
+  @example
+  {%- capture search_terms_param -%}{%- render 'search-terms-param' -%}{%- endcapture -%}
+{% enddoc -%}
+{%- liquid
+  assign raw_search_terms = search.terms | replace: '&quot;', '"' | replace: '&#39;', "'" | replace: '&lt;', '<' | replace: '&gt;', '>' | replace: '&amp;', '&'
+  echo raw_search_terms | url_encode
+-%}

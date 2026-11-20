@@ -1,0 +1,18 @@
+{% doc %}
+  Cart Icon
+
+  @param {string} [class] - Additional CSS classes (optional)
+  @param {number} size - Icon size in pixels (default: 20)
+{% enddoc %}
+
+{%- assign icon_size = size | default: 20 -%}
+<svg
+  class="{{ class }}"
+  width="{{ icon_size }}"
+  height="{{ icon_size }}"
+  viewBox="0 0 24 24"
+  fill="none"
+  aria-hidden="true"
+>
+  <path d="M4.79999 21.6V6.59999H8.39999V6.19999C8.39999 5.19999 8.73749 4.31666 9.41249 3.54999C10.0875 2.78333 10.95 2.39999 12 2.39999C13 2.39999 13.85 2.74999 14.55 3.44999C15.25 4.14999 15.6 4.99999 15.6 5.99999V6.59999H19.2V21.6H4.79999ZM6.59999 19.8H17.4V8.39999H15.6V10.8H13.8V8.39999H10.2V10.8H8.39999V8.39999H6.59999V19.8ZM10.2 6.59999H13.8V5.99999C13.8 5.50499 13.6232 5.08124 13.2697 4.72874C12.9162 4.37624 12.4912 4.19999 11.9947 4.19999C11.4982 4.19999 11.075 4.37624 10.725 4.72874C10.375 5.08124 10.2 5.50499 10.2 5.99999V6.59999Z" fill="currentColor"/>
+</svg>

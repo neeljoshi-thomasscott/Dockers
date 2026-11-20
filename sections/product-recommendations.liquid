@@ -1,0 +1,130 @@
+{%- liquid
+  assign source_collection = section.settings.yml_collection | default: product.collections.first
+  assign products_count = section.settings.yml_count | default: 8
+  assign yml_heading = section.settings.yml_heading | default: 'You May Also Like'
+
+  assign has_source = false
+  if source_collection != blank
+    assign has_source = true
+  endif
+
+  assign eligible_limit = products_count | plus: 1
+
+  assign eligible_count = 0
+  if has_source
+    for eligible_product in source_collection.products limit: eligible_limit
+      unless eligible_product.id == product.id
+        assign eligible_count = eligible_count | plus: 1
+      endunless
+      if eligible_count >= products_count
+        break
+      endif
+    endfor
+  endif
+-%}
+
+{%- if eligible_count > 0 -%}
+  <section
+    class="product-recommendations pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] md:pt-[var(--section-padding-top-desktop)] md:pb-[var(--section-padding-bottom-desktop)]"
+    style="
+      --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+      --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+      --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+      --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+    "
+  >
+    <h2 class="mb-4 px-4 text-left font-primary text-style-with-heading-mobile font-medium text-ink md:mb-recommendations-heading-gap-desktop md:px-0 md:text-center md:text-style-with-heading">{{ yml_heading }}</h2>
+
+    <div class="grid grid-cols-2 gap-0 md:grid-cols-4">
+      {%- liquid
+        assign rendered_count = 0
+      -%}
+      {%- for card_product in source_collection.products limit: eligible_limit -%}
+        {%- unless card_product.id == product.id -%}
+          {%- if rendered_count < products_count -%}
+            {%- render 'product-card', card_product: card_product, view: 'column', show_discount_label: true -%}
+            {%- assign rendered_count = rendered_count | plus: 1 -%}
+          {%- endif -%}
+        {%- endunless -%}
+      {%- endfor -%}
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "You May Also Like",
+  "class": "you-may-like-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "yml_heading",
+      "label": "Heading",
+      "default": "You May Also Like"
+    },
+    {
+      "type": "range",
+      "id": "yml_count",
+      "label": "Number Of Products",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "collection",
+      "id": "yml_collection",
+      "label": "Source Collection"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "You May Also Like"
+    }
+  ]
+}
+{% endschema %}

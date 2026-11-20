@@ -1,0 +1,183 @@
+{%- liquid
+  assign article_hero_alt = article.image.alt | default: article.title
+  assign article_products = article.metafields.custom.article_products.value
+  assign article_show_products = false
+  if section.settings.article_show_products and article_products != blank
+    assign article_show_products = true
+  endif
+
+  assign article_body_first = article.content
+  assign article_body_second = ''
+
+  if article_show_products
+    assign article_parts = article.content | split: '</p>'
+    assign article_split_at = section.settings.article_products_after
+    assign article_container_tags = 'blockquote,ul,ol,table,div,figure' | split: ','
+    assign article_split_done = false
+    assign article_body_first = ''
+
+    for article_part in article_parts
+      if article_split_done
+        assign article_part_text = article_part | strip
+        if forloop.last and article_part_text == blank
+          continue
+        endif
+        assign article_body_second = article_body_second | append: article_part | append: '</p>'
+        continue
+      endif
+
+      assign article_body_first = article_body_first | append: article_part | append: '</p>'
+      if forloop.index >= article_split_at
+        assign article_open_containers = 0
+        for container_tag in article_container_tags
+          assign container_open_token = '<' | append: container_tag
+          assign container_close_token = '</' | append: container_tag | append: '>'
+          assign container_opened = article_body_first | split: container_open_token | size | minus: 1
+          assign container_closed = article_body_first | split: container_close_token | size | minus: 1
+          if container_opened > container_closed
+            assign article_open_containers = article_open_containers | plus: 1
+          endif
+        endfor
+        if article_open_containers == 0
+          assign article_split_done = true
+        endif
+      endif
+    endfor
+
+    unless article_split_done
+      assign article_body_first = article.content
+      assign article_body_second = ''
+    endunless
+  endif
+
+  assign article_body_class = 'article__content font-primary text-blog-body-mobile text-navy-80 lg:text-blog-body-desktop [&_p+p]:mt-5 lg:[&_p+p]:mt-6 [&_a]:underline [&_strong]:font-semibold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_img]:h-auto [&_img]:max-w-full'
+-%}
+
+<article
+  class="article bg-surface pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)]"
+  style="
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+  "
+>
+  {%- if article.image != blank -%}
+    <div class="article__hero h-article-hero-mobile w-full overflow-hidden lg:h-blog-banner">
+      {%- render 'image',
+        image: article.image,
+        alt: article_hero_alt,
+        class_name: 'h-full w-full object-cover',
+        lazy: false,
+        base_width: 1440,
+        mobile_width: 800
+      -%}
+    </div>
+  {%- endif -%}
+
+  <div class="article__body mx-auto flex max-w-article-body-width flex-col gap-3 p-5 lg:gap-8 lg:px-0 lg:py-10">
+    <h1 class="text-center font-primary text-blog-heading-mobile font-bold text-navy lg:text-blog-display">{{ article.title | escape }}</h1>
+
+    {%- if article_body_first != blank -%}
+      <div class="{{ article_body_class }}">{{ article_body_first }}</div>
+    {%- endif -%}
+
+    {%- if article_show_products -%}
+      <ul class="article__products -mx-5 flex snap-x snap-mandatory overflow-x-auto scrollbar-hide lg:mx-0 lg:justify-center lg:overflow-visible" role="list">
+        {%- for product in article_products limit: 3 -%}
+          <li class="w-1/2 shrink-0 snap-start lg:w-blog-card-width-desktop">
+            {%- render 'product-card',
+              card_product: product,
+              view: 'column',
+              image_width: 320,
+              lazy_load: true,
+              show_discount_label: true
+            -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    {%- if article_body_second != blank -%}
+      <div class="{{ article_body_class }}">{{ article_body_second }}</div>
+    {%- endif -%}
+  </div>
+</article>
+
+{% schema %}
+{
+  "name": "Article",
+  "class": "article-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "checkbox",
+      "id": "article_show_products",
+      "label": "Article Show Products",
+      "default": true,
+      "info": "Products come from the article's Article Products metafield"
+    },
+    {
+      "type": "range",
+      "id": "article_products_after",
+      "label": "Products After Paragraph",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Article"
+    }
+  ]
+}
+{% endschema %}

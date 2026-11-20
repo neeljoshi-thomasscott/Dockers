@@ -1,0 +1,125 @@
+{%- comment -%}
+  Reads product.metafields.custom.quick_links (list.metaobject_reference to
+  the quick_link metaobject: label, collection, url, icon). The collection
+  reference wins over url so links follow handle/domain changes; label falls
+  back to the collection title. Renders nothing when the
+  metafield is empty — this section carries no merchant-editable blocks,
+  content is entirely product data driven.
+{%- endcomment -%}
+{%- liquid
+  assign quick_links = product.metafields.custom.quick_links.value
+-%}
+
+{%- if quick_links != blank -%}
+  <section
+    class="quick-links"
+    style="
+      --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+      --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+      --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+      --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+    "
+  >
+    <div
+      class="pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] md:mx-auto md:max-w-[1200px] md:pt-[var(--section-padding-top-desktop)] md:pb-[var(--section-padding-bottom-desktop)]"
+    >
+      <div class="flex flex-col md:flex-row md:gap-4">
+        {%- for quick_link in quick_links -%}
+          {%- liquid
+            assign quick_link_collection = quick_link.collection.value
+            assign quick_link_url = quick_link.url.value
+            assign quick_link_label = quick_link.label.value
+            if quick_link_collection != blank
+              assign quick_link_url = quick_link_collection.url
+              if quick_link_label == blank
+                assign quick_link_label = 'View All ' | append: quick_link_collection.title
+              endif
+            endif
+          -%}
+          {%- capture quick_link_content -%}
+            <span class="font-primary text-sm font-medium tracking-[0.02em] text-foreground md:tracking-normal">{{ quick_link_label | escape }}</span>
+            {%- if quick_link.icon.value != blank -%}
+              <img
+                src="{{ quick_link.icon.value | image_url: width: 32 }}"
+                width="16"
+                height="16"
+                alt=""
+                loading="lazy"
+                class="h-4 w-4 shrink-0"
+              >
+            {%- else -%}
+              {%- render 'icon-chevron-right', size: 16, class: 'h-4 w-4 shrink-0 text-foreground' -%}
+            {%- endif -%}
+          {%- endcapture -%}
+          {%- assign quick_link_class = 'flex w-full items-center justify-between gap-2 border-b border-foreground/20 bg-surface-soft px-4 py-4 md:flex-1 md:border md:bg-surface md:px-5 md:py-4' -%}
+          {%- if forloop.first -%}
+            {%- assign quick_link_class = quick_link_class | append: ' border-t' -%}
+          {%- endif -%}
+          {%- if quick_link_url != blank -%}
+            <a href="{{ quick_link_url }}" class="{{ quick_link_class }}">
+              {{ quick_link_content }}
+            </a>
+          {%- else -%}
+            <div class="{{ quick_link_class }}">
+              {{ quick_link_content }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Quick Links",
+  "class": "quick-links-section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quick Links"
+    }
+  ]
+}
+{% endschema %}
