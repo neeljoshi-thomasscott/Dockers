@@ -46,7 +46,7 @@
   data-product-section
 >
   <div class="mx-auto grid max-w-[1800px] gap-0 md:grid-cols-[2fr_1fr]" data-product-main>
-    <div class="product-media min-w-0{% if product.media.size > 0 %} -mt-header-height-mobile lg:mt-0{% endif %}">
+    <div class="product-media min-w-0">
       {%- if product.media.size > 0 -%}
         <div class="hidden md:grid md:grid-cols-2" data-product-gallery-desktop>
           {%- for tile_media in product.media limit: 6 -%}
@@ -94,7 +94,7 @@
         data-autoplay="false"
         data-loop="true"
       >
-        <div class="relative aspect-[390/585] w-full overflow-hidden">
+        <div class="relative w-full overflow-hidden">
           {%- if show_badge -%}
             <span
               class="absolute z-[1] flex h-pdp-gallery-badge-height items-center px-pdp-gallery-badge-pad-x text-pdp-gallery-badge font-normal bg-surface-20 text-surface bottom-4 left-4"
@@ -103,11 +103,11 @@
               {{ badge_text }}
             </span>
           {%- endif -%}
-          <div class="product-gallery__viewport h-full w-full overflow-hidden" data-product-gallery-viewport>
-            <div class="product-gallery__track flex h-full" data-product-gallery-track>
+          <div class="product-gallery__viewport w-full overflow-hidden" data-product-gallery-viewport>
+            <div class="product-gallery__track flex gap-0.5" data-product-gallery-track>
               {%- for media in product.media -%}
                 <div
-                  class="product-gallery__slide h-full w-full shrink-0 overflow-hidden"
+                  class="product-gallery__slide aspect-[390/585] {% if product.media.size > 1 %}w-[85%]{% else %}w-full{% endif %} shrink-0 overflow-hidden"
                   data-gallery-media-id="{{ media.id }}"
                   tabindex="-1"
                 >
@@ -115,8 +115,8 @@
                     {%- when 'image' -%}
                       <img
                         src="{{ media | image_url: width: 390 }}"
-                        srcset="{{ media | image_url: width: 390 }} 1x, {{ media | image_url: width: 780 }} 2x"
-                        sizes="100vw"
+                        srcset="{{ media | image_url: width: 390 }} 390w, {{ media | image_url: width: 780 }} 780w"
+                        sizes="85vw"
                         alt="{{ media.alt | default: product.title | escape }}"
                         width="390"
                         height="585"
@@ -153,10 +153,19 @@
             {%- render 'icon-close', size: 24, class: 'h-4 w-4 text-ink md:h-6 md:w-6' -%}
           </button>
 
-          <div class="image-viewer__stack h-full w-full overflow-hidden md:snap-y md:snap-mandatory md:overflow-y-auto" data-image-viewer-stack>
+          <div class="image-viewer__zoom-controls fixed bottom-[142px] right-5 z-20 flex flex-col gap-[2px] md:bottom-5" data-image-viewer-zoom-controls>
+            <button type="button" class="flex h-10 w-10 items-center justify-center bg-surface text-ink disabled:opacity-40" data-image-viewer-zoom-in aria-label="{{ 'products.zoom_in' | t }}">
+              {%- render 'icon-plus', size: 20 -%}
+            </button>
+            <button type="button" class="flex h-10 w-10 items-center justify-center bg-surface text-ink disabled:opacity-40" data-image-viewer-zoom-out aria-label="{{ 'products.zoom_out' | t }}" disabled>
+              {%- render 'icon-minus', size: 20 -%}
+            </button>
+          </div>
+
+          <div class="image-viewer__stack h-full w-full overflow-hidden md:snap-y md:snap-mandatory md:overflow-y-auto md:data-[zoomed=true]:!overflow-hidden" data-image-viewer-stack>
             <div class="image-viewer__track flex h-full md:block md:h-auto" data-image-viewer-track>
             {%- for media in product.media -%}
-              <div class="image-viewer__slide h-full w-full shrink-0 snap-start md:h-auto" data-image-viewer-slide data-media-id="{{ media.id }}">
+              <div class="image-viewer__slide h-full w-full shrink-0 snap-start overflow-hidden md:flex md:h-dvh md:items-center md:justify-center md:pl-image-viewer-rail-desktop" data-image-viewer-slide data-media-id="{{ media.id }}">
                 {%- case media.media_type -%}
                   {%- when 'image' -%}
                     <img
@@ -167,7 +176,9 @@
                       width="{{ media.width }}"
                       height="{{ media.height }}"
                       loading="lazy"
-                      class="h-full w-full object-cover md:h-auto md:w-full md:object-contain"
+                      class="h-full w-full origin-center cursor-zoom-in select-none object-cover [touch-action:none] [transform:translate(var(--zoom-x,0px),var(--zoom-y,0px))_scale(var(--zoom-scale,1))] data-[zoomed=true]:cursor-zoom-out md:w-auto md:max-w-full md:object-contain"
+                      draggable="false"
+                      data-image-viewer-zoom-target
                     >
                   {%- when 'video' -%}
                     <inline-video class="block h-full w-full">{{ media | video_tag: autoplay: true, loop: true, controls: false, muted: true, image_size: "1080x", class: "h-full w-full object-cover" }}</inline-video>
@@ -294,11 +305,9 @@
                     price: current_variant.price,
                     compare_at_price: current_variant.compare_at_price,
                     show_discount_label: true,
-                    size: 'pdp',
-                    gap_class: 'gap-1',
-                    class: 'flex-wrap'
+                    size: 'pdp_mrp',
+                    tax_note: block.settings.tax_note
                   -%}
-                  <p class="font-primary text-count tracking-normal text-ink">{{ block.settings.tax_note | default: 'Inclusive of all taxes' }}</p>
                 </div>
               </div>
             </div>
@@ -390,6 +399,17 @@
               {% render 'pdp-accordion',
                 heading: details_heading,
                 content: product.metafields.custom.details,
+                open_by_default: block.settings.open_by_default,
+                shopify_attributes: block.shopify_attributes
+              %}
+            {%- endif -%}
+
+          {%- when 'manufactured_by' -%}
+            {%- if product.metafields.custom.manufacture_by != blank and block.settings.heading != blank -%}
+              {%- assign manufactured_by_content = product.metafields.custom.manufacture_by | escape | newline_to_br -%}
+              {% render 'pdp-accordion',
+                heading: block.settings.heading,
+                content: manufactured_by_content,
                 open_by_default: block.settings.open_by_default,
                 shopify_attributes: block.shopify_attributes
               %}
@@ -599,6 +619,25 @@
       ]
     },
     {
+      "type": "manufactured_by",
+      "name": "Manufactured By",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Manufactured & Packed By"
+        },
+        {
+          "type": "checkbox",
+          "id": "open_by_default",
+          "label": "Open by default",
+          "default": false
+        }
+      ]
+    },
+    {
       "type": "collapsible",
       "name": "Collapsible tab",
       "settings": [
@@ -628,6 +667,7 @@
         { "type": "fit" },
         { "type": "materials_care" },
         { "type": "details" },
+        { "type": "manufactured_by" },
         { "type": "buy_buttons" }
       ]
     }

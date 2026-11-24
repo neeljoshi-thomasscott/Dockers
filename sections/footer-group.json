@@ -1,1 +1,83 @@
-{"type":"footer","name":"Footer","sections":{"footer":{"type":"footer","blocks":{"logo":{"type":"logo","settings":{"image":"shopify:\/\/shop_images\/423b6bf80cbe3d804d8e59057c66306304731076.png"}},"shop":{"type":"link_column","settings":{"heading":"Shop","links":"<ul><li><a href=\"\/collections\/men\">Men<\/a><\/li><li><a href=\"\/collections\/all\">Shop All<\/a><\/li><\/ul>","menu":""}},"company":{"type":"link_column","settings":{"heading":"The Company","links":"<ul><li><a href=\"\/pages\/about-us\">About<\/a><\/li><li><a href=\"\/blogs\/stories\">Blogs<\/a><\/li><\/ul>","menu":""}},"client-services":{"type":"link_column","settings":{"heading":"Policy Pages","links":"<ul><li><a href=\"\/pages\/faqs\">FAQ<\/a><\/li><li><a href=\"\/pages\/returns-exchange\">Exchanges & returns<\/a><\/li><li><a href=\"\/pages\/shipping-delivery\">Shipping & Delivery<\/a><\/li><li><a href=\"\/pages\/terms-conditions\">Legal<\/a><\/li><li><a href=\"\/pages\/privacy-policy\">Privacy Policy<\/a><\/li><li><a href=\"\/pages\/contact-us\">Contact Us<\/a><\/li><\/ul>","menu":""}},"follow-us":{"type":"link_column","settings":{"heading":"Follow Us","links":"<ul><li><a href=\"https:\/\/www.instagram.com\/dockers.in\/\" target=\"_blank\">Instagram<\/a><\/li><li><a href=\"https:\/\/www.facebook.com\/DockersIndia\/\" target=\"_blank\">Facebook<\/a><\/li><li><a href=\"https:\/\/in.pinterest.com\/dockers_in\/\" target=\"_blank\">Pinterest<\/a><\/li><\/ul>","menu":""}},"contact":{"type":"contact","settings":{"heading":"Contact Us","body":"<p>Call us at<\/p><p><a href=\"tel:+918879660312\">+91 88796 60312<\/a><\/p><p><a href=\"mailto:customercare@dockers.in\">customercare@dockers.in<\/a><\/p><p>Unit 447, Fourth Floor, Kewal Industrial Estate, Senapati Bapat Marg, Lower Parel West, Mumbai, Maharashtra - 400013<\/p>"}}},"block_order":["logo","shop","company","client-services","follow-us","contact"],"settings":{"copyright_text":"<p>&copy; 2026 Dockers<\/p>","padding_top_mobile":0,"padding_bottom_mobile":0,"padding_top_desktop":0,"padding_bottom_desktop":0}}},"order":["footer"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "footer",
+  "name": "Footer",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "logo": {
+          "type": "logo",
+          "settings": {
+            "image": "shopify://shop_images/423b6bf80cbe3d804d8e59057c66306304731076.png"
+          }
+        },
+        "shop": {
+          "type": "link_column",
+          "settings": {
+            "heading": "Shop",
+            "links": "<ul><li><a href=\"/collections/men\">Men</a></li><li><a href=\"/collections/all\">Shop All</a></li></ul>",
+            "menu": ""
+          }
+        },
+        "company": {
+          "type": "link_column",
+          "settings": {
+            "heading": "The Company",
+            "links": "<ul><li><a href=\"/pages/about-us\">About</a></li></ul>",
+            "menu": ""
+          }
+        },
+        "client-services": {
+          "type": "link_column",
+          "settings": {
+            "heading": "Policy Pages",
+            "links": "<ul><li><a href=\"/pages/faqs\">FAQ</a></li><li><a href=\"/pages/returns-exchange\">Exchanges & returns</a></li><li><a href=\"/pages/shipping-delivery\">Shipping & Delivery</a></li><li><a href=\"/pages/terms-conditions\">Terms & Conditions</a></li><li><a href=\"/pages/terms-of-use\">Terms of Use</a></li><li><a href=\"/pages/privacy-policy\">Privacy Policy</a></li><li><a href=\"/pages/contact-us\">Contact Us</a></li></ul>",
+            "menu": ""
+          }
+        },
+        "follow-us": {
+          "type": "link_column",
+          "settings": {
+            "heading": "Follow Us",
+            "links": "<ul><li><a href=\"https://www.instagram.com/dockers.in/\" target=\"_blank\">Instagram</a></li><li><a href=\"https://www.facebook.com/DockersIndia/\" target=\"_blank\">Facebook</a></li><li><a href=\"https://in.pinterest.com/dockers_in/\" target=\"_blank\">Pinterest</a></li></ul>",
+            "menu": ""
+          }
+        },
+        "contact": {
+          "type": "contact",
+          "settings": {
+            "heading": "Contact Us",
+            "body": "<p>Call us at</p><p><a href=\"tel:+918879660312\">+91 88796 60312</a></p><p><a href=\"mailto:customercare@dockers.in\">customercare@dockers.in</a></p><p>Unit 447, Fourth Floor, Kewal Industrial Estate, Senapati Bapat Marg, Lower Parel West, Mumbai, Maharashtra - 400013</p>"
+          }
+        }
+      },
+      "block_order": [
+        "logo",
+        "shop",
+        "company",
+        "client-services",
+        "follow-us",
+        "contact"
+      ],
+      "settings": {
+        "copyright_text": "<p>&copy; 2026 Dockers</p>",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0
+      }
+    }
+  },
+  "order": [
+    "footer"
+  ]
+}

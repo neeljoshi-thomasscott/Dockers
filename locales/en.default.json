@@ -1,5 +1,15 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "general": {
+    "payment_methods": "Payment methods",
     "typography": "Typography",
     "fonts": "Fonts",
     "primary": "Primary font",
@@ -26,7 +36,7 @@
   "404": {
     "title": "Page not found",
     "not_found": "The page you were looking for doesn't exist.",
-    "back_to_shopping": "Back to shopping"
+    "back_to_shopping": "Back to Home"
   },
   "blog": {
     "article_comments": "Comments",
@@ -174,6 +184,8 @@
     "filter_max": "Max",
     "clear_all": "Clear all",
     "no_products": "No products found.",
+    "read_more": "Read more",
+    "read_less": "Read less",
     "no_sort_options": "No sort options available.",
     "products_count": {
       "one": "{{ count }} product",
@@ -221,6 +233,7 @@
     "size_guide": "Size Guide",
     "size_guide_subtitle": "All measurements in inches.",
     "size_guide_modal_label": "Size guide",
+    "size_chart_note": "All measurements are of the garment. For best fit, compare with your body measurements.",
     "product_details": "Product Details",
     "buy_now": "Buy Now",
     "add_to_bag": "Add to Bag",
@@ -230,6 +243,8 @@
     "materials_care": "Materials & Care",
     "details": "Details",
     "image_viewer": "Image viewer",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out",
     "view_image": "View image {{ index }}"
   },
   "gift_card": {

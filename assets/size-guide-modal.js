@@ -3,6 +3,9 @@ class SizeGuideModal extends HTMLElement {
     this._dialog = this.querySelector('[data-size-guide-modal-dialog]');
     if (!this._dialog) return;
 
+    this._chartSlot = this.querySelector('[data-size-guide-chart]');
+    this._imagesSlot = this.querySelector('[data-size-guide-images]');
+
     this._triggerElement = null;
 
     this._handleDocumentClick = (event) => {
@@ -11,8 +14,16 @@ class SizeGuideModal extends HTMLElement {
 
       event.preventDefault();
       this._triggerElement = trigger;
-      this._setImage('desktop', trigger.dataset.sizeGuideDesktop);
-      this._setImage('mobile', trigger.dataset.sizeGuideMobile);
+      const { sizeChartId, sizeGuideDesktop, sizeGuideMobile } = trigger.dataset;
+      const chartTemplate = sizeChartId ? document.getElementById(sizeChartId) : null;
+
+      if (chartTemplate) {
+        this._showChart(chartTemplate);
+      } else {
+        this._hideChart();
+        this._setImage('desktop', sizeGuideDesktop);
+        this._setImage('mobile', sizeGuideMobile);
+      }
       this._dialog.showModal();
     };
     document.addEventListener('click', this._handleDocumentClick);
@@ -36,6 +47,20 @@ class SizeGuideModal extends HTMLElement {
 
   disconnectedCallback() {
     document.removeEventListener('click', this._handleDocumentClick);
+  }
+
+  _showChart(template) {
+    if (!this._chartSlot) return;
+    this._chartSlot.replaceChildren(template.content.cloneNode(true));
+    this._chartSlot.hidden = false;
+    if (this._imagesSlot) this._imagesSlot.hidden = true;
+  }
+
+  _hideChart() {
+    if (!this._chartSlot) return;
+    this._chartSlot.replaceChildren();
+    this._chartSlot.hidden = true;
+    if (this._imagesSlot) this._imagesSlot.hidden = false;
   }
 
   _setImage(variant, url) {

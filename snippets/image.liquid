@@ -66,9 +66,16 @@
       {%- endif -%}
 
       {%- if mobile_img and mobile_img != desktop_img -%}
+        {%- liquid
+          assign mobile_max_bp = first_bp
+          if first_bp == 0 and breakpoints_array.size > 1
+            assign second_config = breakpoints_array[1] | strip | split: ':'
+            assign mobile_max_bp = second_config[0] | strip | times: 1
+          endif
+        -%}
         <source
           srcset="{{ mobile_img | image_url: width: first_width, format: 'webp', quality: img_quality }}"
-          media="(max-width: {{ first_bp | minus: 1 }}px)"
+          media="(max-width: {{ mobile_max_bp | minus: 1 }}px)"
         >
       {%- endif -%}
 

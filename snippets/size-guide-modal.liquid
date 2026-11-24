@@ -9,7 +9,9 @@
   attributes (each trigger resolves its own product's images, e.g.
   snippets/variant-selector.liquid or snippets/quick-add-atc.liquid) and
   sets this modal's images at open-time. A slot with no URL falls back to
-  a placeholder icon.
+  a placeholder icon. A trigger with `data-size-chart-id` instead shows the
+  measurement table from the matching <template> (snippets/size-chart-content.liquid),
+  used when the product has no Size Guide entry picked.
 {% enddoc %}
 
 <size-guide-modal class="size-guide-modal">
@@ -38,16 +40,19 @@
     </div>
 
     <div class="size-guide-modal__body min-h-0 flex-1 overflow-y-auto">
-      <div class="size-guide-modal__image-wrap hidden md:block" data-size-guide-desktop-wrap>
-        <img class="size-guide-modal__image w-full h-auto" data-size-guide-desktop-img alt="{{ 'products.size_guide' | t }}" width="600" height="800" loading="lazy" hidden>
-        <div class="flex h-full min-h-size-guide-placeholder-height w-full items-center justify-center text-muted" data-size-guide-desktop-placeholder>
-          {%- render 'icon-image', size: 32 -%}
+      <div class="px-5 pb-6" data-size-guide-chart hidden></div>
+      <div data-size-guide-images>
+        <div class="size-guide-modal__image-wrap hidden md:block" data-size-guide-desktop-wrap>
+          <img class="size-guide-modal__image w-full h-auto" data-size-guide-desktop-img alt="{{ 'products.size_guide' | t }}" width="600" height="800" loading="lazy" hidden>
+          <div class="flex h-full min-h-size-guide-placeholder-height w-full items-center justify-center text-muted" data-size-guide-desktop-placeholder>
+            {%- render 'icon-image', size: 32 -%}
+          </div>
         </div>
-      </div>
-      <div class="size-guide-modal__image-wrap md:hidden" data-size-guide-mobile-wrap>
-        <img class="size-guide-modal__image w-full h-auto" data-size-guide-mobile-img alt="{{ 'products.size_guide' | t }}" width="400" height="600" loading="lazy" hidden>
-        <div class="flex h-full min-h-size-guide-placeholder-height w-full items-center justify-center text-muted" data-size-guide-mobile-placeholder>
-          {%- render 'icon-image', size: 32 -%}
+        <div class="size-guide-modal__image-wrap md:hidden" data-size-guide-mobile-wrap>
+          <img class="size-guide-modal__image w-full h-auto" data-size-guide-mobile-img alt="{{ 'products.size_guide' | t }}" width="400" height="600" loading="lazy" hidden>
+          <div class="flex h-full min-h-size-guide-placeholder-height w-full items-center justify-center text-muted" data-size-guide-mobile-placeholder>
+            {%- render 'icon-image', size: 32 -%}
+          </div>
         </div>
       </div>
     </div>
