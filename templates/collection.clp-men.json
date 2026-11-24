@@ -80,7 +80,7 @@
           "type": "tile",
           "settings": {
             "image": "shopify://shop_images/clp-category-strip-tile-2.png",
-            "label": "Shirt",
+            "label": "Shirts",
             "link": "/collections/men-shirts"
           }
         },
@@ -91,21 +91,12 @@
             "label": "Jeans",
             "link": "/collections/men-jeans"
           }
-        },
-        "tile_4": {
-          "type": "tile",
-          "settings": {
-            "image": "shopify://shop_images/clp-category-strip-tile-4.png",
-            "label": "Jackets",
-            "link": "/collections/men-jackets"
-          }
         }
       },
       "block_order": [
         "tile_1",
         "tile_2",
-        "tile_3",
-        "tile_4"
+        "tile_3"
       ],
       "settings": {
         "padding_top_mobile": 0,
@@ -381,14 +372,6 @@
             "link": "/collections/men-shirts"
           }
         },
-        "tile_7": {
-          "type": "tile",
-          "settings": {
-            "image": "shopify://shop_images/clp-shop-by-category-tile-7.png",
-            "label": "Jackets",
-            "link": "/collections/men-jackets"
-          }
-        },
         "tile_8": {
           "type": "tile",
           "settings": {
@@ -405,7 +388,6 @@
         "tile_4",
         "tile_5",
         "tile_6",
-        "tile_7",
         "tile_8"
       ],
       "settings": {
@@ -470,6 +452,10 @@
         "padding_top_desktop": 0,
         "padding_bottom_desktop": 0
       }
+    },
+    "collection-content": {
+      "type": "collection-content",
+      "settings": {}
     }
   },
   "order": [
@@ -487,6 +473,7 @@
     "product_row_5",
     "product_row_6",
     "product_row_7",
-    "product_row_8"
+    "product_row_8",
+    "collection-content"
   ]
 }

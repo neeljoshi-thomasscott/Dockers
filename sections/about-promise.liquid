@@ -58,6 +58,7 @@
       <div class="about-promise__media relative order-first h-about-promise-media-height-mobile w-full overflow-hidden md:order-last md:h-auto md:self-stretch">
         {%- render 'image',
           image: about_promise_image,
+          mobile_image: section.settings.promise_mob_image,
           alt: section.settings.promise_img_alt,
           class_name: about_promise_media_class,
           responsive_widths: '0:780,768:1280'
@@ -80,6 +81,12 @@
       "type": "image_picker",
       "id": "promise_image",
       "label": "Promise Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "promise_mob_image",
+      "label": "Promise Mobile Image",
+      "info": "Optional. 1560 x 960px (13:8)"
     },
     {
       "type": "text",

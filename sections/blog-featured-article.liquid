@@ -45,8 +45,9 @@
         alt: featured_image_alt,
         class_name: 'h-full w-full object-cover',
         lazy: featured_lazy,
-        base_width: 720,
-        mobile_width: 800
+        srcset_widths: '800,1100,1440,1800,2200',
+        mobile_srcset_widths: '750,1100,1500',
+        sizes: '(min-width: 1024px) 50vw, 100vw'
       -%}
     </div>
   {%- endif -%}

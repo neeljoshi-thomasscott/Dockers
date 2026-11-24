@@ -3,16 +3,20 @@ class SizeGuideModal extends HTMLElement {
     this._dialog = this.querySelector('[data-size-guide-modal-dialog]');
     if (!this._dialog) return;
 
+    this._chartSlot = this.querySelector('[data-size-guide-chart]');
     this._triggerElement = null;
 
     this._handleDocumentClick = (event) => {
       const trigger = event.target.closest('[data-size-guide-trigger]');
       if (!trigger) return;
 
+      const { sizeChartId } = trigger.dataset;
+      const chartTemplate = sizeChartId ? document.getElementById(sizeChartId) : null;
+      if (!chartTemplate || !this._chartSlot) return;
+
       event.preventDefault();
       this._triggerElement = trigger;
-      this._setImage('desktop', trigger.dataset.sizeGuideDesktop);
-      this._setImage('mobile', trigger.dataset.sizeGuideMobile);
+      this._chartSlot.replaceChildren(chartTemplate.content.cloneNode(true));
       this._dialog.showModal();
     };
     document.addEventListener('click', this._handleDocumentClick);
@@ -36,22 +40,6 @@ class SizeGuideModal extends HTMLElement {
 
   disconnectedCallback() {
     document.removeEventListener('click', this._handleDocumentClick);
-  }
-
-  _setImage(variant, url) {
-    const img = this.querySelector(`[data-size-guide-${variant}-img]`);
-    const placeholder = this.querySelector(`[data-size-guide-${variant}-placeholder]`);
-    if (!img || !placeholder) return;
-
-    if (url) {
-      img.src = url;
-      img.hidden = false;
-      placeholder.hidden = true;
-    } else {
-      img.hidden = true;
-      img.removeAttribute('src');
-      placeholder.hidden = false;
-    }
   }
 }
 

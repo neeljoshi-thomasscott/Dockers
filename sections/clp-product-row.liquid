@@ -1,6 +1,10 @@
 {%- liquid
   assign product_row_collection = section.settings.collection
   assign product_row_count = product_row_collection.products_count | default: 0
+  assign product_row_picks = section.blocks | where: 'type', 'row-product'
+  if product_row_picks.size > 0
+    assign product_row_count = product_row_picks.size
+  endif
   assign product_row_heading = section.settings.heading
   assign product_row_subline = section.settings.subline
   assign product_row_has_heading_group = false
@@ -50,11 +54,21 @@
     >
       <div class="clp-product-row__viewport overflow-hidden" data-carousel-viewport>
         <div class="{{ product_row_track_class }}" data-carousel-track>
-          {%- for product in product_row_collection.products limit: section.settings.products_shown -%}
-            <div class="{{ product_row_slide_class }}">
-              {%- render 'product-card', card_product: product, view: 'column', image_width: 480 -%}
-            </div>
-          {%- endfor -%}
+          {%- if product_row_picks.size > 0 -%}
+            {%- for block in product_row_picks -%}
+              {%- if block.settings.row_product != blank -%}
+                <div class="{{ product_row_slide_class }}" {{ block.shopify_attributes }}>
+                  {%- render 'product-card', card_product: block.settings.row_product, view: 'column', image_width: 480, show_discount_label: true -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- else -%}
+            {%- for product in product_row_collection.products limit: section.settings.products_shown -%}
+              <div class="{{ product_row_slide_class }}">
+                {%- render 'product-card', card_product: product, view: 'column', image_width: 480, show_discount_label: true -%}
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
         </div>
       </div>
     </collection-carousel>
@@ -97,7 +111,8 @@
     {
       "type": "collection",
       "id": "collection",
-      "label": "Collection"
+      "label": "Collection",
+      "info": "Used when no Row Product blocks are added"
     },
     {
       "type": "range",
@@ -192,6 +207,19 @@
       "step": 4,
       "default": 0,
       "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row-product",
+      "name": "Row Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "row_product",
+          "label": "Row Product"
+        }
+      ]
     }
   ],
   "presets": [

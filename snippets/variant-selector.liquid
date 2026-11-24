@@ -29,11 +29,10 @@
   assign selected_options = selected_variant.options
   assign size_order = 'XS,S,M,L,XL,2XL,3XL,4XL,5XL,6XL' | split: ','
 
-  assign size_guide = product.metafields.custom.size_guide.value
-  if size_guide != blank
-    assign size_guide_desktop_url = size_guide.desktop_image.value.preview_image | image_url: width: 600
-    assign size_guide_mobile_url = size_guide.mobile_image.value.preview_image | image_url: width: 400
-  endif
+  capture size_chart_markup
+    render 'size-chart-content', product: product
+  endcapture
+  assign size_chart_markup = size_chart_markup | strip
 -%}
 
 <variant-selector
@@ -61,7 +60,7 @@
                 render 'format-price', cents: variant.compare_at_price
               endcapture
               assign variant_discount_pct = variant.compare_at_price | minus: variant.price | times: 100.0 | divided_by: variant.compare_at_price | round
-              assign variant_discount_label = '(' | append: variant_discount_pct | append: '% OFF)'
+              assign variant_discount_label = variant_discount_pct | append: '% OFF'
             endif
           -%}
           {
@@ -251,17 +250,17 @@
           <span class="ml-1 text-sale" data-low-stock-warning hidden>{{ 'products.low_in_stock' | t }}</span>
         </p>
 
-        {%- if size_guide != blank -%}
+        {%- if size_chart_markup != blank -%}
           <button
             type="button"
             data-size-guide-trigger
-            data-size-guide-desktop="{{ size_guide_desktop_url }}"
-            data-size-guide-mobile="{{ size_guide_mobile_url }}"
+            data-size-chart-id="size-chart-{{ product.id }}"
             class="flex w-full items-center justify-end gap-1 font-primary text-control text-ink"
           >
             {{ 'products.size_guide' | t }}
             {% render 'icon-chevron-right', size: 16 %}
           </button>
+          <template id="size-chart-{{ product.id }}">{{ size_chart_markup }}</template>
         {%- endif -%}
 
         <div class="mt-3 flex gap-1.5 overflow-x-auto md:flex-wrap md:gap-y-2 md:overflow-visible">

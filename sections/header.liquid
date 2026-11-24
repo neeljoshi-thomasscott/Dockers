@@ -1,21 +1,5 @@
-{%- liquid
-  # Overlay (transparent) header only where there is a hero image to sit on:
-  # a product page whose product has media. Same condition as the
-  # has-overlay-header body class in layout/theme.liquid and the media
-  # pull-up in sections/product.liquid — a product with no media would
-  # otherwise get white icons over a white page.
-  assign has_overlay_header = false
-  if template.name == 'product' and product.media.size > 0
-    assign has_overlay_header = true
-  endif
-
-  assign header_bg_classes = 'bg-background'
-  if has_overlay_header
-    assign header_bg_classes = 'bg-transparent [&.is-scrolled]:bg-background lg:bg-background'
-  endif
--%}
 <header
-  class="header group sticky top-0 z-50 w-full pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)] {{ header_bg_classes }}"
+  class="header group sticky top-0 z-50 w-full pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)] bg-background"
   style="
     --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
     --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
@@ -30,7 +14,7 @@
     blocks: section.blocks
   %}
 
-  {% render 'header-mobile', overlay_header: has_overlay_header %}
+  {% render 'header-mobile' %}
 
   {% render 'mega-menu',
     main_menu: section.settings.header_main_menu,
@@ -44,10 +28,6 @@
 </header>
 
 <script src="{{ 'cart-count.js' | asset_url }}" defer></script>
-
-{%- if has_overlay_header -%}
-  <script src="{{ 'header-scroll.js' | asset_url }}" defer></script>
-{%- endif -%}
 
 {% schema %}
 {
