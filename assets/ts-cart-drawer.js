@@ -39,7 +39,16 @@ class TsCartDrawer extends HTMLElement {
   #tiersAchieved = -1;
   #pendingConfetti = false;
 
+  /** Browser back/forward restores a stale checkbox state; reset it with the button. */
+  #resetTerms = () => {
+    const terms = this.querySelector('[data-ts-cd-terms]');
+    const checkout = this.querySelector('[data-ts-cd-action="checkout"]');
+    if (terms instanceof HTMLInputElement) terms.checked = false;
+    if (checkout instanceof HTMLButtonElement) checkout.disabled = true;
+  };
+
   connectedCallback() {
+    window.addEventListener('pageshow', this.#resetTerms);
     this.#dialog = this.querySelector('[data-ts-cd-dialog]');
 
     this.addEventListener('click', this.#onClick);
@@ -70,6 +79,7 @@ class TsCartDrawer extends HTMLElement {
   }
 
   disconnectedCallback() {
+    window.removeEventListener('pageshow', this.#resetTerms);
     document.removeEventListener('click', this.#onDocumentClick, true);
     document.removeEventListener('pointerdown', this.#onBuyNowPress, true);
     document.removeEventListener('keydown', this.#onBuyNowPress, true);
