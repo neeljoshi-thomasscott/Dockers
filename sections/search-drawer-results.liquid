@@ -1,0 +1,43 @@
+{%- comment -%}
+  Search Drawer Results Section
+
+  Floating section — never placed in a template or section group. Fetched
+  purely via the Section Rendering API with a literal section_id of
+  "search-drawer-results" (matches this file's handle). Uses the search
+  Liquid object (never predictive_search), scoped to type=product only.
+{%- endcomment -%}
+
+{%- liquid
+  capture products_shown_param
+    render 'get-url-param', param_name: 'products_shown'
+  endcapture
+  assign products_shown = products_shown_param | strip | times: 1
+  if products_shown <= 0
+    assign products_shown = 4
+  endif
+
+  capture search_relevant
+    render 'search-relevant'
+  endcapture
+  assign drawer_results_count = search.results_count
+  if search_relevant contains 'false'
+    assign drawer_results_count = 0
+  endif
+-%}
+
+<div id="search-drawer-results" data-search-drawer-results-count="{{ drawer_results_count }}">
+  {%- if search.performed and drawer_results_count > 0 -%}
+    {%- for result in search.results limit: products_shown -%}
+      {%- if result.object_type == 'product' -%}
+        {%- render 'product-card', card_product: result, view: 'column', aspect_ratio: '2:3', show_discount_label: true, compact: true -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Search Drawer Results",
+  "settings": []
+}
+{% endschema %}

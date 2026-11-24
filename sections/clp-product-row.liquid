@@ -1,0 +1,231 @@
+{%- liquid
+  assign product_row_collection = section.settings.collection
+  assign product_row_count = product_row_collection.products_count | default: 0
+  assign product_row_picks = section.blocks | where: 'type', 'row-product'
+  if product_row_picks.size > 0
+    assign product_row_count = product_row_picks.size
+  endif
+  assign product_row_heading = section.settings.heading
+  assign product_row_subline = section.settings.subline
+  assign product_row_has_heading_group = false
+  if product_row_heading != blank or product_row_subline != blank
+    assign product_row_has_heading_group = true
+  endif
+
+  assign product_row_track_class = 'clp-product-row__track flex'
+  if section.settings.mobile_layout == 'grid-2up'
+    assign product_row_track_class = 'clp-product-row__track grid grid-cols-2 gap-0 lg:flex'
+  endif
+
+  assign product_row_slide_class = 'clp-product-row__slide shrink-0 lg:w-product-row-card-width'
+  if section.settings.mobile_layout == 'scroll'
+    assign product_row_slide_class = product_row_slide_class | append: ' w-product-row-card-width'
+  endif
+-%}
+{%- if product_row_count > 0 -%}
+  <section
+    class="clp-product-row block pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)]"
+    style="
+      --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+      --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+      --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+      --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+    "
+  >
+    {%- if product_row_has_heading_group -%}
+      <div class="clp-product-row__heading-group flex flex-col gap-product-row-heading-gap-mobile pt-product-row-heading-pad-top px-product-row-heading-pad-x-mobile pb-product-row-heading-pad-bottom lg:gap-product-row-heading-gap-desktop lg:px-product-row-heading-pad-x-desktop">
+        {%- if product_row_heading != blank -%}
+          <div class="clp-product-row__heading font-primary font-bold uppercase text-center lg:text-left text-promo-heading-mobile lg:text-promo-heading-desktop text-ink">
+            {{ product_row_heading }}
+          </div>
+        {%- endif -%}
+        {%- if product_row_subline != blank -%}
+          <p class="clp-product-row__subline font-plex-mono uppercase text-center lg:text-left text-promo-subheading-mobile lg:text-promo-subheading text-ink">
+            {{ product_row_subline | escape }}
+          </p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <collection-carousel
+      class="clp-product-row__carousel block"
+      data-loop="false"
+      {% if section.settings.mobile_layout == 'grid-2up' %}data-active-from="lg"{% endif %}
+    >
+      <div class="clp-product-row__viewport overflow-hidden" data-carousel-viewport>
+        <div class="{{ product_row_track_class }}" data-carousel-track>
+          {%- if product_row_picks.size > 0 -%}
+            {%- for block in product_row_picks -%}
+              {%- if block.settings.row_product != blank -%}
+                <div class="{{ product_row_slide_class }}" {{ block.shopify_attributes }}>
+                  {%- render 'product-card', card_product: block.settings.row_product, view: 'column', image_width: 480, show_discount_label: true -%}
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- else -%}
+            {%- for product in product_row_collection.products limit: section.settings.products_shown -%}
+              <div class="{{ product_row_slide_class }}">
+                {%- render 'product-card', card_product: product, view: 'column', image_width: 480, show_discount_label: true -%}
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+      </div>
+    </collection-carousel>
+
+    {%- if section.settings.show_view_all -%}
+      {%- render 'view-all-button',
+        label: section.settings.view_all_label,
+        url: section.settings.view_all_link,
+        variant: 'light'
+      -%}
+    {%- endif -%}
+  </section>
+
+  <script src="{{ 'collection-carousel.js' | asset_url }}" type="module" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Product Row",
+  "class": "clp-product-row-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "richtext",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "subline",
+      "label": "Subline"
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Used when no Row Product blocks are added"
+    },
+    {
+      "type": "range",
+      "id": "products_shown",
+      "label": "Products Shown",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "View All"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show View All",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View All Label",
+      "default": "View All"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View All Link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile Layout",
+      "options": [
+        {
+          "value": "scroll",
+          "label": "Scroll"
+        },
+        {
+          "value": "grid-2up",
+          "label": "Grid 2-Up"
+        }
+      ],
+      "default": "scroll"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "row-product",
+      "name": "Row Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "row_product",
+          "label": "Row Product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Row"
+    }
+  ]
+}
+{% endschema %}

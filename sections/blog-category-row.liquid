@@ -1,0 +1,152 @@
+{%- liquid
+  assign row_blog = section.settings.category_row_blog
+  if row_blog == blank or row_blog.articles_count == 0
+    break
+  endif
+
+  assign row_heading = section.settings.category_row_heading | default: row_blog.title
+  assign row_link_label = section.settings.category_row_link_label
+
+  assign row_image_height = 'row'
+  if section.settings.category_row_image_size == 'tall'
+    assign row_image_height = 'row-tall'
+  endif
+-%}
+
+<div
+  class="blog-category-row flex flex-col gap-6 bg-surface pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)]"
+  style="
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+  "
+>
+  <div class="blog-category-row__header flex flex-col gap-2.5 px-5 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+    <h2 class="font-primary text-blog-heading-mobile font-bold text-navy lg:text-blog-heading-desktop lg:text-ink">{{ row_heading | escape }}</h2>
+    {%- if row_link_label != blank -%}
+      <a href="{{ row_blog.url }}" class="font-secondary text-blog-link-mobile text-ink can-hover:hover:underline lg:text-blog-link-desktop">
+        {{- row_link_label | escape -}}
+      </a>
+    {%- endif -%}
+  </div>
+
+  <drag-scroll class="blog-category-row__viewport block overflow-x-auto snap-x snap-mandatory scrollbar-hide data-[scrollable]:cursor-grab data-[scrollable]:data-[dragging]:cursor-grabbing data-[dragging]:snap-none [@media(pointer:fine)]:data-[scrollable]:select-none">
+    <ul class="blog-category-row__track flex" role="list">
+      {%- for article in row_blog.articles limit: section.settings.category_row_limit -%}
+        <li class="w-blog-card-width-mobile shrink-0 snap-start lg:w-blog-card-width-desktop" data-drag-scroll-item>
+          {%- render 'blog-article-card',
+            card_article: article,
+            category_label: row_blog.title,
+            image_height: row_image_height,
+            lazy: true
+          -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </drag-scroll>
+</div>
+
+<script src="{{ 'drag-scroll.js' | asset_url }}" type="module" defer></script>
+
+{% schema %}
+{
+  "name": "Blog Category Row",
+  "class": "blog-row-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "blog",
+      "id": "category_row_blog",
+      "label": "Category Row Blog"
+    },
+    {
+      "type": "text",
+      "id": "category_row_heading",
+      "label": "Category Row Heading",
+      "info": "Defaults to the blog title"
+    },
+    {
+      "type": "text",
+      "id": "category_row_link_label",
+      "label": "Category Row Link Label",
+      "default": "View Articles"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "category_row_image_size",
+      "label": "Category Row Image Size",
+      "options": [
+        { "value": "standard", "label": "Standard" },
+        { "value": "tall", "label": "Tall" }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "range",
+      "id": "category_row_limit",
+      "label": "Category Row Limit",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Category Row"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,25 @@
+{% doc %}
+  Core Assets
+
+  Loads base CSS, Tailwind CSS, and globally required JavaScript files.
+  Included in layout/theme.liquid <head>.
+{% enddoc %}
+
+{{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'tailwind.css' | asset_url | stylesheet_tag: preload: true }}
+
+<script src="{{ 'pubsub.js' | asset_url }}" defer></script>
+<script src="{{ 'overlay-utils.js' | asset_url }}" defer></script>
+<script src="{{ 'variant-selector.js' | asset_url }}" defer></script>
+<script src="{{ 'cart-api.js' | asset_url }}" defer></script>
+<script src="{{ 'idiomorph.js' | asset_url }}" defer></script>
+<script src="{{ 'search-drawer.js' | asset_url }}" defer></script>
+<script src="{{ 'search-drawer-content.js' | asset_url }}" defer></script>
+<script src="{{ 'size-guide-modal.js' | asset_url }}" defer></script>
+<script src="{{ 'product-form.js' | asset_url }}" defer></script>
+<script src="{{ 'product-card.js' | asset_url }}" defer></script>
+{%- comment -%}
+  Loaded once here, not from quick-add-atc.liquid, which renders once per card.
+{%- endcomment -%}
+<script src="{{ 'quick-add-atc.js' | asset_url }}" defer></script>
+<script src="{{ 'product-gallery.js' | asset_url }}" type="module" defer></script>

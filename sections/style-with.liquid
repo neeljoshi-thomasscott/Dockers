@@ -1,0 +1,164 @@
+{%- liquid
+  assign source_collection = section.settings.style_with_collection | default: product.collections.first
+  assign style_with_count = section.settings.style_with_count | default: 3
+  assign style_with_heading = section.settings.style_with_heading | default: 'Style With'
+  assign style_with_atc_label = section.settings.style_with_atc_label | default: 'Add to Bag'
+
+  assign is_plus_size = false
+  if product.tags contains 'Plus Size'
+    assign is_plus_size = true
+  endif
+
+  assign picked_handles = ','
+  assign eligible_count = 0
+
+  if source_collection != blank
+    for pass in (1..2)
+      for candidate in source_collection.products
+        if eligible_count >= style_with_count
+          break
+        endif
+
+        if candidate.id == product.id or candidate.available == false
+          continue
+        endif
+
+        assign candidate_is_plus = false
+        if candidate.tags contains 'Plus Size'
+          assign candidate_is_plus = true
+        endif
+        if candidate_is_plus != is_plus_size
+          continue
+        endif
+
+        if pass == 1 and candidate.type == product.type
+          continue
+        endif
+
+        assign handle_key = candidate.handle | prepend: ',' | append: ','
+        if picked_handles contains handle_key
+          continue
+        endif
+
+        assign picked_handles = picked_handles | append: candidate.handle | append: ','
+        assign eligible_count = eligible_count | plus: 1
+      endfor
+    endfor
+  endif
+-%}
+
+{%- if eligible_count > 0 -%}
+  <section
+    class="style-with pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] md:mx-auto md:max-w-[1200px] md:pt-[var(--section-padding-top-desktop)] md:pb-[var(--section-padding-bottom-desktop)]"
+    style="
+      --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+      --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+      --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+      --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+    "
+  >
+    <h2 class="mb-4 px-4 font-primary text-style-with-heading-mobile font-medium text-ink md:mb-style-with-heading-gap-desktop md:px-0 md:text-style-with-heading">{{ style_with_heading }}</h2>
+
+    <div class="hidden gap-6 md:grid md:grid-cols-2 xl:grid-cols-3">
+      {%- for card_product in source_collection.products -%}
+        {%- assign card_key = card_product.handle | prepend: ',' | append: ',' -%}
+        {%- if picked_handles contains card_key -%}
+          {%- render 'style-with-card', card_product: card_product, atc_label: style_with_atc_label -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="flex gap-1 overflow-x-auto scrollbar-hide md:hidden">
+      {%- for card_product in source_collection.products -%}
+        {%- assign card_key = card_product.handle | prepend: ',' | append: ',' -%}
+        {%- if picked_handles contains card_key -%}
+          {%- render 'style-with-card-mobile', card_product: card_product -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Style With",
+  "class": "style-with-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "style_with_heading",
+      "label": "Style With Heading",
+      "default": "Style With"
+    },
+    {
+      "type": "range",
+      "id": "style_with_count",
+      "label": "Style With Count",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "style_with_atc_label",
+      "label": "Style With ATC Label",
+      "default": "Add to Bag"
+    },
+    {
+      "type": "collection",
+      "id": "style_with_collection",
+      "label": "Style With Collection"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "default": 62,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 60,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Style With"
+    }
+  ]
+}
+{% endschema %}

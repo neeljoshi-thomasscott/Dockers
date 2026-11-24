@@ -1,0 +1,138 @@
+<section
+  class="collection-header"
+  style="
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+  "
+>
+  {%- if section.settings.show_breadcrumb -%}
+    <nav
+      aria-label="breadcrumb"
+      class="collection-header__crumb-band flex h-crumb-band-height-mobile items-center gap-crumb-band-gap overflow-x-auto whitespace-nowrap scrollbar-hide px-crumb-band-pad-x-mobile font-secondary text-crumb uppercase md:h-crumb-band-height-desktop md:px-crumb-band-pad-x-desktop"
+    >
+      {% render 'breadcrumb-trail', crumb_collection: collection, home_label: section.settings.breadcrumb_home_label %}
+    </nav>
+  {%- endif -%}
+
+  <div class="collection-header__content flex flex-col gap-collection-header-gap px-collection-header-pad-x-mobile pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] md:px-collection-header-pad-x-desktop lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)]">
+    <div class="flex flex-wrap items-baseline gap-x-2">
+      <h1 class="font-primary text-page-title-mobile font-bold md:text-page-title-desktop">{{ collection.title }}</h1>
+      {%- if section.settings.show_product_count -%}
+        <span class="collection-header__count font-primary text-meta text-ink" data-collection-product-count>
+          ({{ 'collections.products_count' | t: count: collection.products_count }})
+        </span>
+      {%- endif -%}
+    </div>
+    {%- if section.settings.show_description and collection.description != blank -%}
+      <div
+        class="collection-header__description font-primary text-meta md:max-w-[var(--description-max-width)]"
+        style="--description-max-width: {{ section.settings.description_max_width }}px;"
+      >{{ collection.description }}</div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection Header",
+  "class": "collection-header-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Breadcrumb"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Show breadcrumb",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "breadcrumb_home_label",
+      "label": "\"Home\" label",
+      "default": "Home"
+    },
+    {
+      "type": "header",
+      "content": "Title"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "Show product count",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show description",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "description_max_width",
+      "label": "Max width (px)",
+      "min": 320,
+      "max": 560,
+      "step": 8,
+      "default": 496
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 12,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Header"
+    }
+  ]
+}
+{% endschema %}

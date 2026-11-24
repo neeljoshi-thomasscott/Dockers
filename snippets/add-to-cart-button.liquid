@@ -1,0 +1,111 @@
+{% doc %}
+  Add to Cart Button
+
+  Lightweight add-to-cart form that wraps in the existing <product-form> Web Component.
+  Works standalone or alongside a variant-selector — communicates via variant:change PubSub event.
+
+  @param {product} product - Product object (required)
+  @param {number} [variant_id] - Override variant ID (default: first available variant)
+  @param {string} [button_class] - Additional CSS classes for the button
+  @param {string} [button_text] - Custom button text (default: "Add to cart" from locale)
+  @param {boolean} [show_price] - Show price inside button (default: false)
+  @param {boolean} [compact] - Render as an icon-only compact button (default: false)
+  @param {string} [compact_pad_class] - Padding class for the compact button (default: 'p-card-button-pad')
+
+  @example
+  {% render 'add-to-cart-button', product: product %}
+{% enddoc %}
+
+{%- liquid
+  assign product = product | default: blank
+
+  unless product != blank
+    break
+  endunless
+
+  assign selected_variant = product.selected_or_first_available_variant
+  assign atc_variant_id = variant_id | default: selected_variant.id
+  assign atc_button_class = button_class | default: ''
+  assign atc_button_text = button_text | default: null
+  assign show_price = show_price | default: false
+  assign atc_compact = compact | default: false
+  assign atc_compact_pad_class = compact_pad_class | default: 'p-card-button-pad'
+
+  assign atc_variant = selected_variant
+  if variant_id != blank
+    for variant in product.variants
+      if variant.id == variant_id
+        assign atc_variant = variant
+        break
+      endif
+    endfor
+  endif
+-%}
+
+<product-form
+  class="block"
+  data-product-id="{{ product.id }}"
+  data-product-title="{{ product.title | escape }}"
+  data-product-url="{{ product.url }}"
+>
+  <form
+    action="{{ routes.cart_add_url }}"
+    method="post"
+    data-product-form
+  >
+    <input type="hidden" name="id" value="{{ atc_variant_id }}">
+    <input type="hidden" name="quantity" value="1">
+
+    <button
+      type="submit"
+      {% if atc_compact %}
+        class="relative flex items-center justify-center overflow-hidden {{ atc_compact_pad_class }} disabled:cursor-not-allowed disabled:opacity-50 {{ atc_button_class }}"
+        aria-label="{{ 'products.add_to_cart' | t }}"
+        data-add-to-cart
+      {% else %}
+        class="relative flex w-full items-center justify-center gap-2 rounded bg-foreground px-4 py-2.5 text-sm font-medium text-background transition-all duration-200 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 {{ atc_button_class }}"
+      {% endif %}
+      {%- unless atc_variant.available %}
+        disabled
+      {% endunless -%}
+    >
+      {%- if atc_compact -%}
+        <span
+          class="absolute inset-0 z-0 translate-y-full bg-surface transition-transform duration-500 ease-out"
+          data-button-fill
+          aria-hidden="true"
+        ></span>
+      {%- endif -%}
+      {%- liquid
+        # The in-stock label, rendered even when the variant is sold out, so
+        # product-form.js can restore it once an available variant is picked.
+        if atc_button_text != null
+          assign atc_available_label = atc_button_text
+        elsif show_price
+          assign atc_price_formatted = atc_variant.price | money_without_trailing_zeros
+          assign atc_available_label = 'products.add_to_cart_with_price' | t: price: atc_price_formatted
+        else
+          assign atc_available_label = 'products.add_to_cart' | t
+        endif
+      -%}
+      <span data-button-text class="relative z-10"{% unless atc_compact %} data-available-label="{{ atc_available_label | strip_html | escape }}"{% endunless %}>
+        {%- if atc_compact -%}
+          <span data-button-plus-icon>{%- render 'icon-plus', size: 16 -%}</span>
+          <span data-button-checkmark-icon class="hidden">{%- render 'icon-checkmark', size: 16 -%}</span>
+        {%- elsif atc_variant.available == false -%}
+          {{ 'products.sold_out' | t }}
+        {%- else -%}
+          {{ atc_available_label }}
+        {%- endif -%}
+      </span>
+      <div class="absolute inset-0 z-10 hidden items-center justify-center" data-button-loader>
+        {%- if atc_compact -%}
+          {%- render 'icon-spinner', size: 16, class: 'text-ink' -%}
+        {%- else -%}
+          <div class="loader text-background"></div>
+        {%- endif -%}
+      </div>
+    </button>
+    <div data-form-error class="mt-2 text-sm text-error" hidden></div>
+  </form>
+</product-form>

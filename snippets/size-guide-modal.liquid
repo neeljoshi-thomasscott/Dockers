@@ -1,0 +1,39 @@
+{% doc %}
+  Size Guide Modal
+
+  Global size-guide dialog rendered once from layout/theme.liquid. Each
+  trigger carries `data-size-chart-id` pointing at its product's <template>
+  (snippets/size-chart-content.liquid); assets/size-guide-modal.js copies
+  that table into the dialog at open-time.
+{% enddoc %}
+
+<size-guide-modal class="size-guide-modal">
+  <dialog
+    class="size-guide-modal__dialog m-auto flex h-size-guide-height w-size-guide-width max-w-none max-h-none flex-col border-0 bg-surface p-0"
+    data-size-guide-modal-dialog
+    aria-label="{{ 'products.size_guide_modal_label' | t }}"
+  >
+    <div class="size-guide-modal__header flex h-size-guide-header-height shrink-0 items-center gap-size-guide-header-gap pl-5 pr-4">
+      <div class="size-guide-modal__heading flex-1">
+        <p class="size-guide-modal__title font-primary text-size-guide-title font-medium uppercase text-ink">
+          {{ 'products.size_guide' | t }}
+        </p>
+        <p class="size-guide-modal__subtitle font-primary text-size-guide-subtitle font-normal text-ink/60">
+          {{ 'products.size_guide_subtitle' | t }}
+        </p>
+      </div>
+      <button
+        type="button"
+        class="size-guide-modal__close flex h-10 w-10 shrink-0 items-center justify-center text-ink"
+        data-size-guide-modal-close
+        aria-label="{{ 'general.close' | t }}"
+      >
+        {% render 'icon-close', size: 17 %}
+      </button>
+    </div>
+
+    <div class="size-guide-modal__body min-h-0 flex-1 overflow-y-auto">
+      <div class="px-5 pb-6" data-size-guide-chart></div>
+    </div>
+  </dialog>
+</size-guide-modal>

@@ -1,0 +1,19 @@
+{% doc %}
+  Format Price
+
+  Outputs a price in the design's display format (₹ prefix, comma thousands
+  separator, `.00` dropped — e.g. ₹2,000; a real fractional price keeps its
+  paise, e.g. ₹7,410.59). The single source for product-facing
+  prices: price-row renders it into the page, and variant-selector renders it
+  into its variant JSON so a client-side variant change shows the exact same
+  string. Cart surfaces keep the store's own money format.
+
+  @param {number} cents - Price in cents
+
+  @example
+  {% render 'format-price', cents: product.price %}
+{% enddoc -%}
+{%- liquid
+  assign formatted_amount = cents | default: 0 | money_without_currency | remove: '.00'
+  echo '₹' | append: formatted_amount
+-%}

@@ -1,0 +1,213 @@
+{%- liquid
+  assign legal_nav_links = linklists[section.settings.nav_menu].links
+  assign legal_has_nav = false
+  if section.settings.show_navigation and legal_nav_links.size > 0
+    assign legal_has_nav = true
+  endif
+
+  if legal_has_nav
+    assign legal_shell_grid_classes = 'lg:grid-cols-legal-shell lg:gap-x-legal-shell-gap'
+    assign legal_content_align_class = ''
+  else
+    assign legal_shell_grid_classes = 'lg:grid-cols-1'
+    assign legal_content_align_class = 'lg:mx-auto'
+  endif
+-%}
+
+<section
+  class="legal-faq flex flex-col lg:grid {{ legal_shell_grid_classes }} lg:px-legal-shell-pad-x lg:pb-legal-shell-pad-y-bottom"
+  style="--item-spacing: {{ section.settings.item_spacing }}px;"
+>
+  {% render 'legal-nav',
+    show_breadcrumb: section.settings.show_breadcrumb,
+    parent_group_label: section.settings.parent_group_label,
+    show_navigation: legal_has_nav,
+    nav_menu: section.settings.nav_menu
+  %}
+
+  <div class="legal-faq__content order-4 px-4 pt-faq-content-pad-top-mobile pb-legal-content-pad-bottom-mobile lg:pt-legal-shell-pad-y-top lg:pb-0 lg:max-w-faq-content {{ legal_content_align_class }}">
+    {%- if section.settings.faq_group_heading != blank -%}
+      <h2 class="legal-faq__group-heading font-primary text-faq-body font-bold text-ink mb-[var(--item-spacing)]">{{ section.settings.faq_group_heading | escape }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.intro != blank -%}
+      <p class="legal-faq__intro font-primary text-faq-body text-ink mb-[var(--item-spacing)]">{{ section.settings.intro | escape }}</p>
+    {%- endif -%}
+
+    <div class="legal-faq__list flex flex-col gap-[var(--item-spacing)]">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'heading' -%}
+            <h2 class="legal-faq__group-heading font-primary text-faq-body font-bold uppercase text-ink{% unless forloop.first %} pt-[var(--item-spacing)]{% endunless %}" {{ block.shopify_attributes }}>{{ block.settings.heading | escape }}</h2>
+          {%- when 'faq_item' -%}
+            <div class="legal-faq__item border-b border-ink pb-[var(--item-spacing)] last:border-b-0" {{ block.shopify_attributes }}>
+              <p class="legal-faq__question font-primary text-faq-body font-bold text-ink">{{ block.settings.question | escape }}</p>
+              <div class="legal-faq__answer font-primary text-faq-body text-ink mt-faq-qa-gap [&_a]:underline [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-5">{{ block.settings.answer }}</div>
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {%- assign faq_blocks = section.blocks | where: 'type', 'faq_item' -%}
+          {%- for block in faq_blocks -%}
+            {
+              "@type": "Question",
+              "name": {{ block.settings.question | json }},
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": {{ block.settings.answer | strip_html | json }}
+              }
+            }{%- unless forloop.last -%},{%- endunless -%}
+          {%- endfor -%}
+        ]
+      }
+    </script>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Legal FAQ",
+  "class": "legal-faq-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Breadcrumb"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Show breadcrumb",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "parent_group_label",
+      "label": "Parent Group Label",
+      "default": "Legal"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show navigation",
+      "default": true
+    },
+    {
+      "type": "link_list",
+      "id": "nav_menu",
+      "label": "Navigation Menu"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "faq_group_heading",
+      "label": "Group Heading"
+    },
+    {
+      "type": "text",
+      "id": "intro",
+      "label": "Intro"
+    },
+    {
+      "type": "range",
+      "id": "item_spacing",
+      "label": "Item Spacing",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "Group heading",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        }
+      ]
+    },
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I qualify for an Authentic Membership free trial?",
+            "answer": "<p>First-time members are eligible for a 30 day free trial. To activate your free trial, add the Authentic Membership trial to the cart or checkout page. Note that we do require payment details upfront, but you will not be charged for your monthly membership until the end of your 30 day free trial period.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "When will I be billed for Authentic Membership?",
+            "answer": "<p>Following the 30 day free trial period, Authentic Members are billed to the credit card on file every 30 days according to the date of sign up. To find your next billing date, sign into the ABG member portal, navigate to the 'Billing' tab and find your next billing date above 'Next Billing Date'. You can also find your Billing history under 'Billing History'</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I redeem my Authentic Membership benefits on participating brand sites?",
+            "answer": "<p>There are several ways to redeem your Authentic Membership benefits on participating brand sites. First and foremost, because Authentic Membership is powered by Shop Pay, if you have cookies enabled, you should be automatically identified as a Shop Pay member and your benefits will seamlessly apply to your cart. If you are not automatically recognized, simply locate the Authentic Membership promotional blocks in cart or checkout and select 'Log In' or 'Already a Member?', respectively. You will be directed to Shop Pay checkout and prompted to enter the email address associated with your Authentic Membership account. A 6-digit Shop verification code will subsequently be delivered to the mobile device associated with your account. You must use the email address associated with your Authentic Membership account when checking out with Shop Pay to see the Authentic Membership benefits apply.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is the Authentic Membership cancellation policy?",
+            "answer": "<p>Members may cancel their Authentic Membership at any time by signing into their Authentic Membership portal, navigating to the 'Billing' tab and selecting 'Cancel Membership' under the 'Manage Membership' section. If you cancel your Authentic Membership in the middle of a billing cycle, your access to the Authentic Membership benefits will continue until your next bill date, at which point you will not be charged again. If you cancel during your free trial period, your benefits will expire immediately. We do not offer refunds on monthly subscription charges once they are completed.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How can I update my Authentic Membership payment information?",
+            "answer": "<p>Authentic Membership fees are automatically billed to the card associated with your initial subscription of the Authentic Membership product. To update your payment information, sign into the ABG member portal, navigate to the 'Billing' tab and select 'Update' next to 'Payment Methods'. Your updated information will be billed on the next billing date.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How can I pay for my Authentic Membership?",
+            "answer": "<p>Authentic Membership fees are automatically billed to the card associated with your initial subscription to the Authentic Membership product. The initial subscription must be made with an eligible debit or credit card through Shop Pay. When signing up for Authentic Membership on a participating brand checkout, you must pay for your entire order with an eligible debit or credit card through Shop Pay. When redeeming Authentic Membership benefits on participating brands after initial sign up, you will have optionality to use any form of payment offered by the brand site, i.e. Klarna, Apple Pay, PayPal, gift card, etc.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

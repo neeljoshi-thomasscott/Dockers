@@ -1,0 +1,490 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "themex",
+    "theme_version": "1.0.0",
+    "theme_author": "devx commerce",
+    "theme_documentation_url": "https://devxcommerce.com",
+    "theme_support_url": "https://devxcommerce.com/support"
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Fonts"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_primary_font",
+        "default": "ibm_plex_sans_n4",
+        "label": "Primary"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_secondary_font",
+        "default": "ibm_plex_mono_n4",
+        "label": "Secondary"
+      }
+    ]
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Primary Brand"
+      },
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Teal (primary)",
+        "default": "#0D9488",
+        "info": "Primary buttons, active states, nav highlights, links"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary",
+        "label": "Teal dark",
+        "default": "#0F7269",
+        "info": "Hover states for primary, active nav text"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Teal (accent)",
+        "default": "#0D9488",
+        "info": "Secondary buttons, nav hover text, dot indicators"
+      },
+      {
+        "type": "color",
+        "id": "color_primary_light",
+        "label": "Teal light",
+        "default": "#CCEBE9",
+        "info": "Badge/tag backgrounds, selected row highlights, chip fills"
+      },
+      {
+        "type": "color",
+        "id": "color_primary_wash",
+        "label": "Teal wash",
+        "default": "#F0FDFA",
+        "info": "Card backgrounds, callout fills, sidebar active state"
+      },
+      {
+        "type": "header",
+        "content": "Neutrals"
+      },
+      {
+        "type": "color",
+        "id": "color_foreground",
+        "label": "Near black (headings)",
+        "default": "#111111",
+        "info": "Page titles, primary headings, high-emphasis text"
+      },
+      {
+        "type": "color",
+        "id": "color_body",
+        "label": "Dark grey (body text)",
+        "default": "#1F2937",
+        "info": "Body text, table content, form labels"
+      },
+      {
+        "type": "color",
+        "id": "color_mid",
+        "label": "Mid grey (secondary text)",
+        "default": "#4B5563",
+        "info": "Secondary text, descriptions, placeholder text"
+      },
+      {
+        "type": "color",
+        "id": "color_muted",
+        "label": "Muted grey (captions)",
+        "default": "#9CA3AF",
+        "info": "Captions, timestamps, footer text, breadcrumb separators"
+      },
+      {
+        "type": "color",
+        "id": "color_border",
+        "label": "Border grey",
+        "default": "#E5E7EB",
+        "info": "Card borders, dividers, table rules, input borders"
+      },
+      {
+        "type": "color",
+        "id": "color_background_alt",
+        "label": "Background alt",
+        "default": "#F7F8F9",
+        "info": "Sidebar backgrounds, card fills, alternating table rows"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Background",
+        "default": "#FFFFFF",
+        "info": "Page background, card backgrounds, input backgrounds"
+      },
+      {
+        "type": "color",
+        "id": "color_primary_foreground",
+        "label": "Primary button text",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "header",
+        "content": "Status Colors"
+      },
+      {
+        "type": "color",
+        "id": "color_error",
+        "label": "Error",
+        "default": "#DC2626"
+      },
+      {
+        "type": "color",
+        "id": "color_error_wash",
+        "label": "Error wash",
+        "default": "#FEF2F2",
+        "info": "Error banner backgrounds, destructive alert fills"
+      },
+      {
+        "type": "color",
+        "id": "color_success",
+        "label": "Success",
+        "default": "#16A34A"
+      },
+      {
+        "type": "color",
+        "id": "color_warning",
+        "label": "Warning",
+        "default": "#F97316",
+        "info": "Warning states, pending badges, attention-required indicators"
+      },
+      {
+        "type": "color",
+        "id": "color_info",
+        "label": "Info / AI",
+        "default": "#7C3AED",
+        "info": "Informational badges, AI-generated content indicators"
+      }
+    ]
+  },
+  {
+    "name": "Logo & Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo_white",
+        "label": "Logo (White)",
+        "info": "Used on the PDP header while it overlays the hero image."
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "label": "Logo width",
+        "min": 50,
+        "max": 300,
+        "step": 10,
+        "default": 120,
+        "unit": "px"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      },
+      {
+        "type": "image_picker",
+        "id": "share_image",
+        "label": "Social Share Image",
+        "info": "Shown when a page is shared on social media and has no image of its own (e.g. the homepage). 1200 × 628px recommended."
+      }
+    ]
+  },
+  {
+    "name": "Product card",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Pricing"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_compare_price",
+        "label": "Show MRP (slashed price)",
+        "info": "Applies to product cards, product page and cart drawer.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_discount_percent",
+        "label": "Show discount %",
+        "info": "Applies to product cards, product page and cart drawer.",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Discount Badge"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_discount_badge",
+        "label": "Show Discount Badge",
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "discount_badge_bg_color",
+        "label": "Discount Badge Background",
+        "default": "#000"
+      },
+      {
+        "type": "color",
+        "id": "discount_badge_text_color",
+        "label": "Discount Badge Text",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "header",
+        "content": "Sold Out Badge"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sold_out_badge",
+        "label": "Show Sold Out Badge",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "sold_out_badge_text",
+        "label": "Sold Out Badge Text",
+        "default": "Sold out"
+      },
+      {
+        "type": "color",
+        "id": "sold_out_badge_bg_color",
+        "label": "Sold Out Badge Background",
+        "default": "#0a0a0a"
+      },
+      {
+        "type": "color",
+        "id": "sold_out_badge_text_color",
+        "label": "Sold Out Badge Text Color",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "header",
+        "content": "Quick Add"
+      },
+      {
+        "type": "range",
+        "id": "low_stock_threshold",
+        "label": "Low stock threshold",
+        "info": "Show the \"Low in stock\" flag when a tracked variant has this many units left or fewer. Set to 0 to never show it.",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "default": 30
+      },
+      {
+        "type": "page",
+        "id": "size_guide_page",
+        "label": "Size guide page",
+        "info": "Destination for the \"Size Guide\" link in the quick add size sheet. Falls back to the product page when empty."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_guide_image_desktop",
+        "label": "Size guide image (desktop)",
+        "info": "Shown in the Size Guide modal body on desktop. Placeholder until the final size chart asset is provided."
+      },
+      {
+        "type": "image_picker",
+        "id": "size_guide_image_mobile",
+        "label": "Size guide image (mobile)",
+        "info": "Shown in the Size Guide modal body on mobile. Falls back to the desktop image when empty. Placeholder until the final size chart asset is provided."
+      },
+      {
+        "type": "header",
+        "content": "Color display"
+      },
+      {
+        "type": "select",
+        "id": "product_color_display",
+        "label": "Color display mode",
+        "options": [
+          { "value": "hide", "label": "Hide" },
+          { "value": "count", "label": "Count" },
+          { "value": "swatch", "label": "Swatch" },
+          { "value": "variant", "label": "Variant image" }
+        ],
+        "default": "swatch"
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Accounts"
+      },
+      {
+        "type": "url",
+        "id": "social_facebook",
+        "label": "Facebook"
+      },
+      {
+        "type": "url",
+        "id": "social_twitter",
+        "label": "X (formerly Twitter)"
+      },
+      {
+        "type": "url",
+        "id": "social_instagram",
+        "label": "Instagram"
+      },
+      {
+        "type": "url",
+        "id": "social_youtube",
+        "label": "YouTube"
+      },
+      {
+        "type": "url",
+        "id": "social_tiktok",
+        "label": "TikTok"
+      },
+      {
+        "type": "url",
+        "id": "social_pinterest",
+        "label": "Pinterest"
+      },
+      {
+        "type": "url",
+        "id": "social_linkedin",
+        "label": "LinkedIn"
+      }
+    ]
+  },
+  {
+    "name": "Urgency sale timer",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "One schedule shared by the Urgency Sale Timer section, the announcement bar and the cart drawer."
+      },
+      {
+        "type": "checkbox",
+        "id": "sale_timer_enable",
+        "label": "Enable sale timer",
+        "default": true,
+        "info": "Turns the timer on or off everywhere at once."
+      },
+      {
+        "type": "text",
+        "id": "sale_timer_start_date",
+        "label": "Show from date (YYYY-MM-DD, e.g. 2026-10-14)",
+        "placeholder": "YYYY-MM-DD",
+        "info": "Optional. The timer stays hidden until then. Leave empty to show straight away."
+      },
+      {
+        "type": "text",
+        "id": "sale_timer_start_time",
+        "label": "Show from time (HH:MM 24-hour, e.g. 00:00)",
+        "placeholder": "HH:MM"
+      },
+      {
+        "type": "text",
+        "id": "sale_timer_end_date",
+        "label": "Sale end date (YYYY-MM-DD, e.g. 2026-10-31)",
+        "placeholder": "YYYY-MM-DD",
+        "info": "When the whole sale ends; the timer hides after this. Leave empty to hide the timer everywhere. Dates and times use the store's time zone."
+      },
+      {
+        "type": "text",
+        "id": "sale_timer_end_time",
+        "label": "Sale end time (HH:MM 24-hour, e.g. 23:59)",
+        "placeholder": "HH:MM",
+        "default": "23:59"
+      },
+      {
+        "type": "select",
+        "id": "sale_timer_on_expire",
+        "label": "When the timer reaches zero",
+        "options": [
+          {
+            "value": "hide",
+            "label": "Hide the timer"
+          },
+          {
+            "value": "message",
+            "label": "Show an expired message"
+          },
+          {
+            "value": "restart",
+            "label": "Repeat countdown until the sale end date"
+          }
+        ],
+        "default": "hide"
+      },
+      {
+        "type": "text",
+        "id": "sale_timer_expired_message",
+        "label": "Expired message",
+        "default": "This sale has ended. Check back soon!"
+      },
+      {
+        "type": "range",
+        "id": "sale_timer_restart_value",
+        "label": "Countdown length (restart every)",
+        "info": "With Repeat countdown, the timer counts down this long, then starts again, until the sale end date. Cycles start at the Show from time.",
+        "min": 1,
+        "max": 30,
+        "step": 1,
+        "default": 1
+      },
+      {
+        "type": "select",
+        "id": "sale_timer_restart_unit",
+        "label": "Restart interval unit",
+        "options": [
+          {
+            "value": "hours",
+            "label": "Hours"
+          },
+          {
+            "value": "days",
+            "label": "Days"
+          },
+          {
+            "value": "weeks",
+            "label": "Weeks"
+          }
+        ],
+        "default": "days"
+      },
+      {
+        "type": "text",
+        "id": "sale_timer_hours_label",
+        "label": "Hours label",
+        "default": "Hours"
+      },
+      {
+        "type": "text",
+        "id": "sale_timer_minutes_label",
+        "label": "Minutes label",
+        "default": "Minutes"
+      },
+      {
+        "type": "text",
+        "id": "sale_timer_seconds_label",
+        "label": "Seconds label",
+        "default": "Seconds"
+      }
+    ]
+  }
+]

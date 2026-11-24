@@ -1,0 +1,48 @@
+{%- liquid
+  assign about_since_tag = section.settings.since_tag
+  assign about_since_year = section.settings.since_year
+-%}
+
+{%- if about_since_tag != blank or about_since_year != blank -%}
+  <div class="about-since overflow-hidden pt-about-since-pad-top-mobile bg-surface md:h-about-since-height-desktop md:pt-about-since-pad-top-desktop">
+    <h2 class="about-since__heading flex flex-col gap-about-since-gap-mobile font-normal md:gap-0">
+      {%- if about_since_tag != blank -%}
+        <span class="about-since__tag self-start py-about-since-tag-pad-y-mobile px-about-since-tag-pad-x-mobile font-plex-mono text-about-since-tag-mobile uppercase text-surface bg-ink md:py-about-since-tag-pad-y-desktop md:px-about-since-tag-pad-x-desktop md:text-about-since-tag-desktop">
+          {{- about_since_tag | escape -}}
+        </span>
+      {%- endif -%}
+      {%- if about_since_year != blank -%}
+        <span class="about-since__year flex justify-center whitespace-nowrap font-primary text-about-since-year-mobile font-bold uppercase text-ink md:text-about-since-year-desktop">
+          {{- about_since_year | escape -}}
+        </span>
+      {%- endif -%}
+    </h2>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "About Since",
+  "class": "about-since-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "since_tag",
+      "label": "Since Tag",
+      "default": "Since"
+    },
+    {
+      "type": "text",
+      "id": "since_year",
+      "label": "Since Year",
+      "default": "1986"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "About Since"
+    }
+  ]
+}
+{% endschema %}

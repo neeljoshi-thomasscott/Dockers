@@ -1,0 +1,180 @@
+<header
+  class="header group sticky top-0 z-50 w-full pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)] bg-background"
+  style="
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+  "
+  id="main-header"
+>
+  {% render 'header-desktop',
+    main_menu: section.settings.header_main_menu,
+    info_menu: section.settings.header_info_menu,
+    blocks: section.blocks
+  %}
+
+  {% render 'header-mobile' %}
+
+  {% render 'mega-menu',
+    main_menu: section.settings.header_main_menu,
+    info_menu: section.settings.header_info_menu,
+    blocks: section.blocks
+  %}
+
+  {%- if request.design_mode -%}
+    {% render 'mega-menu-editor-notice', main_menu: section.settings.header_main_menu, blocks: section.blocks %}
+  {%- endif -%}
+</header>
+
+<script src="{{ 'cart-count.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "link_list",
+      "id": "header_main_menu",
+      "label": "Header Main Menu",
+      "info": "Top-level tabs (Home, Women, Men, Kids, Accessories). Each tab gets its menu content from the Nav Tab block with the same title, and its banners from Nav Banner blocks."
+    },
+    {
+      "type": "link_list",
+      "id": "header_info_menu",
+      "label": "Header Info Menu",
+      "info": "Shared info links (e.g. About Us, FAQs, Contact Us) shown in every tab's flyout/drawer."
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "nav-tab",
+      "name": "Nav Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_title",
+          "label": "Tab Title",
+          "info": "Header Main Menu tab this block belongs to, e.g. Men. Not case-sensitive."
+        },
+        {
+          "type": "link_list",
+          "id": "tab_feat_menu",
+          "label": "Tab Featured Menu",
+          "info": "Group 1 shortcuts (e.g. New Arrivals, Best Sellers)."
+        },
+        {
+          "type": "link_list",
+          "id": "tab_cat_menu",
+          "label": "Tab Category Menu",
+          "info": "Group 2 categories. Give a link sub-links in the menu editor for subcategories. Add Nav Banner blocks for the tab's and each category's banners."
+        }
+      ]
+    },
+    {
+      "type": "nav-banner",
+      "name": "Nav Banner",
+      "settings": [
+        {
+          "type": "text",
+          "id": "banner_tab",
+          "label": "Banner Tab",
+          "info": "Header Main Menu tab this banner belongs to, e.g. Men. Not case-sensitive."
+        },
+        {
+          "type": "text",
+          "id": "banner_cat",
+          "label": "Banner Category",
+          "info": "Optional. A category from that tab's Category Menu, e.g. Shoes. Leave blank for the tab's default banners. A category with its own banners shows only those; otherwise it shows the tab's."
+        },
+        {
+          "type": "image_picker",
+          "id": "banner_img",
+          "label": "Banner Image"
+        },
+        {
+          "type": "text",
+          "id": "banner_text",
+          "label": "Banner Text",
+          "default": "New Arrivals"
+        },
+        {
+          "type": "url",
+          "id": "banner_url",
+          "label": "Banner URL"
+        },
+        {
+          "type": "select",
+          "id": "banner_cta_pos",
+          "label": "Banner CTA Position",
+          "options": [
+            { "value": "top-left", "label": "Top Left" },
+            { "value": "top-center", "label": "Top Center" },
+            { "value": "top-right", "label": "Top Right" },
+            { "value": "middle-left", "label": "Middle Left" },
+            { "value": "middle-center", "label": "Middle Center" },
+            { "value": "middle-right", "label": "Middle Right" },
+            { "value": "bottom-left", "label": "Bottom Left" },
+            { "value": "bottom-center", "label": "Bottom Center" },
+            { "value": "bottom-right", "label": "Bottom Right" }
+          ],
+          "default": "bottom-left"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header"
+    }
+  ]
+}
+{% endschema %}

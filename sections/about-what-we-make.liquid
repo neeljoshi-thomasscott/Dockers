@@ -1,0 +1,137 @@
+{%- liquid
+  assign about_what_we_make_heading = section.settings.what_we_make_heading
+  assign about_what_we_make_card_count = 0
+
+  for block in section.blocks
+    if block.settings.what_we_make_image != blank or block.settings.what_we_make_title != blank or block.settings.what_we_make_body != blank
+      assign about_what_we_make_card_count = about_what_we_make_card_count | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if about_what_we_make_heading != blank or about_what_we_make_card_count > 0 -%}
+  <div class="about-what-we-make flex flex-col gap-about-what-we-make-gap-mobile px-page-gutter-mobile py-about-section-pad-y bg-surface md:gap-about-what-we-make-gap-desktop md:px-about-what-we-make-pad-x-desktop">
+    {%- if about_what_we_make_heading != blank -%}
+      <h2 class="about-what-we-make__heading break-words font-primary text-about-what-we-make-heading-mobile font-bold text-ink md:text-center md:text-about-what-we-make-heading-desktop">
+        {{ about_what_we_make_heading | escape }}
+      </h2>
+    {%- endif -%}
+
+    {%- if about_what_we_make_card_count > 0 -%}
+      <ul
+        class="about-what-we-make__list flex flex-col gap-about-what-we-make-list-gap-mobile md:flex-row md:items-start md:justify-center md:gap-about-what-we-make-list-gap-desktop"
+        role="list"
+      >
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'what-we-make-card' -%}
+              {%- render 'what-we-make-card', block: block -%}
+          {%- endcase -%}
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "About What We Make",
+  "class": "about-make-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "what_we_make_heading",
+      "label": "What We Make Heading",
+      "default": "What We Make: Men's Wardrobe Essentials, Done Right"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "what-we-make-card",
+      "name": "What We Make Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "what_we_make_image",
+          "label": "What We Make Image"
+        },
+        {
+          "type": "text",
+          "id": "what_we_make_img_alt",
+          "label": "What We Make Img Alt",
+          "info": "Leave blank to use the image's own alt text"
+        },
+        {
+          "type": "text",
+          "id": "what_we_make_title",
+          "label": "What We Make Title",
+          "default": "Khakis and Chinos"
+        },
+        {
+          "type": "textarea",
+          "id": "what_we_make_body",
+          "label": "What We Make Body",
+          "default": "This is still where Dockers does its best work. The fabrics are engineered to resist creasing and hold their shape, and the colors are chosen to pair with almost anything already hanging in a man's closet. Whether it's a smart casual look for the weekend or dependable workwear trousers for a five-day week, this is the pair men reach for without thinking twice."
+        },
+        {
+          "type": "select",
+          "id": "what_we_make_mob_pos",
+          "label": "What We Make Mob Pos",
+          "options": [
+            {
+              "value": "top",
+              "label": "Top"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "bottom",
+              "label": "Bottom"
+            }
+          ],
+          "default": "center",
+          "info": "Mobile image crop, below 768px"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [
+    {
+      "name": "About What We Make",
+      "blocks": [
+        {
+          "type": "what-we-make-card",
+          "settings": {
+            "what_we_make_title": "Khakis and Chinos",
+            "what_we_make_body": "This is still where Dockers does its best work. The fabrics are engineered to resist creasing and hold their shape, and the colors are chosen to pair with almost anything already hanging in a man's closet. Whether it's a smart casual look for the weekend or dependable workwear trousers for a five-day week, this is the pair men reach for without thinking twice.",
+            "what_we_make_mob_pos": "top"
+          }
+        },
+        {
+          "type": "what-we-make-card",
+          "settings": {
+            "what_we_make_title": "Business Casual Apparel",
+            "what_we_make_body": "Dress codes have only gotten looser since Dockers helped popularize Casual Friday, but the need for genuinely smart casual menswear hasn't gone anywhere. Dockers designs business casual apparel sharp enough for a client meeting and relaxed enough that you're not counting the hours until you can change.",
+            "what_we_make_mob_pos": "center"
+          }
+        },
+        {
+          "type": "what-we-make-card",
+          "settings": {
+            "what_we_make_title": "Sportswear and Beyond",
+            "what_we_make_body": "The wardrobe has grown well past the original khaki. Men's and women's sportswear, activewear, outerwear, dress shirts, footwear and accessories now sit alongside the pants that started it all, all built on the same idea: comfortable, versatile design that performs as well as it looks.",
+            "what_we_make_mob_pos": "top"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

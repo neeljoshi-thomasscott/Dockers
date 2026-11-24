@@ -1,0 +1,8 @@
+{% doc %}
+  @param {number} [size] - Icon width/height in px, defaults to 20
+  @param {string} [class] - Additional classes for the svg element
+{% enddoc %}
+{%- assign icon_size = size | default: 20 -%}
+<svg class="{{ class }}" width="{{ icon_size }}" height="{{ icon_size }}" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <path d="M15 12H17V9H21V7H17V4H15V12ZM3 9L15 9V7L3 7V9ZM3 17H7V20H9V12H7V15H3V17ZM9 17H21V15H9V17Z" fill="currentColor"></path>
+</svg>

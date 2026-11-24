@@ -1,0 +1,280 @@
+<search-drawer
+  class="search-drawer fixed inset-0 z-[999]"
+  data-section-id="{{ section.id }}"
+  data-min-characters="{{ section.settings.search_min_chars }}"
+  data-debounce-delay="{{ section.settings.search_debounce_ms }}"
+  aria-hidden="true"
+  role="dialog"
+  aria-modal="true"
+  aria-label="{{ 'accessibility.search' | t }}"
+  hidden
+>
+  <div
+    class="search-drawer__panel fixed inset-y-0 right-0 flex h-full w-full max-w-search-drawer-width translate-x-full flex-col border-l-hairline border-foreground bg-background transition-transform duration-300"
+    data-search-drawer-panel
+  >
+    <div class="flex h-search-field-row-height items-center border-b-hairline border-foreground/50 p-search-field-row-pad" data-search-drawer-field-row>
+      <span class="flex h-search-field-control w-search-field-control flex-shrink-0 items-center justify-center" aria-hidden="true">
+        {% render 'icon-search', size: 24 %}
+      </span>
+
+      <input
+        type="text"
+        data-search-drawer-input
+        class="min-w-0 flex-1 bg-transparent font-primary text-sm font-normal text-foreground outline-none placeholder:text-foreground/60"
+        placeholder="{{ section.settings.search_placeholder }}"
+        autocomplete="off"
+      >
+
+      <button
+        type="button"
+        data-search-drawer-clear
+        class="flex-shrink-0 whitespace-nowrap font-primary text-xs font-normal text-foreground"
+        hidden
+      >
+        {{ section.settings.search_clear_label }}
+      </button>
+
+      <button
+        type="button"
+        data-search-drawer-close
+        class="flex h-search-field-control w-search-field-control flex-shrink-0 items-center justify-center"
+        aria-label="{{ 'accessibility.close_search' | t }}"
+      >
+        <span class="flex h-6 w-6 items-center justify-center">
+          {% render 'icon-close', size: 20 %}
+        </span>
+      </button>
+    </div>
+
+    <div
+      id="search-drawer-content"
+      data-search-drawer-content
+      data-products-shown="{{ section.settings.search_products_shown | default: 4 }}"
+      class="flex-1 overflow-y-auto"
+    >
+      {%- liquid
+        assign recent_searches_fallback = 'search.recent_searches' | t
+        assign featured_products_fallback = 'search.featured_products' | t
+        assign recent_searches_heading = section.settings.recent_searches_heading | default: recent_searches_fallback
+        assign featured_products_heading = section.settings.featured_products_heading | default: featured_products_fallback
+      -%}
+
+      <div
+        data-search-drawer-recent-searches
+        class="flex flex-col gap-search-section-gap px-search-drawer-pad-x-mobile py-search-section-pad-mobile md:p-search-section-pad-desktop"
+        hidden
+      >
+        <div class="flex items-center justify-between">
+          <h3 class="text-eyebrow uppercase text-foreground/60">{{ recent_searches_heading }}</h3>
+          <button type="button" data-search-drawer-clear-recent class="text-eyebrow text-foreground">
+            {{ section.settings.search_clear_label }}
+          </button>
+        </div>
+
+        {%- comment -%}
+          Recent searches live only in the visitor's localStorage, so
+          assets/search-drawer-content.js clones the template below per saved
+          query — Shopify's render cache for `/?sections=` ignores custom
+          params, so a Section Rendering fetch would keep serving one list.
+        {%- endcomment -%}
+        <ul data-search-drawer-recent-list class="flex flex-col"></ul>
+
+        <template data-search-drawer-recent-row-template>
+          <li>
+            <a
+              href=""
+              data-search-drawer-row
+              tabindex="-1"
+              class="flex h-suggestion-row-height items-center justify-start py-suggestion-row-pad-y text-left text-suggestion font-normal text-foreground"
+            ></a>
+          </li>
+        </template>
+      </div>
+
+      <div
+        data-search-drawer-suggestions
+        class="flex flex-col gap-search-section-gap px-search-drawer-pad-x-mobile py-search-section-pad-mobile md:p-search-section-pad-desktop"
+      >
+        <h3
+          data-search-drawer-suggestions-heading
+          data-label="{{ 'search.suggested' | t }}"
+          class="text-eyebrow uppercase text-foreground/60"
+        >
+          {{ 'search.suggestions' | t }}
+        </h3>
+
+        <ul data-search-drawer-suggestion-list class="flex flex-col">
+          {%- liquid
+            assign suggestion_lines = section.settings.suggestion_terms | newline_to_br | split: '<br />'
+          -%}
+          {%- for suggestion_line in suggestion_lines -%}
+            {%- assign suggestion_line = suggestion_line | strip -%}
+            {%- if suggestion_line != blank -%}
+              {%- assign suggestion_parts = suggestion_line | split: '|' -%}
+              {%- assign suggestion_label = suggestion_parts | first | strip -%}
+              {%- assign suggestion_url = '' -%}
+              {%- if suggestion_parts.size > 1 -%}
+                {%- assign suggestion_url = suggestion_parts | last | strip -%}
+              {%- endif -%}
+              <li
+                data-search-drawer-suggestion-row
+                data-term="{{ suggestion_label | escape }}"
+                class="h-suggestion-row-height"
+              >
+                <a
+                  href="{% if suggestion_url != blank %}{{ suggestion_url }}{% else %}{{ routes.search_url }}?q={{ suggestion_label | url_encode }}&type=product{% endif %}"
+                  data-search-drawer-row
+                  tabindex="-1"
+                  class="flex h-full w-full items-center justify-start py-suggestion-row-pad-y text-left text-suggestion font-normal text-foreground"
+                >
+                  {{ suggestion_label }}
+                </a>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+
+        {%- comment -%}
+          Real, as-typed query suggestions (Shopify's Predictive Search
+          `queries` resource) — distinct from the merchant-curated list
+          above. assets/search-drawer-content.js clones the template below
+          per suggested query rather than building markup in JS.
+        {%- endcomment -%}
+        <ul data-search-drawer-suggested-list class="flex flex-col" hidden></ul>
+      </div>
+
+      <template data-search-drawer-suggested-row-template>
+        <li data-search-drawer-suggested-row class="h-suggestion-row-height">
+          <a
+            href=""
+            data-search-drawer-row
+            tabindex="-1"
+            class="flex h-full w-full items-center justify-start whitespace-pre py-suggestion-row-pad-y text-left text-suggestion font-normal text-foreground"
+          ><span data-search-drawer-row-before></span><span data-search-drawer-row-match class="font-medium"></span><span data-search-drawer-row-after></span></a>
+        </li>
+      </template>
+
+      <h3
+        data-search-drawer-results-heading
+        class="break-words px-search-drawer-pad-x-mobile py-search-section-pad-mobile text-search-value text-foreground md:p-search-section-pad-desktop"
+        hidden
+      >
+        {{ 'search.top_results_for_label' | t }} "<span data-search-drawer-results-query class="font-medium"></span>"
+      </h3>
+
+      <div data-search-drawer-results-grid class="grid grid-cols-2 gap-0" hidden></div>
+
+      <div
+        data-search-drawer-no-results-message
+        class="px-search-drawer-pad-x-mobile py-search-section-pad-mobile text-search-value text-foreground md:p-search-section-pad-desktop"
+        hidden
+      >
+        {{ section.settings.no_results_message }}
+      </div>
+
+      <h3
+        data-search-drawer-featured-heading
+        class="px-search-drawer-pad-x-mobile py-search-section-pad-mobile text-eyebrow uppercase text-foreground/60 md:p-search-section-pad-desktop"
+        hidden
+      >
+        {{ featured_products_heading }}
+      </h3>
+
+      <div data-search-drawer-fallback-grid>
+        {%- render 'search-drawer-fallback-grid', collection: section.settings.fallback_collection, products_limit: section.settings.search_fallback_shown -%}
+      </div>
+    </div>
+  </div>
+</search-drawer>
+
+{% schema %}
+{
+  "name": "Search Drawer",
+  "class": "search-drawer-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search Placeholder",
+      "default": "What are you looking for"
+    },
+    {
+      "type": "text",
+      "id": "search_clear_label",
+      "label": "Search Clear Label",
+      "default": "Clear"
+    },
+    {
+      "type": "range",
+      "id": "search_min_chars",
+      "label": "Search Min Chars",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "search_debounce_ms",
+      "label": "Search Debounce Ms",
+      "min": 0,
+      "max": 1000,
+      "step": 50,
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "search_products_shown",
+      "label": "Search Products Shown",
+      "min": 2,
+      "max": 12,
+      "step": 2,
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "recent_searches_heading",
+      "label": "Recent Searches Heading",
+      "default": "Recent Searches"
+    },
+    {
+      "type": "text",
+      "id": "featured_products_heading",
+      "label": "Featured Products Heading",
+      "default": "Featured Products"
+    },
+    {
+      "type": "richtext",
+      "id": "no_results_message",
+      "label": "No Results Message",
+      "default": "<p>Sorry, we couldn't find what you are looking for.<br>Please try again.</p>"
+    },
+    {
+      "type": "collection",
+      "id": "fallback_collection",
+      "label": "Fallback Collection"
+    },
+    {
+      "type": "range",
+      "id": "search_fallback_shown",
+      "label": "Fallback Products Shown",
+      "min": 2,
+      "max": 12,
+      "step": 2,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Suggestions"
+    },
+    {
+      "type": "textarea",
+      "id": "suggestion_terms",
+      "label": "Suggestion Terms",
+      "info": "One per line. Add a custom link with a pipe, e.g. Shirts|/collections/shirts — otherwise links to the search results page for that term.",
+      "default": "Shirts|/collections/men-shirts\nT-Shirts|/collections/men-t-shirts\nPolos|/collections/men-t-shirts-polos\nTrousers|/collections/men-trousers"
+    }
+  ]
+}
+{% endschema %}

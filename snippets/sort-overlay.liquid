@@ -1,0 +1,182 @@
+{% doc %}
+  Sort Overlay
+
+  Single sort control rendered once per collection or search page. Renders
+  as a desktop dropdown anchored under the toolbar's Sort trigger and as a
+  mobile bottom sheet over a scrim. Opens on the `toolbar:open-sort`
+  CustomEvent and dispatches `sort:change` with the chosen native
+  `sort_by` value on selection. Every option is also a real link so the
+  control works with JavaScript disabled. On `/search`, `collection.*`
+  reads are aliased to `search.*` internally. With `sort_blog`, options are
+  buttons and the host page sorts its own list on `sort:change`.
+
+  @param {object} [collection] - The collection object (blank on /search and blog pages)
+  @param {string} [current_sort] - Currently active sort value (falls back to collection.sort_by / collection.default_sort_by, or their search.* equivalents)
+  @param {object} [sort_blog] - Blog object; renders client-side article sort options instead of collection sort links
+{% enddoc %}
+
+{%- liquid
+  assign collection = collection | default: blank
+  assign sort_blog = sort_blog | default: blank
+  assign is_search_template = false
+  if template.name == 'search'
+    assign is_search_template = true
+  endif
+
+  unless collection != blank or is_search_template or sort_blog != blank
+    break
+  endunless
+
+  if sort_blog != blank
+    assign working_default_sort_by = 'newest'
+    assign current_sort = 'newest'
+  elsif is_search_template
+    assign working_sort_options = search.sort_options
+    assign working_sort_by = search.sort_by
+    assign working_default_sort_by = search.default_sort_by
+    assign working_filters = search.filters
+  else
+    assign working_sort_options = collection.sort_options
+    assign working_sort_by = collection.sort_by
+    assign working_default_sort_by = collection.default_sort_by
+    assign working_filters = collection.filters
+  endif
+
+  if sort_blog == blank
+    assign current_sort = current_sort | default: working_sort_by | default: working_default_sort_by
+    assign native_sort_values = working_sort_options | map: 'value'
+
+    assign sort_option_values = 'recommended,highest_price,lowest_price,newest,relevance' | split: ','
+    assign sort_option_natives = working_default_sort_by | append: ',price-descending,price-ascending,created-descending,relevance' | split: ','
+  endif
+
+  # Without JavaScript, a sort link is a plain page navigation, so the
+  # active view (template.suffix) and filters have to be carried on the
+  # href itself or they're dropped.
+  assign current_view_param = template.suffix
+
+  capture preserved_sort_query
+    if sort_blog == blank
+      if current_view_param != blank
+        echo 'view=' | append: current_view_param | append: '&'
+      endif
+      if is_search_template
+        capture escaped_search_terms
+          render 'search-terms-param'
+        endcapture
+        echo 'q=' | append: escaped_search_terms | append: '&'
+        echo 'type=product&'
+      endif
+      for sort_filter in working_filters
+        for filter_value in sort_filter.values
+          if filter_value.active
+            assign escaped_filter_value = filter_value.value | url_param_escape
+            echo filter_value.param_name | append: '=' | append: escaped_filter_value | append: '&'
+          endif
+        endfor
+      endfor
+    endif
+  endcapture
+  assign preserved_sort_query = preserved_sort_query | strip
+-%}
+
+<sort-overlay
+  data-default-sort="{{ working_default_sort_by }}"
+  class="sort-overlay fixed inset-0 z-[110] pointer-events-none md:absolute md:inset-auto md:right-sort-dropdown-offset-x md:top-full"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="sort-overlay-title"
+>
+  <div
+    class="sort-overlay__scrim absolute inset-0 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"
+    data-sort-overlay-scrim
+  ></div>
+
+  <div
+    class="sort-overlay__panel absolute inset-x-0 bottom-0 h-sort-sheet-height w-full translate-y-full bg-background shadow-xl transition-transform duration-300 md:static md:h-sort-dropdown-height md:w-sort-dropdown-width md:translate-y-0 md:border md:border-ink md:opacity-0 md:pointer-events-none md:scale-95 md:shadow-none md:transition-all"
+    data-sort-overlay-panel
+  >
+    <div class="sort-overlay__header flex h-drawer-header-height items-center justify-between border-b border-border pl-drawer-header-pad-left-mobile pr-drawer-header-pad-right-mobile md:hidden">
+      <h2 id="sort-overlay-title" class="text-control font-medium uppercase">{{ 'collections.sort' | t }}</h2>
+      <button type="button" class="flex h-10 w-10 items-center justify-center transition-colors hover:text-muted" data-sort-overlay-close aria-label="{{ 'accessibility.close' | t }}">
+        {%- render 'icon-close', size: 20 -%}
+      </button>
+    </div>
+
+    {%- capture sort_option_radio -%}
+      <span
+        class="sort-overlay__radio flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border border-border transition-colors group-aria-checked:border-foreground"
+        data-sort-overlay-radio
+        aria-hidden="true"
+      >
+        <span
+          class="hidden h-1.5 w-1.5 rounded-full bg-foreground group-aria-checked:block"
+          data-sort-overlay-radio-dot
+        ></span>
+      </span>
+    {%- endcapture -%}
+    {%- comment -%}
+      The radio dot is always rendered and styled off the option's
+      aria-checked (group-aria-checked:), so sort-overlay.js moves the
+      selection by setting that one attribute after a client-side sort swap.
+    {%- endcomment -%}
+    <div class="sort-overlay__options md:py-3" role="radiogroup" aria-labelledby="sort-overlay-title" data-sort-overlay-options>
+      {%- if sort_blog != blank -%}
+        {%- assign blog_sort_values = 'newest,oldest,title-ascending,title-descending' | split: ',' -%}
+        {%- for blog_sort_value in blog_sort_values -%}
+          {%- assign blog_sort_label_key = 'blog.sort_options.' | append: blog_sort_value | replace: '-', '_' -%}
+          <button
+            type="button"
+            class="sort-overlay__option group flex h-option-row-height w-full items-center gap-option-row-gap px-4 text-copy"
+            role="radio"
+            aria-checked="{% if blog_sort_value == current_sort %}true{% else %}false{% endif %}"
+            data-sort-overlay-option
+            data-sort-overlay-value="{{ blog_sort_value }}"
+          >
+            {{ sort_option_radio }}
+            <span>{{ blog_sort_label_key | t }}</span>
+          </button>
+        {%- endfor -%}
+      {%- else -%}
+        {%- liquid
+          assign rendered_sort_option = false
+          # "Recommended" maps to the listing's default sort, which may equal a fixed option
+          # below; each native value renders once so it isn't listed twice.
+          assign rendered_native_values = ','
+        -%}
+        {%- for sort_option_value in sort_option_values -%}
+          {%- assign native_value = sort_option_natives[forloop.index0] -%}
+          {%- assign native_value_token = ',' | append: native_value | append: ',' -%}
+          {%- if native_sort_values contains native_value and rendered_native_values contains native_value_token -%}
+            {%- continue -%}
+          {%- endif -%}
+          {%- if native_sort_values contains native_value -%}
+            {%- assign rendered_sort_option = true -%}
+            {%- assign rendered_native_values = rendered_native_values | append: native_value | append: ',' -%}
+            {%- assign label_key = 'collections.sort_by_options.' | append: sort_option_value -%}
+            {%- assign is_current_sort = false -%}
+            {%- if native_value == current_sort -%}
+              {%- assign is_current_sort = true -%}
+            {%- endif -%}
+            <a
+              href="?{{ preserved_sort_query }}sort_by={{ native_value }}"
+              class="sort-overlay__option group flex h-option-row-height items-center gap-option-row-gap px-4 text-copy"
+              role="radio"
+              aria-checked="{{ is_current_sort }}"
+              data-sort-overlay-option
+              data-sort-overlay-value="{{ native_value }}"
+            >
+              {{ sort_option_radio }}
+              <span>{{ label_key | t }}</span>
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+        {%- unless rendered_sort_option -%}
+          <p class="px-4 py-3 text-copy text-muted">{{ 'collections.no_sort_options' | t }}</p>
+        {%- endunless -%}
+      {%- endif -%}
+    </div>
+  </div>
+</sort-overlay>
+
+<script src="{{ 'sort-overlay.js' | asset_url }}" defer></script>

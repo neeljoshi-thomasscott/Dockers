@@ -1,0 +1,142 @@
+{%- liquid
+  assign last_updated = page.metafields.custom.last_updated.value
+  if last_updated != blank
+    assign last_updated_day = last_updated | date: '%-d' | plus: 0
+    assign last_updated_day_mod = last_updated_day | modulo: 100
+    assign last_updated_suffix = 'th'
+    if last_updated_day_mod < 11 or last_updated_day_mod > 13
+      assign last_updated_last_digit = last_updated_day | modulo: 10
+      case last_updated_last_digit
+        when 1
+          assign last_updated_suffix = 'st'
+        when 2
+          assign last_updated_suffix = 'nd'
+        when 3
+          assign last_updated_suffix = 'rd'
+      endcase
+    endif
+  endif
+
+  assign legal_nav_links = linklists[section.settings.nav_menu].links
+  assign legal_has_nav = false
+  if section.settings.show_navigation and legal_nav_links.size > 0
+    assign legal_has_nav = true
+  endif
+
+  # Without a nav there is no sidebar column, so the content centres under the title.
+  if legal_has_nav
+    assign legal_shell_grid_classes = 'lg:grid-cols-legal-shell lg:gap-x-legal-shell-gap'
+    assign legal_content_align_class = ''
+  else
+    assign legal_shell_grid_classes = 'lg:grid-cols-1'
+    assign legal_content_align_class = 'lg:mx-auto'
+  endif
+-%}
+
+<section
+  class="legal-document flex flex-col lg:grid {{ legal_shell_grid_classes }} lg:px-legal-shell-pad-x lg:pb-legal-shell-pad-y-bottom"
+  style="
+    --content-max-width: {{ section.settings.content_max_width }}px;
+    --paragraph-spacing: {{ section.settings.paragraph_spacing }}px;
+  "
+>
+  {% render 'legal-nav',
+    show_breadcrumb: section.settings.show_breadcrumb,
+    parent_group_label: section.settings.parent_group_label,
+    show_navigation: legal_has_nav,
+    nav_menu: section.settings.nav_menu
+  %}
+
+  <div class="legal-document__content order-4 px-4 pb-legal-content-pad-bottom-mobile font-primary text-doc-body text-ink lg:box-content lg:px-4 lg:pt-legal-shell-pad-y-top lg:pb-0 lg:max-w-[var(--content-max-width)] {{ legal_content_align_class }} [&>*]:pt-[var(--paragraph-spacing)] [&>*:first-child]:pt-0 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-[1.5em] [&_li]:pt-[var(--paragraph-spacing)] [&_li:first-child]:pt-0 [&_a]:text-ink [&_a]:underline [&_a]:visited:text-ink [&_a]:hover:text-ink [&_a]:focus-visible:outline [&_a]:focus-visible:outline-2 [&_a]:focus-visible:outline-ink">
+    {%- if last_updated != blank -%}
+      <p class="legal-document__meta-title font-bold">{{ page.title | escape }}</p>
+      {%- if section.settings.legal_brand_label != blank -%}
+        <p class="legal-document__meta-brand">{{ section.settings.legal_brand_label | escape }}</p>
+      {%- endif -%}
+      <p class="legal-document__meta-date">
+        {{ 'general.last_updated' | t }} {{ last_updated | date: '%B %-d' }}<sup class="text-doc-ordinal">{{ last_updated_suffix }}</sup> {{ last_updated | date: '%Y' }}
+      </p>
+    {%- endif -%}
+    {{ page.content }}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Legal Document",
+  "class": "legal-document-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Breadcrumb"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Show breadcrumb",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "parent_group_label",
+      "label": "Parent Group Label",
+      "default": "Legal"
+    },
+    {
+      "type": "header",
+      "content": "Last Updated"
+    },
+    {
+      "type": "text",
+      "id": "legal_brand_label",
+      "label": "Legal Brand Label",
+      "default": "Dockers",
+      "info": "Shown above the Last Updated date (from the page's custom.last_updated metafield)"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show navigation",
+      "default": true
+    },
+    {
+      "type": "link_list",
+      "id": "nav_menu",
+      "label": "Navigation Menu"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content Max Width",
+      "min": 604,
+      "max": 800,
+      "step": 4,
+      "unit": "px",
+      "default": 604
+    },
+    {
+      "type": "range",
+      "id": "paragraph_spacing",
+      "label": "Paragraph Spacing",
+      "min": 0,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Legal Document"
+    }
+  ]
+}
+{% endschema %}

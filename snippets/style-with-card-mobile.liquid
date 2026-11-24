@@ -1,0 +1,56 @@
+{% doc %}
+  Style With Card Mobile
+
+  Renders a single mobile "Style With" card on the PDP: a full-bleed 160×240
+  image tile with an overlaid quick-add icon, no title/price.
+
+  @param {product} card_product - Product object (required)
+
+  @example
+  {% render 'style-with-card-mobile', card_product: product %}
+{% enddoc %}
+
+{%- liquid
+  assign card_product = card_product | default: blank
+
+  unless card_product != blank
+    break
+  endunless
+-%}
+
+<div class="style-with-card-mobile relative h-[240px] w-[160px] shrink-0 bg-surface-soft" data-style-with-card-mobile>
+  <a href="{{ card_product.url }}" class="absolute inset-0">
+    {%- if card_product.featured_image != blank -%}
+      <img
+        src="{{ card_product.featured_image | image_url: width: 320 }}"
+        srcset="{{ card_product.featured_image | image_url: width: 160 }} 1x, {{ card_product.featured_image | image_url: width: 320 }} 2x"
+        sizes="160px"
+        loading="lazy"
+        alt="{{ card_product.title | escape }}"
+        width="160"
+        height="240"
+        class="h-full w-full object-cover"
+      >
+    {%- else -%}
+      <div class="flex h-full w-full items-center justify-center text-muted">
+        {%- render 'icon-cart', size: 32 -%}
+      </div>
+    {%- endif -%}
+  </a>
+
+  {%- comment -%}
+    No explicit z-index: position:absolute alone already paints this above the
+    card's image (it comes after it in DOM order), and adding one here would
+    trap quick-add-atc's fixed scrim/panel inside a local stacking context,
+    capping their effective priority instead of letting them compete at the
+    root level against sibling cards in the row (see the same reasoning in
+    product-card.liquid's image_cluster_wrapper_class comment).
+  {%- endcomment -%}
+  <div class="absolute bottom-[10px] right-[16px]">
+    {%- render 'quick-add-atc',
+      product: card_product,
+      button_class: 'bg-ink-20 text-white',
+      compact_pad_class: 'h-6 w-6'
+    -%}
+  </div>
+</div>

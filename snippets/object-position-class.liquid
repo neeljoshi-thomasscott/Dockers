@@ -1,0 +1,17 @@
+{% doc %}
+  Outputs the Tailwind object-position class for a crop position setting.
+
+  @param {string} position - Crop position: 'top', 'center' or 'bottom'
+
+  @example
+  {% capture position_class %}{% render 'object-position-class', position: block.settings.x_mob_pos %}{% endcapture %}
+{% enddoc %}
+
+{%- case position -%}
+  {%- when 'top' -%}
+    object-top
+  {%- when 'bottom' -%}
+    object-bottom
+  {%- else -%}
+    object-center
+{%- endcase -%}

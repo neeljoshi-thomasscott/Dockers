@@ -1,0 +1,33 @@
+{% doc %}
+  Trust Builder
+
+  Renders the PDP's 3 fixed trust items (trust badge, free delivery / COD,
+  easy returns), each a hardcoded icon paired with a merchant-editable
+  richtext label.
+
+  @param {object} block - The trust_builder section block (required)
+
+  @example
+  {% render 'trust-builder', block: block %}
+{% enddoc %}
+
+<div class="-mx-4 flex divide-x divide-border pt-pdp-trust-pad-y-mobile md:mx-0 pb-pdp-trust-pad-y-mobile md:pt-pdp-trust-pad-y-desktop md:pb-pdp-trust-pad-y-desktop md:px-pdp-info-pad-x-desktop" {{ block.shopify_attributes }}>
+  <div class="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+    {%- render 'icon-trust-badge', size: 24, class: 'h-6 w-6 text-ink' -%}
+    {%- if block.settings.trust_builder_text_1 != blank -%}
+      <div class="font-secondary text-count text-ink">{{ block.settings.trust_builder_text_1 }}</div>
+    {%- endif -%}
+  </div>
+  <div class="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+    {%- render 'icon-free-delivery', size: 24, class: 'h-6 w-6 text-ink' -%}
+    {%- if block.settings.trust_builder_text_2 != blank -%}
+      <div class="font-secondary text-count text-ink">{{ block.settings.trust_builder_text_2 }}</div>
+    {%- endif -%}
+  </div>
+  <div class="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+    {%- render 'icon-easy-returns', size: 24, class: 'h-6 w-6 text-ink' -%}
+    {%- if block.settings.trust_builder_text_3 != blank -%}
+      <div class="font-secondary text-count text-ink">{{ block.settings.trust_builder_text_3 }}</div>
+    {%- endif -%}
+  </div>
+</div>

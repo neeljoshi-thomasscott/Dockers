@@ -1,0 +1,169 @@
+{%- liquid
+  assign about_editorial_split_card_count = 0
+  assign about_editorial_split_ids = ''
+
+  for block in section.blocks
+    if block.settings.editorial_split_image != blank or block.settings.editorial_split_caption != blank
+      assign about_editorial_split_card_count = about_editorial_split_card_count | plus: 1
+    endif
+
+    if block.type == 'editorial-split-card' and block.settings.editorial_split_image != blank
+      assign about_editorial_split_ids = about_editorial_split_ids | append: block.id | append: ','
+    endif
+  endfor
+
+  assign about_editorial_split_ids = about_editorial_split_ids | split: ','
+  assign about_editorial_split_loop_size = about_editorial_split_ids.size
+  assign about_editorial_split_interactive = false
+  if about_editorial_split_loop_size >= 2
+    assign about_editorial_split_interactive = true
+  endif
+-%}
+
+{%- if about_editorial_split_card_count > 0 -%}
+  <about-editorial-split
+    class="about-editorial-split group/split block bg-surface md:overflow-anchor-none md:data-split-ready:h-about-editorial-split-track-tablet lg:data-split-ready:h-about-editorial-split-track-desktop"
+    data-fade-ms="150"
+    {%- if about_editorial_split_interactive %}
+      style="--about-editorial-split-steps: {{ about_editorial_split_loop_size }};"
+    {%- endif %}
+  >
+    <ul
+      class="about-editorial-split__list flex flex-col transition-opacity duration-150 ease-out motion-reduce:transition-none data-split-fading:opacity-0 group-data-split-ready/split:top-header-height-mobile md:grid md:grid-flow-col md:auto-cols-fr md:border-b md:border-ink-10 md:group-data-split-ready/split:sticky md:group-data-split-pinned/split:h-about-editorial-split-stage-tablet md:group-data-split-pinned/split:overflow-hidden lg:group-data-split-ready/split:top-header-height-desktop lg:group-data-split-pinned/split:h-about-editorial-split-stage-desktop"
+      role="list"
+      data-editorial-split-list
+    >
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'editorial-split-card' -%}
+            {%- liquid
+              assign about_editorial_split_index = nil
+              assign about_editorial_split_next_index = nil
+              assign about_editorial_split_next_block = nil
+
+              if about_editorial_split_interactive and block.settings.editorial_split_image != blank
+                for about_editorial_split_id in about_editorial_split_ids
+                  if about_editorial_split_id == block.id
+                    assign about_editorial_split_index = forloop.index0
+                    break
+                  endif
+                endfor
+
+                assign about_editorial_split_next_index = about_editorial_split_index | plus: 1 | modulo: about_editorial_split_loop_size
+                assign about_editorial_split_next_id = about_editorial_split_ids[about_editorial_split_next_index]
+                assign about_editorial_split_next_block = section.blocks | where: 'id', about_editorial_split_next_id | first
+              endif
+            -%}
+            {%- render 'editorial-split-card',
+              block: block,
+              card_index: about_editorial_split_index,
+              next_block: about_editorial_split_next_block,
+              next_index: about_editorial_split_next_index
+            -%}
+        {%- endcase -%}
+      {%- endfor -%}
+    </ul>
+  </about-editorial-split>
+
+  {%- if about_editorial_split_interactive -%}
+    <script src="{{ 'about-editorial-split.js' | asset_url }}" defer></script>
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "About Editorial Split",
+  "class": "about-split-section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "editorial-split-card",
+      "name": "Editorial Split Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "editorial_split_image",
+          "label": "Editorial Split Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "editorial_split_mob_img",
+          "label": "Split Mobile Image",
+          "info": "Optional. 1560 x 960px (13:8)"
+        },
+        {
+          "type": "text",
+          "id": "editorial_split_img_alt",
+          "label": "Editorial Split Img Alt",
+          "info": "Leave blank to use the image's own alt text"
+        },
+        {
+          "type": "text",
+          "id": "editorial_split_caption",
+          "label": "Editorial Split Caption",
+          "default": "Comfort You Don't Have to Think About"
+        },
+        {
+          "type": "richtext",
+          "id": "editorial_split_body",
+          "label": "Editorial Split Body",
+          "info": "Shown when the card is in view"
+        },
+        {
+          "type": "select",
+          "id": "editorial_split_mob_pos",
+          "label": "Editorial Split Mob Pos",
+          "options": [
+            {
+              "value": "top",
+              "label": "Top"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "bottom",
+              "label": "Bottom"
+            }
+          ],
+          "default": "center",
+          "info": "Mobile image crop, below 768px"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "presets": [
+    {
+      "name": "About Editorial Split",
+      "blocks": [
+        {
+          "type": "editorial-split-card",
+          "settings": {
+            "editorial_split_caption": "Comfort You Don't Have to Think About",
+            "editorial_split_body": "<p>If Dockers had to be summed up in one word, it would be comfort, and not the vague kind. Comfortable men's trousers that don't dig in during a long meeting. Wrinkle-free trousers that survive a commute or a flight and still look pressed when you arrive. Stretch waistbands, thanks to Smart 360 Flex™, that move with a day that never goes according to plan.</p><p>That's really what all-day wearability for men means at Dockers: clothes engineered to disappear into your day instead of interrupting it. The same thinking carries into fabric choice for men who travel often. Pieces are built to pack well, resist creasing, and adjust easily across climates and time zones, which is exactly what travel-friendly men's apparel should do without anyone having to ask. For anyone splitting a week between the office, an airport, and everything in between, Dockers has quietly become the low-maintenance menswear that just works.</p>",
+            "editorial_split_mob_pos": "center"
+          }
+        },
+        {
+          "type": "editorial-split-card",
+          "settings": {
+            "editorial_split_caption": "Dressed for Every Version of Your Day",
+            "editorial_split_body": "<p>Most men don't dress for one occasion anymore. They dress for a day that keeps changing shape without warning, and that's exactly the reality Dockers was built for: professional and casual clothing for men who need one wardrobe, not two separate ones.</p><p>A pair of Dockers chinos can move from a morning presentation to dinner with friends without a hitch, and that's by design, not by accident. It's why Dockers has earned its reputation as versatile daily menswear instead of a pile of one-occasion pieces. Buy less, wear it more, let each piece earn its place in the closet. That approach has carried the brand from a single khaki silhouette in 1986 to a wardrobe brand doing over a billion dollars in retail sales worldwide.</p>",
+            "editorial_split_mob_pos": "top"
+          }
+        },
+        {
+          "type": "editorial-split-card",
+          "settings": {
+            "editorial_split_caption": "Style That Respects Where It Comes From",
+            "editorial_split_body": "<p>For a man navigating an air-conditioned boardroom one hour and a humid commute the next, modern workplace clothing has to work harder than most people give it credit for. Dockers was built with exactly that kind of unpredictability in mind. Fabrics are chosen to breathe in real heat, hold up over long days, and move easily between a corporate office, a client site, and a weekend with friends.</p><p>Dockers.in brings that same fit-first, comfort-first thinking home. The same design principles that helped build a global menswear brand since 1986 are now available for the Indian man's wardrobe, his workday, and his weekend. Whether you're starting a work-ready wardrobe from scratch or just looking for the one pair of chinos that finally replaces the five you've been rotating, Dockers is built to be the answer. It's the same brand that changed office dressing in California in 1986, just tailored for the climate, the commute, and the calendar of a working day in India.</p>",
+            "editorial_split_mob_pos": "top"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

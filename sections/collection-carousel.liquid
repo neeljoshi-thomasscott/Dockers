@@ -1,0 +1,108 @@
+<div
+  class="collection-carousel pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)]"
+  style="
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+  "
+>
+  <drag-scroll class="collection-carousel__viewport block overflow-x-auto snap-x snap-mandatory scrollbar-hide data-[scrollable]:cursor-grab data-[scrollable]:data-[dragging]:cursor-grabbing data-[dragging]:snap-none [@media(pointer:fine)]:data-[scrollable]:select-none">
+    <div class="collection-carousel__track flex">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'collection-card' -%}
+            {%- render 'collection-carousel-card', block: block -%}
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </drag-scroll>
+</div>
+
+<script src="{{ 'drag-scroll.js' | asset_url }}" type="module" defer></script>
+
+{% schema %}
+{
+  "name": "Collection Carousel",
+  "class": "collection-carousel-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection-card",
+      "name": "Collection Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Desktop Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "Mobile Image"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Card Label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Card Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Carousel"
+    }
+  ]
+}
+{% endschema %}

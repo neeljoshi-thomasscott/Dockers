@@ -1,0 +1,18 @@
+{% doc %}
+  Share Icon
+
+  @param {string} [class] - Additional CSS classes (optional)
+  @param {number} [size] - Icon size in pixels (default: 20)
+{% enddoc %}
+
+{%- assign icon_size = size | default: 20 -%}
+<svg
+  class="{{ class }}"
+  width="{{ icon_size }}"
+  height="{{ icon_size }}"
+  viewBox="0 0 20 20"
+  fill="none"
+  aria-hidden="true"
+>
+  <path d="M3.75 17.9167V7.08334H7.38771V8.33334H5V16.6667H15V8.33334H12.6123V7.08334H16.25V17.9167H3.75ZM9.375 13.125V3.93271L7.83333 5.47438L6.95521 4.58334L10 1.53854L13.0448 4.58334L12.1667 5.47438L10.625 3.93271V13.125H9.375Z" fill="currentColor"/>
+</svg>

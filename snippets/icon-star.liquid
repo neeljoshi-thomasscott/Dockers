@@ -1,0 +1,29 @@
+{% doc %}
+  Star Icon
+
+  @param {string} [class] - Additional CSS classes (optional)
+  @param {number} [size] - Icon size in pixels (default: 12)
+  @param {boolean} [filled] - Solid fill vs outline only (default: true)
+{% enddoc %}
+
+{%- assign icon_size = size | default: 12 -%}
+{%- assign icon_filled = filled | default: true -%}
+<svg
+  class="{{ class }}"
+  width="{{ icon_size }}"
+  height="{{ icon_size }}"
+  viewBox="0 0 24 24"
+  {%- if icon_filled %}
+    fill="currentColor"
+    stroke="none"
+  {%- else %}
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  {%- endif %}
+  aria-hidden="true"
+>
+  <path d="M12 2.5l2.9 6.1 6.6.7-4.9 4.6 1.3 6.6-5.9-3.4-5.9 3.4 1.3-6.6-4.9-4.6 6.6-.7z"/>
+</svg>

@@ -1,0 +1,446 @@
+{%- comment -%}
+  Resolved from template.suffix alone — see collection-toolbar.liquid for
+  why a custom query param can't be used here instead. There's no merchant-
+  facing "default view" setting to fall back to: the shipped templates
+  (collection.json/.column.json/.grid.json/.row.json) each mirror their own
+  suffix already, so a section-setting fallback would only ever be reached
+  by manually assigning one of the suffixed templates as a collection's
+  default with no ?view= ever in play — not a supported workflow here.
+{%- endcomment -%}
+{%- liquid
+  assign view = template.suffix | default: 'column'
+  case view
+    when 'column', 'grid', 'row'
+    else
+      assign view = 'column'
+  endcase
+
+  case view
+    when 'column'
+      assign columns_desktop = section.settings.columns_desktop_column | default: 4
+      assign columns_mobile = section.settings.columns_mobile_column | default: 2
+    when 'grid'
+      assign columns_desktop = section.settings.columns_desktop_grid | default: 4
+      assign columns_mobile = section.settings.columns_mobile_grid | default: 3
+    when 'row'
+      assign columns_desktop = section.settings.columns_desktop_row | default: 1
+      assign columns_mobile = section.settings.columns_mobile_row | default: 1
+    else
+      assign columns_desktop = section.settings.columns_desktop_column | default: 4
+      assign columns_mobile = section.settings.columns_mobile_column | default: 2
+  endcase
+
+  case columns_desktop
+    when 1
+      assign grid_class_desktop = 'md:grid-cols-1'
+    when 2
+      assign grid_class_desktop = 'md:grid-cols-2'
+    when 3
+      assign grid_class_desktop = 'md:grid-cols-3'
+    when 4
+      assign grid_class_desktop = 'md:grid-cols-4'
+    when 5
+      assign grid_class_desktop = 'md:grid-cols-5'
+    else
+      assign grid_class_desktop = 'md:grid-cols-4'
+  endcase
+
+  case columns_mobile
+    when 1
+      assign grid_class_mobile = 'grid-cols-1'
+    when 2
+      assign grid_class_mobile = 'grid-cols-2'
+    when 3
+      assign grid_class_mobile = 'grid-cols-3'
+    when 4
+      assign grid_class_mobile = 'grid-cols-4'
+    when 5
+      assign grid_class_mobile = 'grid-cols-5'
+    else
+      assign grid_class_mobile = 'grid-cols-2'
+  endcase
+
+  assign products_per_page = section.settings.products_per_page | default: 16
+  assign image_aspect_ratio = section.settings.image_aspect_ratio | default: '2:3'
+  assign gallery_autoplay = section.settings.gallery_autoplay | default: false
+  assign gallery_autoplay_interval = section.settings.gallery_autoplay_interval | default: 5
+
+  assign is_search_template = false
+  if template.name == 'search'
+    assign is_search_template = true
+  endif
+  assign show_no_results_products = false
+  if is_search_template
+    assign working_result_count = search.results_count
+    capture search_relevant
+      render 'search-relevant'
+    endcapture
+    assign search_empty = false
+    if search.performed and search.results_count == 0 or search_relevant contains 'false'
+      assign search_empty = true
+      assign working_result_count = 0
+    endif
+    assign no_results_collection = section.settings.no_results_collection
+    if search_empty and no_results_collection != blank and no_results_collection.products.size > 0
+      assign show_no_results_products = true
+    endif
+  else
+    assign working_result_count = collection.products_count
+
+    assign filters_active = false
+    for filter in collection.filters
+      if filter.active_values.size > 0 or filter.min_value.value != null or filter.max_value.value != null
+        assign filters_active = true
+        break
+      endif
+    endfor
+
+    assign clear_filters_query = ''
+    if template.suffix != blank
+      assign clear_filters_query = 'view=' | append: template.suffix
+    endif
+    if collection.sort_by != blank and collection.sort_by != collection.default_sort_by
+      if clear_filters_query != blank
+        assign clear_filters_query = clear_filters_query | append: '&'
+      endif
+      assign clear_filters_query = clear_filters_query | append: 'sort_by=' | append: collection.sort_by
+    endif
+    assign clear_filters_href = collection.url
+    if clear_filters_query != blank
+      assign clear_filters_href = clear_filters_href | append: '?' | append: clear_filters_query
+    endif
+
+    assign empty_collection_href = section.settings.empty_collection_link | default: collections['men'].url | default: routes.all_products_collection_url
+  endif
+-%}
+
+<section
+  class="collection-listing pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)]"
+  style="
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+  "
+  data-collection-listing-section
+  data-section-id="{{ section.id }}"
+  data-current-view="{{ view }}"
+  data-products-count-text="{{ 'collections.products_count' | t: count: working_result_count | escape }}"
+  data-is-search="{{ is_search_template }}"
+  {%- if is_search_template %}
+  data-search-terms="{{ search.terms | escape }}"
+  {%- endif %}
+>
+  {%- comment -%}
+    The paginate tag only recognizes the literal `collection.products` /
+    `search.results` expression as paginateable — an assigned alias
+    (working_result_items) loses that marker and throws "Array ... is not
+    paginateable". Branching the tag itself is the only way to share one
+    products_per_page setting across both templates; the shared grid/empty
+    markup lives in snippets/collection-listing-grid.liquid so it isn't
+    duplicated between the two branches.
+  {%- endcomment -%}
+  {%- if show_no_results_products -%}
+    {%- comment -%}
+      A zero-result search has nothing to paginate, so Figma's product grid
+      under the no-results message comes from a merchant-picked collection
+      instead (mirrors the search drawer's own fallback_collection). Rendered
+      outside the paginate tag with no paginate drop, so no load-more is shown
+      — it would page search.results, not this collection — and capped at
+      one page's worth of products via items_limit.
+    {%- endcomment -%}
+    {%- render 'collection-listing-grid',
+      items: no_results_collection.products,
+      items_limit: products_per_page,
+      view: view,
+      image_aspect_ratio: image_aspect_ratio,
+      gallery_autoplay: gallery_autoplay,
+      gallery_autoplay_interval: gallery_autoplay_interval,
+      grid_class_mobile: grid_class_mobile,
+      grid_class_desktop: grid_class_desktop
+    -%}
+  {%- elsif is_search_template and search_empty -%}
+  {%- elsif is_search_template -%}
+    {% paginate search.results by products_per_page %}
+      {%- comment -%}
+        No empty_state_message here — sections/search-page-header.liquid
+        already shows a search-specific "no results for X" message right
+        above this grid on /search; passing the generic PLP one too
+        duplicated it (F-1: two "no results" messages stacked on the page).
+      {%- endcomment -%}
+      {%- render 'collection-listing-grid',
+        items: search.results,
+        view: view,
+        image_aspect_ratio: image_aspect_ratio,
+        gallery_autoplay: gallery_autoplay,
+        gallery_autoplay_interval: gallery_autoplay_interval,
+        grid_class_mobile: grid_class_mobile,
+        grid_class_desktop: grid_class_desktop,
+        paginate: paginate
+      -%}
+    {% endpaginate %}
+  {%- else -%}
+    {%- capture empty_state -%}
+      {%- if filters_active -%}
+        {%- render 'collection-empty-state',
+          heading: section.settings.empty_filtered_heading,
+          text: section.settings.empty_filtered_text,
+          button_label: section.settings.empty_filtered_button,
+          button_href: clear_filters_href
+        -%}
+      {%- else -%}
+        {%- render 'collection-empty-state',
+          heading: section.settings.empty_collection_heading,
+          text: section.settings.empty_collection_text,
+          button_label: section.settings.empty_collection_button,
+          button_href: empty_collection_href
+        -%}
+      {%- endif -%}
+    {%- endcapture -%}
+    {% paginate collection.products by products_per_page %}
+      {%- render 'collection-listing-grid',
+        items: collection.products,
+        view: view,
+        image_aspect_ratio: image_aspect_ratio,
+        gallery_autoplay: gallery_autoplay,
+        gallery_autoplay_interval: gallery_autoplay_interval,
+        grid_class_mobile: grid_class_mobile,
+        grid_class_desktop: grid_class_desktop,
+        paginate: paginate,
+        empty_state: empty_state
+      -%}
+    {% endpaginate %}
+  {%- endif -%}
+</section>
+
+<script src="{{ 'collection-controller.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Collection Listing",
+  "class": "collection-listing-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 4,
+      "max": 48,
+      "step": 4,
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Column view"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop_column",
+      "label": "Column Desktop Cols",
+      "min": 3,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile_column",
+      "label": "Column Mobile Cols",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Grid view"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop_grid",
+      "label": "Grid Desktop Cols",
+      "min": 3,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile_grid",
+      "label": "Grid Mobile Cols",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Row view"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop_row",
+      "label": "Row Desktop Cols",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile_row",
+      "label": "Row Mobile Cols",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image Aspect Ratio",
+      "options": [
+        { "value": "2:3", "label": "Portrait (2:3)" },
+        { "value": "1:1", "label": "Square (1:1)" },
+        { "value": "4:5", "label": "Portrait (4:5)" },
+        { "value": "3:4", "label": "Portrait (3:4)" },
+        { "value": "8:13", "label": "Tall (8:13)" }
+      ],
+      "default": "2:3"
+    },
+    {
+      "type": "checkbox",
+      "id": "gallery_autoplay",
+      "label": "Enable Gallery Autoplay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "gallery_autoplay_interval",
+      "label": "Autoplay Interval (Sec)",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 5,
+      "visible_if": "{{ section.settings.gallery_autoplay }}"
+    },
+    {
+      "type": "header",
+      "content": "Empty state"
+    },
+    {
+      "type": "paragraph",
+      "content": "Shown when filters leave no products."
+    },
+    {
+      "type": "text",
+      "id": "empty_filtered_heading",
+      "label": "Heading",
+      "default": "No products match your filters"
+    },
+    {
+      "type": "text",
+      "id": "empty_filtered_text",
+      "label": "Text",
+      "default": "Try removing a filter or widening the price range."
+    },
+    {
+      "type": "text",
+      "id": "empty_filtered_button",
+      "label": "Button label",
+      "default": "Clear all filters"
+    },
+    {
+      "type": "paragraph",
+      "content": "Shown when the collection has no products."
+    },
+    {
+      "type": "text",
+      "id": "empty_collection_heading",
+      "label": "Heading",
+      "default": "Nothing here yet"
+    },
+    {
+      "type": "text",
+      "id": "empty_collection_text",
+      "label": "Text",
+      "default": "New styles are coming soon."
+    },
+    {
+      "type": "text",
+      "id": "empty_collection_button",
+      "label": "Button label",
+      "default": "Shop Men"
+    },
+    {
+      "type": "url",
+      "id": "empty_collection_link",
+      "label": "Button link",
+      "info": "Defaults to the Men collection."
+    },
+    {
+      "type": "collection",
+      "id": "no_results_collection",
+      "label": "No Results Collection",
+      "info": "Search page only. Products shown when a search returns no results."
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Listing"
+    }
+  ]
+}
+{% endschema %}

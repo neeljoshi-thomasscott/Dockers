@@ -1,0 +1,313 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "general": {
+    "payment_methods": "Payment methods",
+    "typography": "Typography",
+    "fonts": "Fonts",
+    "primary": "Primary font",
+    "secondary": "Secondary font",
+    "header": "Header",
+    "footer": "Footer",
+    "search": "Search",
+    "close": "Close",
+    "dismiss": "Dismiss",
+    "menu": "Menu",
+    "loading": "Loading...",
+    "continue_shopping": "Continue shopping",
+    "view_all": "View all",
+    "share": "Share",
+    "back": "Back",
+    "link_copied": "Link copied",
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "home": "Home",
+    "last_updated": "Last Updated:"
+  },
+  "404": {
+    "title": "Page not found",
+    "not_found": "The page you were looking for doesn't exist.",
+    "back_to_shopping": "Back to Home"
+  },
+  "blog": {
+    "article_comments": "Comments",
+    "article_metadata_html": "{{ date }} by {{ author }}",
+    "comment_form_body": "Comment",
+    "comment_form_email": "Email",
+    "comment_form_name": "Name",
+    "comment_form_submit": "Post",
+    "comment_form_title": "Add a comment",
+    "read_more": "Read more",
+    "no_articles": "No articles found.",
+    "comment_posted": "Your comment has been posted successfully.",
+    "read_time": "{{ count }} min read",
+    "by_author": "By {{ author }}",
+    "tags": "Article tags",
+    "categories": "Blog categories",
+    "sort_options": {
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "title_ascending": "A–Z",
+      "title_descending": "Z–A"
+    }
+  },
+  "cart": {
+    "checkout": "Checkout",
+    "title": "Cart",
+    "update": "Update",
+    "remove": "Remove",
+    "shopping_cart": "Shopping Cart",
+    "empty_cart": "Your cart is empty",
+    "subtotal": "Subtotal",
+    "decrease": "Decrease quantity for {{ product }}",
+    "increase": "Increase quantity for {{ product }}",
+    "quantity_input_label": "Quantity for {{ product }}",
+    "close": "Close",
+    "added_to_cart": "Product added to cart!",
+    "add_to_cart_error": "Failed to add product. Please try again.",
+    "update_cart_error": "Failed to update cart. Please try again.",
+    "item_removed": "Item removed from cart.",
+    "taxes_and_shipping_at_checkout": "Taxes and shipping calculated at checkout.",
+    "loading": "Loading...",
+    "note": "Order note",
+    "note_placeholder": "Add a note to your order...",
+    "continue_shopping": "Continue shopping",
+    "shop_now": "Shop now",
+    "cart_error": "Something went wrong. Please try again.",
+    "one_time_purchase": "One-time purchase",
+    "subscribe_and_save": "Subscribe & Save",
+    "selling_plan_discount": "off",
+    "selling_plan_save": "Save {{ amount }}"
+  },
+  "customers": {
+    "login": {
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "title": "Login",
+      "forgot_password": "Forgot your password?",
+      "create_account": "Create account",
+      "no_account": "Don't have an account?",
+      "have_account": "Already have an account?",
+      "not_logged_in": "You are not logged in."
+    },
+    "register": {
+      "title": "Create account",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create"
+    },
+    "account": {
+      "title": "My Account",
+      "account_settings": "Account Settings",
+      "account_details": "Account Details",
+      "order_history": "Order History",
+      "view_addresses": "View addresses",
+      "save": "Save",
+      "cancel": "Cancel",
+      "no_orders": "You haven't placed any orders yet.",
+      "continue_shopping": "Continue Shopping",
+      "logout": "Log out"
+    },
+    "order": {
+      "view_order": "View Order",
+      "back": "Back to account",
+      "order_name": "Order {{ name }}",
+      "date": "Date",
+      "fulfillment_status": "Fulfillment Status",
+      "payment_status": "Payment Status",
+      "total": "Total",
+      "quantity": "Qty",
+      "not_found": "Order not found.",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "taxes": "Taxes",
+      "discount": "Discount",
+      "total_label": "Total",
+      "shipping_address": "Shipping Address",
+      "billing_address": "Billing Address"
+    },
+    "addresses": {
+      "title": "Addresses",
+      "no_addresses": "No addresses saved yet.",
+      "add_address": "Add Address",
+      "default_address": "Default",
+      "set_default": "Set as default address",
+      "save": "Save address",
+      "edit": "Edit",
+      "delete": "Delete",
+      "delete_confirm": "Are you sure you want to delete this address?",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "company": "Company",
+      "address1": "Address",
+      "address2": "Apartment, suite, etc.",
+      "city": "City",
+      "zip": "Postal / Zip code",
+      "country": "Country",
+      "province": "Province / State",
+      "phone": "Phone"
+    },
+    "activate_account": {
+      "title": "Activate account",
+      "description": "Create your password to activate your account.",
+      "password": "Password",
+      "password_confirm": "Confirm password",
+      "submit": "Activate account",
+      "decline": "Decline"
+    },
+    "reset_password": {
+      "title": "Reset your password",
+      "email": "Email",
+      "password": "New password",
+      "password_confirm": "Confirm new password",
+      "submit": "Reset password",
+      "success": "We've sent you an email with a link to update your password."
+    }
+  },
+  "collections": {
+    "title": "Collections",
+    "sort_by": "Sort by",
+    "filter": "Filter",
+    "filter_min": "Min",
+    "filter_max": "Max",
+    "clear_all": "Clear all",
+    "no_products": "No products found.",
+    "read_more": "Read more",
+    "read_less": "Read less",
+    "no_sort_options": "No sort options available.",
+    "products_count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "pill_all_label": "All",
+    "sort_options": {
+      "manual": "Featured",
+      "best-selling": "Best selling",
+      "title-ascending": "Alphabetically, A-Z",
+      "title-descending": "Alphabetically, Z-A",
+      "price-ascending": "Price, low to high",
+      "price-descending": "Price, high to low",
+      "created-ascending": "Date, old to new",
+      "created-descending": "Date, new to old"
+    },
+    "sort_by_options": {
+      "recommended": "Recommended",
+      "highest_price": "Highest Price",
+      "lowest_price": "Lowest Price",
+      "newest": "Newest",
+      "relevance": "Relevance"
+    },
+    "sort": "Sort",
+    "filter_drawer_title": "Filter & sort",
+    "filter_reset": "Reset",
+    "filter_apply": "Apply"
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "unavailable": "Unavailable",
+    "quantity": "Quantity",
+    "colors_available": "{{ count }} colors available",
+    "description": "Description",
+    "view_product": "View product",
+    "purchase_options": "Purchase options",
+    "add_to_cart_with_price": "Add to cart — {{ price }}",
+    "wishlist": "Add to wishlist",
+    "size": "Size",
+    "color": "Color",
+    "low_in_stock": "Low in stock",
+    "select_size": "Select size",
+    "select_variant": "Select variant",
+    "size_guide": "Size Guide",
+    "size_guide_subtitle": "All measurements in inches.",
+    "size_guide_modal_label": "Size guide",
+    "size_chart_note": "All measurements are of the garment. For best fit, compare with your body measurements.",
+    "product_details": "Product Details",
+    "buy_now": "Buy Now",
+    "add_to_bag": "Add to Bag",
+    "check_delivery_date": "Check Delivery Date",
+    "enter_pincode": "Enter Pincode",
+    "fit": "Fit",
+    "materials_care": "Materials & Care",
+    "details": "Details",
+    "image_viewer": "Image viewer",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out",
+    "view_image": "View image {{ index }}"
+  },
+  "gift_card": {
+    "add_to_apple_wallet": "Add to Apple Wallet",
+    "card": "Gift card",
+    "expired": "This gift card has expired",
+    "expires_on": "Expires on {{ expires_on }}",
+    "use_at_checkout": "Use this gift card at checkout"
+  },
+  "password": {
+    "title": "This shop is coming soon",
+    "password": "Password",
+    "enter": "Enter"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search products, articles...",
+    "submit": "Search",
+    "no_results_html": "No results found for \"{{ terms }}\"",
+    "results_for_html": "{{ count }} results for \"{{ terms }}\"",
+    "try_different": "Try different keywords or browse our collections.",
+    "products": "Products",
+    "articles": "Articles",
+    "pages": "Pages",
+    "article": "Article",
+    "page": "Page",
+    "recent_searches": "Recent searches",
+    "recently_viewed": "Recently viewed",
+    "trending": "Trending",
+    "clear_history": "Clear history",
+    "view_all_results": "View all results for \"{{ terms }}\"",
+    "suggestions": "Suggestions",
+    "suggested": "Suggested",
+    "top_results_for_label": "Top Results For",
+    "featured_products": "Featured products"
+  },
+  "newsletter": {
+    "heading": "Subscribe to our newsletter",
+    "placeholder": "Enter your email",
+    "submit": "Subscribe",
+    "success": "Thank you for subscribing!"
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "close": "Close",
+    "menu": "Menu",
+    "cart": "Cart",
+    "search": "Search",
+    "account": "Account",
+    "breadcrumb": "Breadcrumb",
+    "document_navigation": "Document navigation",
+    "close_search": "Close search"
+  },
+  "mega_menu": {
+    "shop_all": "Shop all {{ category }}",
+    "editor_notice_title": "Mega menu setup issues (only visible in the theme editor)",
+    "editor_tab_unmatched": "Nav Tab \"{{ tab }}\": no Header Main Menu tab has this title, so it isn't shown.",
+    "editor_tab_home": "Nav Tab \"{{ tab }}\": Home never opens a flyout, so it isn't shown.",
+    "editor_tab_duplicate": "Nav Tab \"{{ tab }}\": a Nav Tab above already uses this tab, so this one is ignored.",
+    "editor_banner_no_tab": "Nav Banner {{ position }} ({{ target }}): Banner Tab is empty, so it isn't shown.",
+    "editor_banner_home": "Nav Banner {{ position }} ({{ target }}): Home never opens a flyout, so it isn't shown.",
+    "editor_banner_tab_unmatched": "Nav Banner {{ position }} ({{ target }}): no Header Main Menu tab is called \"{{ tab }}\", so it isn't shown.",
+    "editor_banner_cat_unmatched": "Nav Banner {{ position }} ({{ target }}): {{ tab }}'s Category Menu has no \"{{ category }}\" link, so it isn't shown.",
+    "editor_banner_no_image": "Nav Banner {{ position }} ({{ target }}): has no image, so it isn't shown."
+  }
+}
