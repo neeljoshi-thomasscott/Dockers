@@ -39,7 +39,7 @@
         "tab_3": {
           "type": "blog-hub-tab",
           "settings": {
-            "hub_tab_blog": "art-of-dressing-easy",
+            "hub_tab_blog": "formal-style",
             "hub_tab_label": ""
           }
         },
@@ -80,24 +80,24 @@
         "featured_article": "heritage-history/how-casual-friday-quietly-rewrote-the-office-dress-code",
         "featured_eyebrow": "New",
         "featured_image_side": "right",
+        "featured_image_eager": true,
         "padding_top_mobile": 0,
         "padding_bottom_mobile": 0,
         "padding_top_desktop": 0,
-        "padding_bottom_desktop": 0,
-        "featured_image_eager": true
+        "padding_bottom_desktop": 0
       }
     },
     "featured_2": {
       "type": "blog-featured-article",
       "settings": {
-        "featured_article": "art-of-dressing-easy/how-casual-friday-quietly-rewrote-the-office-dress-code",
+        "featured_article": "formal-style/how-casual-friday-quietly-rewrote-the-office-dress-code",
         "featured_eyebrow": "Featured Article",
         "featured_image_side": "left",
+        "featured_image_eager": false,
         "padding_top_mobile": 0,
         "padding_bottom_mobile": 0,
         "padding_top_desktop": 0,
-        "padding_bottom_desktop": 0,
-        "featured_image_eager": false
+        "padding_bottom_desktop": 0
       }
     },
     "row_heritage": {
@@ -134,7 +134,7 @@
       "type": "blog-category-row",
       "disabled": true,
       "settings": {
-        "category_row_blog": "art-of-dressing-easy",
+        "category_row_blog": "formal-style",
         "category_row_heading": "",
         "category_row_link_label": "View Article",
         "category_row_image_size": "standard",
