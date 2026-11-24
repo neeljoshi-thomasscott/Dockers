@@ -468,6 +468,11 @@ class TsCartDrawer extends HTMLElement {
 
   #onChange = (event) => {
     const select = /** @type {HTMLElement} */ (event.target);
+    if (select instanceof HTMLInputElement && select.matches('[data-ts-cd-terms]')) {
+      const checkout = this.querySelector('[data-ts-cd-action="checkout"]');
+      if (checkout instanceof HTMLButtonElement) checkout.disabled = !select.checked;
+      return;
+    }
     if (!(select instanceof HTMLSelectElement) || !select.matches('[data-ts-cd-variant]')) return;
 
     const row = /** @type {HTMLElement | null} */ (select.closest('[data-ts-cd-line]'));

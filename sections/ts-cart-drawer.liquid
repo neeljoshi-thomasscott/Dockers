@@ -543,11 +543,11 @@
 
             {%- assign terms_url = section.settings.terms_url | default: shop.terms_of_service.url | default: "/policies/terms-of-service" -%}
             <label class="ts-cd__terms">
-              <input type="checkbox" data-ts-cd-terms checked>
+              <input type="checkbox" data-ts-cd-terms>
               <span>Read <a href="{{ terms_url }}" target="_blank" rel="noopener">Terms &amp; Conditions</a> here</span>
             </label>
 
-            <button type="button" class="ts-cd__checkout" data-ts-cd-action="checkout">
+            <button type="button" class="ts-cd__checkout" data-ts-cd-action="checkout" disabled>
               <span>Checkout</span>
             </button>
           {%- endunless -%}
