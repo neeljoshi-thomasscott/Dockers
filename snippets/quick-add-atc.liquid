@@ -79,14 +79,6 @@
     assign size_guide_mobile_url = size_guide.mobile_image.value.preview_image | image_url: width: 400
   endif
 
-  assign size_chart_markup = ''
-  if size_guide == blank
-    capture size_chart_markup
-      render 'size-chart-content', product: product
-    endcapture
-    assign size_chart_markup = size_chart_markup | strip
-  endif
-
   assign first_available_value = null
   assign first_available_variant = null
   for value in size_option.values
@@ -142,25 +134,18 @@
         </span>
       </div>
 
-      {%- if size_guide != blank or size_chart_markup != blank -%}
+      {%- if size_guide != blank -%}
         <button
           type="button"
           class="quick-add-atc__size-guide flex w-full items-center justify-end gap-1.5 text-control text-ink"
           data-size-guide-trigger
           data-quick-add-size-guide
-          {% if size_guide != blank %}
-            data-size-guide-desktop="{{ size_guide_desktop_url }}"
-            data-size-guide-mobile="{{ size_guide_mobile_url }}"
-          {% else %}
-            data-size-chart-id="size-chart-{{ product.id }}"
-          {% endif %}
+          data-size-guide-desktop="{{ size_guide_desktop_url }}"
+          data-size-guide-mobile="{{ size_guide_mobile_url }}"
         >
           {{ 'products.size_guide' | t }}
           {%- render 'icon-chevron-right', size: 14 -%}
         </button>
-        {%- if size_chart_markup != blank -%}
-          <template id="size-chart-{{ product.id }}">{{ size_chart_markup }}</template>
-        {%- endif -%}
       {%- endif -%}
     </div>
 

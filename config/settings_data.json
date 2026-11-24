@@ -30,10 +30,10 @@
     "color_warning": "#F97316",
     "color_info": "#7C3AED",
     "logo": "shopify://shop_images/423b6bf80cbe3d804d8e59057c66306304731076.png",
-    "logo_white": "shopify://shop_images/dockers-logo-white.png",
     "favicon": "shopify://shop_images/dockers-favicon.png",
-    "show_compare_price": true,
-    "show_discount_percent": true,
+    "logo_white": "shopify://shop_images/dockers-logo-white.png",
+    "show_compare_price": false,
+    "show_discount_percent": false,
     "show_discount_badge": true,
     "show_sold_out_badge": true,
     "low_stock_threshold": 30,
@@ -46,13 +46,6 @@
     "sale_timer_expired_message": "This sale has ended. Check back soon!",
     "sale_timer_restart_value": 18,
     "sale_timer_restart_unit": "hours",
-    "mid": "198cwqzl6qsm",
-    "envType": "production",
-    "goEnable": true,
-    "goBuynowEnable": true,
-    "buyNowText": "Buy It Now",
-    "buyNowKeepThemeLabel": true,
-    "enableIntlFlow": false,
     "sections": {
       "search-drawer": {
         "type": "search-drawer",
@@ -76,7 +69,7 @@
           "ts-cart-drawer-0": {
             "type": "banner",
             "settings": {
-              "title": "&nbsp;20% OFF sitewide + 5% Prepaid OFF&nbsp;",
+              "title": "EXTRA 10% OFF ON PREPAID",
               "show_subtext": false,
               "subtext": "",
               "start_date": "",

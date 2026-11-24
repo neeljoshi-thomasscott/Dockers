@@ -4,45 +4,22 @@
   assign style_with_heading = section.settings.style_with_heading | default: 'Style With'
   assign style_with_atc_label = section.settings.style_with_atc_label | default: 'Add to Bag'
 
-  assign is_plus_size = false
-  if product.tags contains 'Plus Size'
-    assign is_plus_size = true
+  assign has_source = false
+  if source_collection != blank
+    assign has_source = true
   endif
 
-  assign picked_handles = ','
+  assign eligible_limit = style_with_count | plus: 1
+
   assign eligible_count = 0
-
-  if source_collection != blank
-    for pass in (1..2)
-      for candidate in source_collection.products
-        if eligible_count >= style_with_count
-          break
-        endif
-
-        if candidate.id == product.id or candidate.available == false
-          continue
-        endif
-
-        assign candidate_is_plus = false
-        if candidate.tags contains 'Plus Size'
-          assign candidate_is_plus = true
-        endif
-        if candidate_is_plus != is_plus_size
-          continue
-        endif
-
-        if pass == 1 and candidate.type == product.type
-          continue
-        endif
-
-        assign handle_key = candidate.handle | prepend: ',' | append: ','
-        if picked_handles contains handle_key
-          continue
-        endif
-
-        assign picked_handles = picked_handles | append: candidate.handle | append: ','
+  if has_source
+    for eligible_product in source_collection.products limit: eligible_limit
+      unless eligible_product.id == product.id
         assign eligible_count = eligible_count | plus: 1
-      endfor
+      endunless
+      if eligible_count >= style_with_count
+        break
+      endif
     endfor
   endif
 -%}
@@ -60,20 +37,30 @@
     <h2 class="mb-4 px-4 font-primary text-style-with-heading-mobile font-medium text-ink md:mb-style-with-heading-gap-desktop md:px-0 md:text-style-with-heading">{{ style_with_heading }}</h2>
 
     <div class="hidden gap-6 md:grid md:grid-cols-2 xl:grid-cols-3">
-      {%- for card_product in source_collection.products -%}
-        {%- assign card_key = card_product.handle | prepend: ',' | append: ',' -%}
-        {%- if picked_handles contains card_key -%}
-          {%- render 'style-with-card', card_product: card_product, atc_label: style_with_atc_label -%}
-        {%- endif -%}
+      {%- liquid
+        assign desk_rendered_count = 0
+      -%}
+      {%- for card_product in source_collection.products limit: eligible_limit -%}
+        {%- unless card_product.id == product.id -%}
+          {%- if desk_rendered_count < style_with_count -%}
+            {%- render 'style-with-card', card_product: card_product, atc_label: style_with_atc_label -%}
+            {%- assign desk_rendered_count = desk_rendered_count | plus: 1 -%}
+          {%- endif -%}
+        {%- endunless -%}
       {%- endfor -%}
     </div>
 
     <div class="flex gap-1 overflow-x-auto scrollbar-hide md:hidden">
-      {%- for card_product in source_collection.products -%}
-        {%- assign card_key = card_product.handle | prepend: ',' | append: ',' -%}
-        {%- if picked_handles contains card_key -%}
-          {%- render 'style-with-card-mobile', card_product: card_product -%}
-        {%- endif -%}
+      {%- liquid
+        assign mob_rendered_count = 0
+      -%}
+      {%- for card_product in source_collection.products limit: eligible_limit -%}
+        {%- unless card_product.id == product.id -%}
+          {%- if mob_rendered_count < style_with_count -%}
+            {%- render 'style-with-card-mobile', card_product: card_product -%}
+            {%- assign mob_rendered_count = mob_rendered_count | plus: 1 -%}
+          {%- endif -%}
+        {%- endunless -%}
       {%- endfor -%}
     </div>
   </section>

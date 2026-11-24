@@ -66,13 +66,6 @@
           "settings": {
             "open_by_default": false
           }
-        },
-        "manufactured_by": {
-          "type": "manufactured_by",
-          "settings": {
-            "heading": "Manufactured & Packed By",
-            "open_by_default": false
-          }
         }
       },
       "block_order": [
@@ -84,8 +77,7 @@
         "description",
         "fit",
         "materials_care",
-        "details",
-        "manufactured_by"
+        "details"
       ],
       "settings": {
         "enable_full_screen_viewer": true,

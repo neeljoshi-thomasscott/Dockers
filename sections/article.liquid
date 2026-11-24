@@ -1,80 +1,57 @@
 {%- liquid
   assign article_hero_alt = article.image.alt | default: article.title
   assign article_products = article.metafields.custom.article_products.value
-  assign article_collections = article.metafields.custom.article_collections.value
-
-  assign article_products_pending = false
+  assign article_show_products = false
   if section.settings.article_show_products and article_products != blank
-    assign article_products_pending = true
+    assign article_show_products = true
   endif
 
-  assign article_collections_pending = false
-  if section.settings.article_show_collections and article_collections != blank
-    assign article_collections_pending = true
+  assign article_body_first = article.content
+  assign article_body_second = ''
+
+  if article_show_products
+    assign article_parts = article.content | split: '</p>'
+    assign article_split_at = section.settings.article_products_after
+    assign article_container_tags = 'blockquote,ul,ol,table,div,figure' | split: ','
+    assign article_split_done = false
+    assign article_body_first = ''
+
+    for article_part in article_parts
+      if article_split_done
+        assign article_part_text = article_part | strip
+        if forloop.last and article_part_text == blank
+          continue
+        endif
+        assign article_body_second = article_body_second | append: article_part | append: '</p>'
+        continue
+      endif
+
+      assign article_body_first = article_body_first | append: article_part | append: '</p>'
+      if forloop.index >= article_split_at
+        assign article_open_containers = 0
+        for container_tag in article_container_tags
+          assign container_open_token = '<' | append: container_tag
+          assign container_close_token = '</' | append: container_tag | append: '>'
+          assign container_opened = article_body_first | split: container_open_token | size | minus: 1
+          assign container_closed = article_body_first | split: container_close_token | size | minus: 1
+          if container_opened > container_closed
+            assign article_open_containers = article_open_containers | plus: 1
+          endif
+        endfor
+        if article_open_containers == 0
+          assign article_split_done = true
+        endif
+      endif
+    endfor
+
+    unless article_split_done
+      assign article_body_first = article.content
+      assign article_body_second = ''
+    endunless
   endif
 
-  assign article_products_at = article.metafields.custom.products_after.value | default: section.settings.article_products_after
-  assign article_collections_at = article.metafields.custom.collections_after.value | default: section.settings.article_collections_after
-
-  assign article_parts = article.content | split: '</p>'
-  assign article_content_tail = article.content | strip | slice: -4, 4
-  assign article_ends_with_paragraph = false
-  if article_content_tail == '</p>'
-    assign article_ends_with_paragraph = true
-  endif
-  assign article_container_tags = 'blockquote,ul,ol,table,div,figure' | split: ','
-
-  assign article_body_class = 'article__content font-primary text-blog-body-mobile text-navy-80 lg:text-blog-body-desktop [&_p+p]:mt-5 lg:[&_p+p]:mt-6 [&_a]:underline [&_strong]:font-semibold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_img]:h-auto [&_img]:max-w-full [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_table]:border-collapse [&_th]:border [&_th]:border-border [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-semibold [&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2 [&_td]:align-top'
+  assign article_body_class = 'article__content font-primary text-blog-body-mobile text-navy-80 lg:text-blog-body-desktop [&_p+p]:mt-5 lg:[&_p+p]:mt-6 [&_a]:underline [&_strong]:font-semibold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_img]:h-auto [&_img]:max-w-full'
 -%}
-
-{%- capture article_products_html -%}
-  {%- if article_products_pending -%}
-    <ul class="article__products -mx-5 flex snap-x snap-mandatory overflow-x-auto scrollbar-hide lg:mx-0 lg:justify-center lg:gap-4" role="list">
-      {%- for product in article_products limit: 4 -%}
-        <li class="w-1/2 shrink-0 snap-start lg:w-auto lg:min-w-0 lg:flex-1 lg:max-w-blog-card-width-desktop">
-          {%- render 'product-card',
-            card_product: product,
-            view: 'column',
-            image_width: 320,
-            lazy_load: true,
-            show_discount_label: true
-          -%}
-        </li>
-      {%- endfor -%}
-    </ul>
-  {%- endif -%}
-{%- endcapture -%}
-
-{%- capture article_collections_html -%}
-  {%- if article_collections_pending -%}
-    <div class="article__collections flex flex-col gap-3 lg:gap-4">
-      {%- if section.settings.article_collections_heading != blank -%}
-        <h2 class="font-primary text-blog-body-mobile font-bold uppercase text-navy lg:text-center lg:text-blog-body-desktop">{{ section.settings.article_collections_heading | escape }}</h2>
-      {%- endif -%}
-      <ul class="-mx-5 flex gap-3 overflow-x-auto scrollbar-hide px-5 lg:mx-0 lg:flex-wrap lg:justify-center lg:gap-4 lg:px-0" role="list">
-        {%- for article_collection in article_collections limit: 6 -%}
-          <li class="w-36 shrink-0 lg:w-44">
-            <a href="{{ article_collection.url }}" class="group flex flex-col gap-2 text-navy">
-              <span class="block aspect-[3/4] w-full overflow-hidden bg-navy/5">
-                {%- if article_collection.featured_image != blank -%}
-                  {%- render 'image',
-                    image: article_collection.featured_image,
-                    alt: article_collection.title,
-                    class_name: 'h-full w-full object-cover transition-transform duration-300 group-hover:scale-105',
-                    lazy: true,
-                    base_width: 360,
-                    mobile_width: 300
-                  -%}
-                {%- endif -%}
-              </span>
-              <span class="font-primary text-card-title font-bold uppercase underline-offset-4 group-hover:underline">{{ article_collection.title | escape }}</span>
-            </a>
-          </li>
-        {%- endfor -%}
-      </ul>
-    </div>
-  {%- endif -%}
-{%- endcapture -%}
 
 <article
   class="article bg-surface pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)]"
@@ -101,75 +78,29 @@
   <div class="article__body mx-auto flex max-w-article-body-width flex-col gap-3 p-5 lg:gap-8 lg:px-0 lg:py-10">
     <h1 class="text-center font-primary text-blog-heading-mobile font-bold text-navy lg:text-blog-display">{{ article.title | escape }}</h1>
 
-    {%- liquid
-      assign article_seen = ''
-      assign article_buffer = ''
+    {%- if article_body_first != blank -%}
+      <div class="{{ article_body_class }}">{{ article_body_first }}</div>
+    {%- endif -%}
 
-      for article_part in article_parts
-        assign article_part_text = article_part | strip
-        if article_part_text == blank
-          continue
-        endif
-        if forloop.last and article_ends_with_paragraph == false
-          assign article_buffer = article_buffer | append: article_part
-          break
-        endif
+    {%- if article_show_products -%}
+      <ul class="article__products -mx-5 flex snap-x snap-mandatory overflow-x-auto scrollbar-hide lg:mx-0 lg:justify-center lg:overflow-visible" role="list">
+        {%- for product in article_products limit: 3 -%}
+          <li class="w-1/2 shrink-0 snap-start lg:w-blog-card-width-desktop">
+            {%- render 'product-card',
+              card_product: product,
+              view: 'column',
+              image_width: 320,
+              lazy_load: true,
+              show_discount_label: true
+            -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
 
-        assign article_chunk = article_part | append: '</p>'
-        assign article_seen = article_seen | append: article_chunk
-        assign article_buffer = article_buffer | append: article_chunk
-
-        assign article_products_due = false
-        if article_products_pending and forloop.index >= article_products_at
-          assign article_products_due = true
-        endif
-        assign article_collections_due = false
-        if article_collections_pending and forloop.index >= article_collections_at
-          assign article_collections_due = true
-        endif
-
-        unless article_products_due or article_collections_due
-          continue
-        endunless
-
-        assign article_open_containers = 0
-        for container_tag in article_container_tags
-          assign container_open_token = '<' | append: container_tag
-          assign container_close_token = '</' | append: container_tag | append: '>'
-          assign container_opened = article_seen | split: container_open_token | size | minus: 1
-          assign container_closed = article_seen | split: container_close_token | size | minus: 1
-          if container_opened > container_closed
-            assign article_open_containers = article_open_containers | plus: 1
-          endif
-        endfor
-        if article_open_containers > 0
-          continue
-        endif
-
-        if article_buffer != blank
-          echo '<div class="' | append: article_body_class | append: '">' | append: article_buffer | append: '</div>'
-          assign article_buffer = ''
-        endif
-        if article_products_due
-          echo article_products_html
-          assign article_products_pending = false
-        endif
-        if article_collections_due
-          echo article_collections_html
-          assign article_collections_pending = false
-        endif
-      endfor
-
-      if article_buffer != blank
-        echo '<div class="' | append: article_body_class | append: '">' | append: article_buffer | append: '</div>'
-      endif
-      if article_products_pending
-        echo article_products_html
-      endif
-      if article_collections_pending
-        echo article_collections_html
-      endif
-    -%}
+    {%- if article_body_second != blank -%}
+      <div class="{{ article_body_class }}">{{ article_body_second }}</div>
+    {%- endif -%}
   </div>
 </article>
 
@@ -187,7 +118,7 @@
       "id": "article_show_products",
       "label": "Article Show Products",
       "default": true,
-      "info": "Products come from the article's Article Products metafield (up to 4)"
+      "info": "Products come from the article's Article Products metafield"
     },
     {
       "type": "range",
@@ -196,31 +127,7 @@
       "min": 1,
       "max": 30,
       "step": 1,
-      "default": 6,
-      "info": "Used when the article's Products After Paragraph field is empty"
-    },
-    {
-      "type": "checkbox",
-      "id": "article_show_collections",
-      "label": "Show Collections",
-      "default": true,
-      "info": "Collections come from the article's Article Collections metafield"
-    },
-    {
-      "type": "text",
-      "id": "article_collections_heading",
-      "label": "Collections Heading",
-      "default": "Shop the Edit"
-    },
-    {
-      "type": "range",
-      "id": "article_collections_after",
-      "label": "Collections After Paragraph",
-      "min": 1,
-      "max": 30,
-      "step": 1,
-      "default": 12,
-      "info": "Used when the article's Collections After Paragraph field is empty"
+      "default": 6
     },
     {
       "type": "header",

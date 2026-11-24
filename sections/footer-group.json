@@ -32,7 +32,7 @@
           "type": "link_column",
           "settings": {
             "heading": "The Company",
-            "links": "<ul><li><a href=\"/pages/about-us\">About</a></li><li><a href=\"/blogs/all\">Blogs</a></li></ul>",
+            "links": "<ul><li><a href=\"/pages/about-us\">About</a></li><li><a href=\"/blogs/stories\">Blogs</a></li></ul>",
             "menu": ""
           }
         },
@@ -40,7 +40,7 @@
           "type": "link_column",
           "settings": {
             "heading": "Policy Pages",
-            "links": "<ul><li><a href=\"/pages/faqs\">FAQ</a></li><li><a href=\"/pages/returns-exchange\">Exchanges & returns</a></li><li><a href=\"/pages/shipping-delivery\">Shipping & Delivery</a></li><li><a href=\"/pages/terms-conditions\">Terms & Conditions</a></li><li><a href=\"/pages/terms-of-use\">Terms of Use</a></li><li><a href=\"/pages/privacy-policy\">Privacy Policy</a></li><li><a href=\"/pages/contact-us\">Contact Us</a></li></ul>",
+            "links": "<ul><li><a href=\"/pages/faqs\">FAQ</a></li><li><a href=\"/pages/returns-exchange\">Exchanges & returns</a></li><li><a href=\"/pages/shipping-delivery\">Shipping & Delivery</a></li><li><a href=\"/pages/terms-conditions\">Legal</a></li><li><a href=\"/pages/privacy-policy\">Privacy Policy</a></li><li><a href=\"/pages/contact-us\">Contact Us</a></li></ul>",
             "menu": ""
           }
         },

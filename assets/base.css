@@ -157,6 +157,12 @@ ol {
   background-color: rgb(var(--color-background));
 }
 
+@media (max-width: 1023px) {
+  body.has-overlay-header .shopify-section-group-header-group {
+    background-color: transparent;
+  }
+}
+
 input[type='search']::-webkit-search-cancel-button,
 input[type='search']::-webkit-search-decoration {
   -webkit-appearance: none;

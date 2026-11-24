@@ -40,6 +40,13 @@ display: none !important;
     if template.suffix != blank
       assign body_class = body_class | append: ' template-suffix-' | append: template.suffix
     endif
+
+    # Same condition as sections/header.liquid's has_overlay_header: lets
+    # base.css make the header group transparent only when a hero image sits
+    # under it.
+    if template.name == 'product' and product.media.size > 0
+      assign body_class = body_class | append: ' has-overlay-header'
+    endif
   -%}
   <body class="{{ body_class }}">
     <a

@@ -11,9 +11,7 @@
   "sections": {
     "collection-header": {
       "type": "collection-header",
-      "settings": {
-        "show_description": false
-      }
+      "settings": {}
     },
     "collection-toolbar": {
       "type": "collection-toolbar",
@@ -30,16 +28,11 @@
         "columns_desktop_column": 4,
         "columns_mobile_column": 2
       }
-    },
-    "collection-content": {
-      "type": "collection-content",
-      "settings": {}
     }
   },
   "order": [
     "collection-header",
     "collection-toolbar",
-    "collection-listing",
-    "collection-content"
+    "collection-listing"
   ]
 }

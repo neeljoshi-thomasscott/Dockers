@@ -89,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const priceEl = productSection.querySelector('[data-product-price]');
   const comparePriceEl = productSection.querySelector('[data-product-compare-price]');
   const discountEl = productSection.querySelector('[data-product-discount]');
-  const mrpEl = productSection.querySelector('[data-product-mrp]');
 
   const updatePrice = (variant) => {
     if (!priceEl) return;
@@ -104,8 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
         comparePriceEl.classList.add('hidden');
       }
     }
-
-    mrpEl?.classList.toggle('hidden', !variant.display_compare_at_price);
 
     if (discountEl) {
       if (variant.discount_label) {

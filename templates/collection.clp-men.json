@@ -470,10 +470,6 @@
         "padding_top_desktop": 0,
         "padding_bottom_desktop": 0
       }
-    },
-    "collection-content": {
-      "type": "collection-content",
-      "settings": {}
     }
   },
   "order": [
@@ -491,7 +487,6 @@
     "product_row_5",
     "product_row_6",
     "product_row_7",
-    "product_row_8",
-    "collection-content"
+    "product_row_8"
   ]
 }
