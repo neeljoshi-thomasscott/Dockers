@@ -32,7 +32,7 @@
           "type": "link_column",
           "settings": {
             "heading": "The Company",
-            "links": "<ul><li><a href=\"/pages/about-us\">About</a></li><li><a href=\"/blogs/all-season-style\" title=\"All Season Style\">Blogs</a></li></ul>",
+            "links": "<ul><li><a href=\"/pages/about-us\">About</a></li></ul>",
             "menu": ""
           }
         },
