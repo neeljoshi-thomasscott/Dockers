@@ -55,6 +55,11 @@
       {%- if menu != blank -%}
         {%- for link in menu.links -%}
           {%- liquid
+            # Temporarily hidden: Terms of Use
+            assign link_title_lc = link.title | downcase | strip
+            if link_title_lc == 'terms of use'
+              continue
+            endif
             assign is_active = false
             assign link_path_slash = link.url | append: '/'
             assign current_path_slash = request.path | append: '/'
@@ -84,6 +89,11 @@
       {%- if menu != blank -%}
         {%- for link in menu.links -%}
           {%- liquid
+            # Temporarily hidden: Terms of Use
+            assign link_title_lc = link.title | downcase | strip
+            if link_title_lc == 'terms of use'
+              continue
+            endif
             assign is_active = false
             assign link_path_slash = link.url | append: '/'
             assign current_path_slash = request.path | append: '/'
