@@ -7,7 +7,7 @@
 {% enddoc %}
 {%- liquid
   assign colour_siblings = product.metafields.custom.colour_siblings.value
-  assign current_colour = product.metafields.specs.colour.value
+  assign current_colour = product.metafields.specs.colour_family.value | default: product.metafields.specs.colour.value
 -%}
 
 {%- if colour_siblings != blank and current_colour != blank -%}
@@ -20,7 +20,7 @@
     <div class="mt-3.5 flex min-h-6 flex-wrap items-center gap-2">
       {%- for sibling in colour_siblings -%}
         {%- liquid
-          assign sibling_colour = sibling.metafields.specs.colour.value | default: sibling.title
+          assign sibling_colour = sibling.metafields.specs.colour_family.value | default: sibling.metafields.specs.colour.value | default: sibling.title
           assign sibling_hex = blank
           for sibling_swatch in sibling.metafields.custom.color_swatch_link.value limit: 1
             assign sibling_hex = sibling_swatch.color.value
