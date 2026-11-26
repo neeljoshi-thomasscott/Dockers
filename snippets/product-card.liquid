@@ -334,7 +334,7 @@
         class="product-card__title truncate text-card-title font-normal text-ink"
         data-product-card-title-link
       >
-        {{ card_product.title }}
+        {{ card_product.metafields.custom.short_title.value | default: card_product.title }}
       </a>
 
       {%- render 'price-row',
@@ -387,7 +387,7 @@
               endif
             -%}
             <span
-              class="relative block h-2.5 w-2.5 overflow-hidden border border-swatch-border"
+              class="relative block h-2.5 w-2.5 overflow-hidden border border-ink-50"
               data-product-card-swatch
               title="{{ value | escape }}"
               aria-label="{{ value | escape }}"

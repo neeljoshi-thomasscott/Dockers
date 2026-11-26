@@ -1,0 +1,61 @@
+{% doc %}
+  Contact form posting to Shopify's contact endpoint; submissions arrive in the store's sender email.
+{% enddoc %}
+
+{%- liquid
+  assign field_class = 'w-full border border-ink-50 bg-surface px-4 py-3 font-primary text-sm text-ink placeholder:text-ink-50 focus:border-ink focus:outline-none'
+  assign label_class = 'mb-1.5 block text-sm font-medium'
+-%}
+
+<div class="contact-form pb-10">
+  <h2 class="contact-form__heading mb-6 font-primary text-lg font-bold uppercase tracking-widest md:text-xl">
+    {{ 'contact.heading' | t }}
+  </h2>
+
+  {%- form 'contact', id: 'contact-form', class: 'contact-form__form grid grid-cols-1 gap-4 md:grid-cols-2' -%}
+    {%- if form.posted_successfully? -%}
+      <p class="contact-form__success flex items-center gap-2 bg-success/5 p-3 text-sm text-success md:col-span-2" role="status">
+        {%- render 'icon-checkmark', size: 16 -%}
+        {{ 'contact.success' | t }}
+      </p>
+    {%- elsif form.errors -%}
+      <div class="contact-form__error bg-error/5 p-3 text-sm text-error md:col-span-2" role="alert">
+        {%- for field in form.errors -%}
+          <p>
+            {%- if field == 'form' -%}
+              {{ form.errors.messages[field] }}
+            {%- else -%}
+              {{ form.errors.translated_fields[field] | capitalize }} {{ form.errors.messages[field] }}
+            {%- endif -%}
+          </p>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div>
+      <label for="ContactForm-name" class="{{ label_class }}">{{ 'contact.name' | t }}</label>
+      <input id="ContactForm-name" class="{{ field_class }}" type="text" name="contact[name]" autocomplete="name" value="{{ form.name }}" required>
+    </div>
+
+    <div>
+      <label for="ContactForm-email" class="{{ label_class }}">{{ 'contact.email' | t }}</label>
+      <input id="ContactForm-email" class="{{ field_class }}" type="email" name="contact[email]" autocomplete="email" value="{{ form.email }}" required>
+    </div>
+
+    <div class="md:col-span-2">
+      <label for="ContactForm-phone" class="{{ label_class }}">{{ 'contact.phone' | t }}</label>
+      <input id="ContactForm-phone" class="{{ field_class }}" type="tel" name="contact[phone]" autocomplete="tel" value="{{ form.phone }}">
+    </div>
+
+    <div class="md:col-span-2">
+      <label for="ContactForm-body" class="{{ label_class }}">{{ 'contact.message' | t }}</label>
+      <textarea id="ContactForm-body" class="{{ field_class }} min-h-36 resize-y" name="contact[body]" rows="5" required>{{ form.body }}</textarea>
+    </div>
+
+    <div class="md:col-span-2">
+      <button class="contact-form__submit flex h-12 w-full items-center justify-center bg-ink px-10 font-plex-mono text-pdp-buy-button uppercase tracking-wide text-surface transition-opacity duration-200 hover:opacity-90 md:w-auto" type="submit">
+        {{ 'contact.submit' | t }}
+      </button>
+    </div>
+  {%- endform -%}
+</div>

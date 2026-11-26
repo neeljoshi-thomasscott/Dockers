@@ -1,0 +1,17 @@
+{% doc %}
+  @param {object} block - The usp-item block
+{% enddoc %}
+
+<div class="flex flex-1 flex-col items-center justify-center gap-3 px-2 text-center" {{ block.shopify_attributes }}>
+  {%- case block.settings.usp_item_icon -%}
+    {%- when 'delivery' -%}
+      {%- render 'icon-trust-badge', size: 24, class: 'h-6 w-6 text-ink' -%}
+    {%- when 'cod' -%}
+      {%- render 'icon-free-delivery', size: 24, class: 'h-6 w-6 text-ink' -%}
+    {%- when 'returns' -%}
+      {%- render 'icon-easy-returns', size: 24, class: 'h-6 w-6 text-ink' -%}
+  {%- endcase -%}
+  {%- if block.settings.usp_item_text != blank -%}
+    <div class="font-secondary text-count text-ink">{{ block.settings.usp_item_text }}</div>
+  {%- endif -%}
+</div>

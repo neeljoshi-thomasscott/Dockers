@@ -43,11 +43,17 @@
   {% render 'legal-nav',
     show_breadcrumb: section.settings.show_breadcrumb,
     parent_group_label: section.settings.parent_group_label,
+    crumb_skip_parent: section.settings.crumb_skip_parent,
     show_navigation: legal_has_nav,
     nav_menu: section.settings.nav_menu
   %}
 
   <div class="legal-document__content order-4 px-4 pb-legal-content-pad-bottom-mobile font-primary text-doc-body text-ink lg:box-content lg:px-4 lg:pt-legal-shell-pad-y-top lg:pb-0 lg:max-w-[var(--content-max-width)] {{ legal_content_align_class }} [&>*]:pt-[var(--paragraph-spacing)] [&>*:first-child]:pt-0 [&_strong]:font-bold [&_ul]:list-disc [&_ul]:pl-[1.5em] [&_li]:pt-[var(--paragraph-spacing)] [&_li:first-child]:pt-0 [&_a]:text-ink [&_a]:underline [&_a]:visited:text-ink [&_a]:hover:text-ink [&_a]:focus-visible:outline [&_a]:focus-visible:outline-2 [&_a]:focus-visible:outline-ink">
+    {%- assign contact_form_handles = section.settings.contact_form_pages | default: '' | split: ',' -%}
+    {%- if contact_form_handles contains page.handle -%}
+      {% render 'contact-form' %}
+    {%- endif -%}
+
     {%- if last_updated != blank -%}
       <p class="legal-document__meta-title font-bold">{{ page.title | escape }}</p>
       {%- if section.settings.legal_brand_label != blank -%}
@@ -58,6 +64,7 @@
       </p>
     {%- endif -%}
     {{ page.content }}
+
   </div>
 </section>
 
@@ -81,6 +88,24 @@
       "id": "parent_group_label",
       "label": "Parent Group Label",
       "default": "Legal"
+    },
+    {
+      "type": "text",
+      "id": "crumb_skip_parent",
+      "label": "Pages without parent group",
+      "default": "contact-us",
+      "info": "Comma-separated page handles"
+    },
+    {
+      "type": "header",
+      "content": "Contact Form"
+    },
+    {
+      "type": "text",
+      "id": "contact_form_pages",
+      "label": "Show contact form on pages",
+      "default": "contact-us",
+      "info": "Comma-separated page handles"
     },
     {
       "type": "header",

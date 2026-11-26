@@ -210,7 +210,7 @@
                   class="h-[18px] w-[18px] object-cover"
                 >
               {%- elsif swatch_color != blank -%}
-                <span class="h-[18px] w-[18px]" style="background-color: {{ swatch_color | escape }};"></span>
+                <span class="h-[18px] w-[18px] border border-ink-50" style="background-color: {{ swatch_color | escape }};"></span>
               {%- else -%}
                 <span class="flex h-[18px] w-[18px] items-center justify-center bg-muted/30 text-xs font-medium uppercase leading-none text-muted">
                   {{- value | slice: 0 | escape -}}

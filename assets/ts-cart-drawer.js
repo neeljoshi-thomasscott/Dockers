@@ -39,16 +39,7 @@ class TsCartDrawer extends HTMLElement {
   #tiersAchieved = -1;
   #pendingConfetti = false;
 
-  /** Browser back/forward restores a stale checkbox state; reset it with the button. */
-  #resetTerms = () => {
-    const terms = this.querySelector('[data-ts-cd-terms]');
-    const checkout = this.querySelector('[data-ts-cd-action="checkout"]');
-    if (terms instanceof HTMLInputElement) terms.checked = false;
-    if (checkout instanceof HTMLButtonElement) checkout.disabled = true;
-  };
-
   connectedCallback() {
-    window.addEventListener('pageshow', this.#resetTerms);
     this.#dialog = this.querySelector('[data-ts-cd-dialog]');
 
     this.addEventListener('click', this.#onClick);
@@ -79,7 +70,6 @@ class TsCartDrawer extends HTMLElement {
   }
 
   disconnectedCallback() {
-    window.removeEventListener('pageshow', this.#resetTerms);
     document.removeEventListener('click', this.#onDocumentClick, true);
     document.removeEventListener('pointerdown', this.#onBuyNowPress, true);
     document.removeEventListener('keydown', this.#onBuyNowPress, true);
@@ -478,11 +468,6 @@ class TsCartDrawer extends HTMLElement {
 
   #onChange = (event) => {
     const select = /** @type {HTMLElement} */ (event.target);
-    if (select instanceof HTMLInputElement && select.matches('[data-ts-cd-terms]')) {
-      const checkout = this.querySelector('[data-ts-cd-action="checkout"]');
-      if (checkout instanceof HTMLButtonElement) checkout.disabled = !select.checked;
-      return;
-    }
     if (!(select instanceof HTMLSelectElement) || !select.matches('[data-ts-cd-variant]')) return;
 
     const row = /** @type {HTMLElement | null} */ (select.closest('[data-ts-cd-line]'));

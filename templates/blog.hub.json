@@ -71,119 +71,52 @@
         "padding_top_mobile": 0,
         "padding_bottom_mobile": 0,
         "padding_top_desktop": 0,
-        "padding_bottom_desktop": 0
+        "padding_bottom_desktop": 0,
+        "hub_all_blog": "all"
       }
     },
-    "featured_1": {
-      "type": "blog-featured-article",
+    "stories": {
+      "type": "blog-hub-stories",
+      "blocks": {
+        "blog_all": {
+          "type": "story-blog",
+          "settings": {
+            "story_blog": "all"
+          }
+        },
+        "blog_style": {
+          "type": "story-blog",
+          "settings": {
+            "story_blog": "style-guides"
+          }
+        },
+        "blog_formal": {
+          "type": "story-blog",
+          "settings": {
+            "story_blog": "formal-style"
+          }
+        }
+      },
+      "block_order": [
+        "blog_all",
+        "blog_style",
+        "blog_formal"
+      ],
       "settings": {
-        "featured_article": "formal-style/how-should-a-formal-shirt-fit",
-        "featured_eyebrow": "New",
-        "featured_image_side": "right",
-        "featured_image_eager": true,
+        "stories_first_eyebrow": "New",
+        "stories_initial_count": 4,
+        "stories_load_count": 4,
+        "stories_first_eager": true,
         "padding_top_mobile": 0,
-        "padding_bottom_mobile": 0,
+        "padding_bottom_mobile": 40,
         "padding_top_desktop": 0,
-        "padding_bottom_desktop": 0
-      }
-    },
-    "row_heritage": {
-      "type": "blog-category-row",
-      "disabled": true,
-      "settings": {
-        "category_row_blog": "heritage-history",
-        "category_row_heading": "",
-        "category_row_link_label": "View Article",
-        "category_row_image_size": "standard",
-        "category_row_limit": 5,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40,
-        "padding_top_desktop": 40,
-        "padding_bottom_desktop": 40
-      }
-    },
-    "row_style": {
-      "type": "blog-category-row",
-      "settings": {
-        "category_row_blog": "style-guides",
-        "category_row_heading": "",
-        "category_row_link_label": "View Article",
-        "category_row_image_size": "standard",
-        "category_row_limit": 5,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40,
-        "padding_top_desktop": 40,
-        "padding_bottom_desktop": 40
-      }
-    },
-    "row_dressing": {
-      "type": "blog-category-row",
-      "settings": {
-        "category_row_blog": "formal-style",
-        "category_row_heading": "",
-        "category_row_link_label": "View Article",
-        "category_row_image_size": "standard",
-        "category_row_limit": 5,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40,
-        "padding_top_desktop": 40,
-        "padding_bottom_desktop": 40
-      }
-    },
-    "row_sustainability": {
-      "type": "blog-category-row",
-      "disabled": true,
-      "settings": {
-        "category_row_blog": "sustainability",
-        "category_row_heading": "",
-        "category_row_link_label": "View Articles",
-        "category_row_image_size": "tall",
-        "category_row_limit": 5,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40,
-        "padding_top_desktop": 40,
-        "padding_bottom_desktop": 40
-      }
-    },
-    "row_community": {
-      "type": "blog-category-row",
-      "disabled": true,
-      "settings": {
-        "category_row_blog": "community",
-        "category_row_heading": "",
-        "category_row_link_label": "View Articles",
-        "category_row_image_size": "tall",
-        "category_row_limit": 5,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40,
-        "padding_top_desktop": 40,
-        "padding_bottom_desktop": 40
-      }
-    },
-    "row_journal": {
-      "type": "blog-category-row",
-      "settings": {
-        "category_row_blog": "all",
-        "category_row_heading": "",
-        "category_row_link_label": "View Article",
-        "category_row_image_size": "standard",
-        "category_row_limit": 5,
-        "padding_top_mobile": 40,
-        "padding_bottom_mobile": 40,
-        "padding_top_desktop": 40,
-        "padding_bottom_desktop": 40
+        "padding_bottom_desktop": 80
       }
     }
   },
   "order": [
     "header",
     "tabs",
-    "featured_1",
-    "row_dressing",
-    "row_style",
-    "row_journal",
-    "row_heritage",
-    "row_sustainability",
-    "row_community"
+    "stories"
   ]
 }

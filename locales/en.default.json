@@ -33,6 +33,16 @@
     "home": "Home",
     "last_updated": "Last Updated:"
   },
+  "contact": {
+    "heading": "Write to us",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone number (optional)",
+    "message": "Message",
+    "submit": "Submit",
+    "success": "Thanks for contacting us. We'll get back to you soon.",
+    "error": "Please check the highlighted fields and try again."
+  },
   "404": {
     "title": "Page not found",
     "not_found": "The page you were looking for doesn't exist.",
@@ -48,6 +58,7 @@
     "comment_form_title": "Add a comment",
     "read_more": "Read more",
     "no_articles": "No articles found.",
+    "load_more": "Load more stories",
     "comment_posted": "Your comment has been posted successfully.",
     "read_time": "{{ count }} min read",
     "by_author": "By {{ author }}",

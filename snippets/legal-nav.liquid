@@ -4,6 +4,7 @@
 
   @param {boolean} show_breadcrumb - Whether to show the breadcrumb trail
   @param {string} parent_group_label - Breadcrumb's parent group label (e.g. "Legal")
+  @param {string} [crumb_skip_parent] - Comma-separated page handles that show no parent group
   @param {boolean} show_navigation - Whether to show the document nav
   @param {string} [nav_menu] - Handle of the linklist powering the document nav
 {% enddoc %}
@@ -31,8 +32,11 @@
   >
     <a href="{{ routes.root_url }}">{{ 'general.home' | t }}</a>
     <span>/</span>
-    <span>{{ parent_group_label | escape }}</span>
-    <span>/</span>
+    {%- assign crumb_skip_list = crumb_skip_parent | default: '' | split: ',' -%}
+    {%- unless crumb_skip_list contains page.handle -%}
+      <span>{{ parent_group_label | escape }}</span>
+      <span>/</span>
+    {%- endunless -%}
     <span aria-current="page">{{ legal_crumb_label | escape }}</span>
   </nav>
 {%- endif -%}
@@ -55,11 +59,6 @@
       {%- if menu != blank -%}
         {%- for link in menu.links -%}
           {%- liquid
-            # Temporarily hidden: Terms of Use
-            assign link_title_lc = link.title | downcase | strip
-            if link_title_lc == 'terms of use'
-              continue
-            endif
             assign is_active = false
             assign link_path_slash = link.url | append: '/'
             assign current_path_slash = request.path | append: '/'
@@ -89,11 +88,6 @@
       {%- if menu != blank -%}
         {%- for link in menu.links -%}
           {%- liquid
-            # Temporarily hidden: Terms of Use
-            assign link_title_lc = link.title | downcase | strip
-            if link_title_lc == 'terms of use'
-              continue
-            endif
             assign is_active = false
             assign link_path_slash = link.url | append: '/'
             assign current_path_slash = request.path | append: '/'

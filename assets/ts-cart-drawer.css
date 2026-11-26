@@ -896,7 +896,6 @@
   font-weight: 700;
 }
 
-.ts-cd__checkout:disabled { opacity: 0.4; cursor: not-allowed; }
 .ts-cd__checkout.is-busy { opacity: 0.7; pointer-events: none; }
 .ts-cd.is-updating .ts-cd__checkout { opacity: 0.7; pointer-events: none; }
 

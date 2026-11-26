@@ -9,6 +9,43 @@
  */
 {
   "sections": {
+    "usp_strip": {
+      "type": "usp-strip",
+      "blocks": {
+        "usp_delivery": {
+          "type": "usp-item",
+          "settings": {
+            "usp_item_icon": "delivery",
+            "usp_item_text": "<p>FREE<br>DELIVERY</p>"
+          }
+        },
+        "usp_cod": {
+          "type": "usp-item",
+          "settings": {
+            "usp_item_icon": "cod",
+            "usp_item_text": "<p>COD<br>AVAILABLE</p>"
+          }
+        },
+        "usp_returns": {
+          "type": "usp-item",
+          "settings": {
+            "usp_item_icon": "returns",
+            "usp_item_text": "<p>7 DAYS<br>RETURNS</p>"
+          }
+        }
+      },
+      "block_order": [
+        "usp_delivery",
+        "usp_cod",
+        "usp_returns"
+      ],
+      "settings": {
+        "padding_top_mobile": 24,
+        "padding_bottom_mobile": 24,
+        "padding_top_desktop": 32,
+        "padding_bottom_desktop": 32
+      }
+    },
     "banner_1": {
       "type": "collection-banner",
       "settings": {
@@ -16,7 +53,7 @@
         "mobile_image": "shopify://shop_images/Dockers-banner-first-m.webp",
         "image_alt": "",
         "cta_position": "middle-left",
-        "cta_label": "Shop ALl",
+        "cta_label": "Shop All",
         "cta_link": "/collections/men",
         "eager_load": true,
         "banner_autoplay": true,
@@ -243,15 +280,47 @@
         "padding_top_desktop": 0,
         "padding_bottom_desktop": 0
       }
+    },
+    "bestsellers": {
+      "type": "clp-product-row",
+      "settings": {
+        "heading": "<p>Bestsellers</p>",
+        "collection": "bestsellers",
+        "products_shown": 9,
+        "show_view_all": true,
+        "view_all_label": "View All",
+        "view_all_link": "/collections/bestsellers",
+        "mobile_layout": "scroll",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "heading": "Get the latest news & offers in fashion",
+        "description": "",
+        "background_color": "#F1F1F1",
+        "text_color": "#0F0F0F",
+        "padding_top_mobile": 32,
+        "padding_bottom_mobile": 32,
+        "padding_top_desktop": 48,
+        "padding_bottom_desktop": 48
+      }
     }
   },
   "order": [
     "banner_1",
+    "usp_strip",
     "banner_2",
     "carousel_1",
     "banner_3",
     "carousel_2",
     "banner_4",
-    "carousel_3"
+    "carousel_3",
+    "bestsellers",
+    "newsletter"
   ]
 }

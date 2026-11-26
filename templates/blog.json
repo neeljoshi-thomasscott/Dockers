@@ -9,19 +9,89 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "blog",
+    "header": {
+      "type": "blog-hub-header",
       "settings": {
-        "blog_banner_image": "shopify://shop_images/blog-category-banner.png",
-        "blog_banner_alt": "",
-        "blog_show_tags": true,
-        "blog_show_sort": true,
+        "hub_heading": "Dockers Style Journal",
         "padding_top_mobile": 0,
         "padding_bottom_mobile": 0,
         "padding_top_desktop": 0,
         "padding_bottom_desktop": 0
       }
+    },
+    "tabs": {
+      "type": "blog-hub-tabs",
+      "blocks": {
+        "tab_1": {
+          "type": "blog-hub-tab",
+          "settings": {
+            "hub_tab_blog": "heritage-history",
+            "hub_tab_label": ""
+          }
+        },
+        "tab_2": {
+          "type": "blog-hub-tab",
+          "settings": {
+            "hub_tab_blog": "style-guides",
+            "hub_tab_label": ""
+          }
+        },
+        "tab_3": {
+          "type": "blog-hub-tab",
+          "settings": {
+            "hub_tab_blog": "formal-style",
+            "hub_tab_label": ""
+          }
+        },
+        "tab_4": {
+          "type": "blog-hub-tab",
+          "disabled": true,
+          "settings": {
+            "hub_tab_blog": "sustainability",
+            "hub_tab_label": ""
+          }
+        },
+        "tab_5": {
+          "type": "blog-hub-tab",
+          "settings": {
+            "hub_tab_blog": "community",
+            "hub_tab_label": ""
+          }
+        }
+      },
+      "block_order": [
+        "tab_1",
+        "tab_2",
+        "tab_3",
+        "tab_4",
+        "tab_5"
+      ],
+      "settings": {
+        "hub_all_label": "All Stories",
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0,
+        "hub_all_blog": "all"
+      }
+    },
+    "main": {
+      "type": "blog-hub-stories",
+      "settings": {
+        "stories_first_eyebrow": "",
+        "stories_initial_count": 4,
+        "stories_load_count": 4,
+        "stories_first_eager": true,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 40,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 80
+      }
     }
   },
-  "order": ["main"]
+  "order": [
+    "header",
+    "tabs",
+    "main"
+  ]
 }

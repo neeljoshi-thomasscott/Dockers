@@ -187,6 +187,20 @@
                             >
                             {% render 'icon-checkmark', size: 10, class: 'pointer-events-none absolute left-0.5 top-0.5 hidden text-surface peer-checked:block' %}
                           </span>
+                          {%- liquid
+                            assign swatch_color = value.swatch.color
+                            if filter.param_name == 'filter.p.m.custom.standard_colour'
+                              assign swatch_handle = 'dockers-' | append: value.value | handleize
+                              assign swatch_color = shop.metaobjects['shopify--color-pattern'][swatch_handle].color
+                            endif
+                          -%}
+                          {%- if swatch_color != blank -%}
+                            <span
+                              class="h-4 w-4 shrink-0 rounded-full border border-ink-20 bg-[var(--filter-swatch-color)]"
+                              style="--filter-swatch-color: {{ swatch_color }};"
+                              aria-hidden="true"
+                            ></span>
+                          {%- endif -%}
                           <span class="text-filter-option font-normal">
                             {{- value.label }} <span data-filter-drawer-option-count>({{ value.count }})</span>
                           </span>

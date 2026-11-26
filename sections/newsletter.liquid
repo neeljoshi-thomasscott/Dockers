@@ -10,57 +10,51 @@
   "
 >
   <div class="page-width">
-    <div class="mx-auto max-w-xl text-center">
+    <div class="mx-auto flex max-w-5xl flex-col items-center text-center">
       {%- if section.settings.heading != blank -%}
-        <h2 class="mb-3 font-primary text-2xl font-normal md:text-3xl lg:text-4xl">{{ section.settings.heading | escape }}</h2>
+        <h2 class="mb-4 font-primary text-xl font-bold uppercase tracking-widest md:text-2xl lg:text-3xl">{{ section.settings.heading | escape }}</h2>
       {%- endif -%}
 
       {%- if section.settings.description != blank -%}
         <p class="mb-8 text-base opacity-70">{{ section.settings.description | escape }}</p>
       {%- endif -%}
 
-      <div data-newsletter-form data-action="/contact">
-        <input type="hidden" name="form_type" value="customer">
+      {%- assign form_id = 'newsletter-' | append: section.id -%}
+      {%- form 'customer', id: form_id, class: 'w-full max-w-2xl' -%}
         <input type="hidden" name="contact[tags]" value="newsletter">
 
-        <div class="flex gap-2">
+        <div class="flex">
           <input
             type="email"
             name="contact[email]"
             placeholder="{{ 'newsletter.placeholder' | t }}"
             required
-            class="flex-1 border border-white/30 bg-transparent px-4 py-3 text-sm text-current placeholder:opacity-50 focus:border-white/60 focus:outline-none"
+            autocomplete="email"
+            class="min-w-0 flex-1 border-0 bg-surface px-4 py-3 text-base text-ink placeholder:text-ink-50 focus:outline-none md:px-5 md:py-4"
             aria-label="{{ 'newsletter.placeholder' | t }}"
-            data-newsletter-email
           >
           <button
-            type="button"
-            class="border border-transparent bg-accent px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-accent/90"
-            data-newsletter-submit
+            type="submit"
+            class="shrink-0 bg-ink px-6 py-3 text-base font-bold uppercase text-surface transition-opacity duration-200 hover:opacity-90 md:px-12 md:py-4"
           >
             {{ 'newsletter.submit' | t }}
           </button>
         </div>
 
-        {%- comment -%} Toast notification for AJAX feedback {%- endcomment -%}
-        <div
-          class="mt-4 hidden items-center gap-2 overflow-hidden rounded p-3 text-sm transition-all duration-300"
-          data-newsletter-toast
-          role="alert"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          <span class="hidden" data-newsletter-toast-success>
+        {%- if form.posted_successfully? -%}
+          <p class="mt-4 flex items-center gap-2 rounded bg-success/5 p-3 text-sm text-success" role="status">
             {%- render 'icon-checkmark', size: 16 -%}
-          </span>
-          <span data-newsletter-toast-message></span>
-        </div>
-      </div>
+            {{ 'newsletter.success' | t }}
+          </p>
+        {%- elsif form.errors -%}
+          <p class="mt-4 rounded bg-error/5 p-3 text-sm text-error" role="alert">
+            {{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}
+          </p>
+        {%- endif -%}
+      {%- endform -%}
     </div>
   </div>
 </section>
-
-<script src="{{ 'newsletter.js' | asset_url }}" defer></script>
 
 {% schema %}
 {

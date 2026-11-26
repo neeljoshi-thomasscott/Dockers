@@ -1,0 +1,217 @@
+{%- liquid
+  assign stories_source_count = 0
+  for block in section.blocks
+    if block.type == 'story-blog' and block.settings.story_blog != blank
+      assign stories_source_count = stories_source_count | plus: 1
+    endif
+  endfor
+
+  if stories_source_count > 0
+    assign stories_articles = blank
+    for block in section.blocks
+      assign source_blog = block.settings.story_blog
+      if block.type != 'story-blog' or source_blog == blank
+        continue
+      endif
+      if stories_articles == blank
+        assign stories_articles = source_blog.articles
+      else
+        assign stories_articles = stories_articles | concat: source_blog.articles
+      endif
+    endfor
+    assign stories_articles = stories_articles | sort: 'published_at' | reverse
+  else
+    assign stories_articles = blog.articles
+  endif
+
+  assign stories_initial = section.settings.stories_initial_count
+  assign stories_step = section.settings.stories_load_count
+  assign stories_eyebrow_first = section.settings.stories_first_eyebrow
+-%}
+
+<div
+  class="blog-hub-stories bg-surface pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)]"
+  style="
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+  "
+  data-blog-stories
+  data-blog-stories-step="{{ stories_step }}"
+>
+  {%- if stories_articles.size > 0 -%}
+    <ul class="blog-hub-stories__list flex flex-col gap-4" role="list">
+      {%- for story in stories_articles -%}
+        {%- liquid
+          assign story_blog_handle = story.url | split: '/blogs/' | last | split: '/' | first
+          assign story_category = blogs[story_blog_handle].title
+
+          assign story_eyebrow = story_category
+          if forloop.first and stories_eyebrow_first != blank
+            assign story_eyebrow = stories_eyebrow_first
+          endif
+
+          assign story_side = 'right'
+          assign story_index_mod = forloop.index0 | modulo: 2
+          if story_index_mod == 1
+            assign story_side = 'left'
+          endif
+
+          assign story_lazy = true
+          if forloop.first and section.settings.stories_first_eager
+            assign story_lazy = false
+          endif
+
+          assign story_hidden = false
+          if forloop.index > stories_initial
+            assign story_hidden = true
+          endif
+        -%}
+        <li
+          class="blog-hub-stories__item{% if story_hidden %} hidden{% endif %}"
+          data-blog-story-item
+          {% if story_hidden %}
+            data-blog-story-hidden
+          {% endif %}
+        >
+          {%- render 'blog-story-row',
+            story_article: story,
+            story_eyebrow: story_eyebrow,
+            story_category: story_category,
+            story_image_side: story_side,
+            story_lazy: story_lazy
+          -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    {%- if stories_articles.size > stories_initial -%}
+      <div class="blog-hub-stories__more flex justify-center px-5 pt-10 lg:pt-16" data-blog-stories-more-wrap>
+        <button
+          type="button"
+          class="border border-ink px-8 py-3 font-primary text-blog-tab font-medium text-ink"
+          data-blog-stories-more
+        >
+          {{ 'blog.load_more' | t }}
+        </button>
+      </div>
+    {%- endif -%}
+  {%- else -%}
+    <p class="px-5 py-10 text-center font-primary text-blog-body-desktop text-ink-muted">{{ 'blog.no_articles' | t }}</p>
+  {%- endif -%}
+</div>
+
+{%- if stories_articles.size > stories_initial -%}
+  <script src="{{ 'blog-load-more.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Blog Hub Stories",
+  "class": "blog-hub-stories-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "paragraph",
+      "content": "Add blogs to mix their articles, newest first. With no blogs added, the current blog's articles show."
+    },
+    {
+      "type": "text",
+      "id": "stories_first_eyebrow",
+      "label": "First Story Eyebrow",
+      "default": "New"
+    },
+    {
+      "type": "range",
+      "id": "stories_initial_count",
+      "label": "Stories Shown First",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "stories_load_count",
+      "label": "Stories Per Load More",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "stories_first_eager",
+      "label": "First Image Eager",
+      "info": "Turn on when the first story is near the top of the page",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "story-blog",
+      "name": "Blog",
+      "settings": [
+        {
+          "type": "blog",
+          "id": "story_blog",
+          "label": "Story Blog"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Hub Stories"
+    }
+  ]
+}
+{% endschema %}

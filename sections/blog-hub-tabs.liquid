@@ -22,12 +22,13 @@
   >
     {%- liquid
       assign hub_all_label = section.settings.hub_all_label
+      assign hub_all_url = section.settings.hub_all_blog.url | default: blog.url
       assign hub_all_active = false
       if hub_tab_active_found == false
         assign hub_all_active = true
       endif
       if hub_all_label != blank
-        render 'blog-hub-tab', href: blog.url, label: hub_all_label, active: hub_all_active
+        render 'blog-hub-tab', href: hub_all_url, label: hub_all_label, active: hub_all_active
       endif
     -%}
     {%- for block in section.blocks -%}
@@ -35,7 +36,7 @@
         {%- when 'blog-hub-tab' -%}
           {%- liquid
             assign tab_blog = block.settings.hub_tab_blog
-            if tab_blog == blank
+            if tab_blog == blank or tab_blog.articles_count == 0
               continue
             endif
             assign tab_label = block.settings.hub_tab_label | default: tab_blog.title
@@ -68,6 +69,12 @@
       "id": "hub_all_label",
       "label": "Hub All Tab Label",
       "default": "All Stories"
+    },
+    {
+      "type": "blog",
+      "id": "hub_all_blog",
+      "label": "Hub All Tab Blog",
+      "info": "The blog the All tab links to. Defaults to the current blog"
     },
     {
       "type": "header",

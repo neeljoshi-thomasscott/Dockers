@@ -1,0 +1,106 @@
+<div
+  class="usp-strip pt-[var(--section-padding-top-mobile)] pb-[var(--section-padding-bottom-mobile)] lg:pt-[var(--section-padding-top-desktop)] lg:pb-[var(--section-padding-bottom-desktop)]"
+  style="
+    --section-padding-top-mobile: {{ section.settings.padding_top_mobile }}px;
+    --section-padding-bottom-mobile: {{ section.settings.padding_bottom_mobile }}px;
+    --section-padding-top-desktop: {{ section.settings.padding_top_desktop }}px;
+    --section-padding-bottom-desktop: {{ section.settings.padding_bottom_desktop }}px;
+  "
+>
+  <div class="page-width flex divide-x divide-border">
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'usp-item' -%}
+          {%- render 'usp-item', block: block -%}
+      {%- endcase -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "USP Strip",
+  "class": "usp-strip-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding Top Mobile",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding Bottom Mobile",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Padding Top Desktop",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Padding Bottom Desktop",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "usp-item",
+      "name": "USP Item",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "select",
+          "id": "usp_item_icon",
+          "label": "USP Item Icon",
+          "options": [
+            { "value": "delivery", "label": "Free delivery" },
+            { "value": "cod", "label": "Cash on delivery" },
+            { "value": "returns", "label": "Returns" }
+          ],
+          "default": "delivery"
+        },
+        {
+          "type": "richtext",
+          "id": "usp_item_text",
+          "label": "USP Item Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "USP Strip",
+      "blocks": [
+        { "type": "usp-item", "settings": { "usp_item_icon": "delivery", "usp_item_text": "<p>FREE<br>DELIVERY</p>" } },
+        { "type": "usp-item", "settings": { "usp_item_icon": "cod", "usp_item_text": "<p>COD<br>AVAILABLE</p>" } },
+        { "type": "usp-item", "settings": { "usp_item_icon": "returns", "usp_item_text": "<p>7 DAYS<br>RETURNS</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

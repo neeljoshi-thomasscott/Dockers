@@ -1,0 +1,72 @@
+{% doc %}
+  One alternating image and text row in the blog story list.
+
+  @param {article} story_article - The article to show (required)
+  @param {string} [story_eyebrow] - Small label above the title (optional)
+  @param {string} [story_category] - Blog title shown in the meta line (optional)
+  @param {string} [story_image_side] - 'left' or 'right' on desktop (default 'right')
+  @param {boolean} [story_lazy] - Lazy load the image (default true)
+
+  @example
+  {% render 'blog-story-row', story_article: article, story_eyebrow: 'New', story_category: 'Formal Style', story_image_side: 'right', story_lazy: false %}
+{% enddoc %}
+
+{%- liquid
+  assign story_direction_class = 'lg:flex-row-reverse'
+  if story_image_side == 'left'
+    assign story_direction_class = 'lg:flex-row'
+  endif
+  assign story_image_lazy = true
+  if story_lazy == false
+    assign story_image_lazy = false
+  endif
+  assign story_image_alt = story_article.image.alt | default: story_article.title
+  assign story_content_width_class = 'lg:w-full'
+  if story_article.image != blank
+    assign story_content_width_class = 'lg:w-blog-story-content'
+  endif
+-%}
+{%- capture story_read_time -%}{% render 'article-read-time', article: story_article %}{%- endcapture -%}
+{%- assign story_read_time = story_read_time | plus: 0 -%}
+
+<article class="blog-story-row relative flex flex-col bg-surface {{ story_direction_class }}">
+  {%- if story_article.image != blank -%}
+    <div class="blog-story-row__media h-blog-story-height-mobile w-full overflow-hidden lg:h-blog-story-height lg:w-blog-story-media">
+      {%- render 'image',
+        image: story_article.image,
+        alt: story_image_alt,
+        class_name: 'h-full w-full object-cover',
+        lazy: story_image_lazy,
+        srcset_widths: '800,1100,1440,1800',
+        mobile_srcset_widths: '750,1100,1500',
+        sizes: '(min-width: 1024px) 55vw, 100vw'
+      -%}
+    </div>
+  {%- endif -%}
+
+  <div class="blog-story-row__content flex flex-col justify-center gap-4 px-5 py-8 lg:gap-6 lg:px-10 lg:py-10 xl:px-16 {{ story_content_width_class }}">
+    <div class="flex flex-col gap-3 lg:gap-4">
+      {%- if story_eyebrow != blank -%}
+        <p class="font-secondary text-blog-meta-sm uppercase tracking-widest text-navy lg:text-blog-meta">{{ story_eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="font-primary text-blog-heading-mobile font-bold text-navy lg:text-blog-heading-desktop">
+        <a href="{{ story_article.url }}" class="after:absolute after:inset-0">{{ story_article.title | escape }}</a>
+      </h2>
+      <p class="line-clamp-2 font-primary text-blog-body-mobile text-navy-80 lg:text-blog-body-desktop">
+        {{ story_article.excerpt_or_content | strip_html | truncatewords: 40 }}
+      </p>
+    </div>
+
+    <p class="flex flex-wrap items-center gap-x-3 gap-y-1 font-secondary text-blog-meta-sm uppercase tracking-widest text-navy-70 lg:text-blog-meta lg:text-navy">
+      {%- if story_article.author != blank -%}
+        <span>{{ 'blog.by_author' | t: author: story_article.author }}</span>
+        <span aria-hidden="true">·</span>
+      {%- endif -%}
+      <span>{{ 'blog.read_time' | t: count: story_read_time }}</span>
+      {%- if story_category != blank -%}
+        <span aria-hidden="true">·</span>
+        <span>{{ story_category | escape }}</span>
+      {%- endif -%}
+    </p>
+  </div>
+</article>
