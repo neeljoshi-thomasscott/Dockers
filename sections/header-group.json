@@ -13,6 +13,7 @@
   "sections": {
     "announcement_bar": {
       "type": "announcement-bar",
+      "disabled": true,
       "settings": {
         "message": "<p><a href=\"/pages/terms-conditions\" title=\"Terms & Conditions\">20% OFF Sitewide + 5% Prepaid OFF | T&C Apply</a></p>",
         "background_color": "#0f0f0f",
