@@ -12,12 +12,19 @@
     "document": {
       "type": "legal-document",
       "settings": {
-        "show_breadcrumb": true,
+        "show_breadcrumb": false,
         "parent_group_label": "Legal",
+        "crumb_skip_parent": "contact-us",
+        "contact_form_pages": "contact-us",
+        "legal_brand_label": "Dockers",
         "show_navigation": true,
-        "nav_menu": "document-nav"
+        "nav_menu": "document-nav",
+        "content_max_width": 604,
+        "paragraph_spacing": 24
       }
     }
   },
-  "order": ["document"]
+  "order": [
+    "document"
+  ]
 }
