@@ -12,6 +12,11 @@
     assign product_row_has_heading_group = true
   endif
 
+  assign product_row_align_class = 'text-center lg:text-left'
+  if section.settings.heading_alignment == 'center'
+    assign product_row_align_class = 'text-center lg:text-center'
+  endif
+
   assign product_row_track_class = 'clp-product-row__track flex'
   if section.settings.mobile_layout == 'grid-2up'
     assign product_row_track_class = 'clp-product-row__track grid grid-cols-2 gap-0 lg:flex'
@@ -35,12 +40,12 @@
     {%- if product_row_has_heading_group -%}
       <div class="clp-product-row__heading-group flex flex-col gap-product-row-heading-gap-mobile pt-product-row-heading-pad-top px-product-row-heading-pad-x-mobile pb-product-row-heading-pad-bottom lg:gap-product-row-heading-gap-desktop lg:px-product-row-heading-pad-x-desktop">
         {%- if product_row_heading != blank -%}
-          <div class="clp-product-row__heading font-primary font-bold uppercase text-center lg:text-left text-promo-heading-mobile lg:text-promo-heading-desktop text-ink">
+          <div class="clp-product-row__heading font-primary font-bold uppercase {{ product_row_align_class }} text-promo-heading-mobile lg:text-promo-heading-desktop text-ink">
             {{ product_row_heading }}
           </div>
         {%- endif -%}
         {%- if product_row_subline != blank -%}
-          <p class="clp-product-row__subline font-plex-mono uppercase text-center lg:text-left text-promo-subheading-mobile lg:text-promo-subheading text-ink">
+          <p class="clp-product-row__subline font-plex-mono uppercase {{ product_row_align_class }} text-promo-subheading-mobile lg:text-promo-subheading text-ink">
             {{ product_row_subline | escape }}
           </p>
         {%- endif -%}
@@ -103,6 +108,16 @@
       "type": "text",
       "id": "subline",
       "label": "Subline"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment (desktop)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
     },
     {
       "type": "header",
