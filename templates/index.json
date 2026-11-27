@@ -285,6 +285,7 @@
       "type": "clp-product-row",
       "settings": {
         "heading": "<p>Bestsellers</p>",
+        "heading_alignment": "center",
         "collection": "bestsellers",
         "products_shown": 9,
         "show_view_all": true,
