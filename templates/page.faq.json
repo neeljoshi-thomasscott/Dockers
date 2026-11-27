@@ -11,13 +11,6 @@
   "sections": {
     "faq": {
       "type": "legal-faq",
-      "settings": {
-        "show_breadcrumb": true,
-        "parent_group_label": "Help",
-        "show_navigation": true,
-        "nav_menu": "document-nav",
-        "intro": "Quick answers about Dockers menswear in India: khakis, chinos, shirts, sizing, delivery, returns and exchanges on dockers.in."
-      },
       "blocks": {
         "heading_1": {
           "type": "heading",
@@ -163,7 +156,16 @@
         "faq_2_6",
         "faq_2_7",
         "faq_2_8"
-      ]
+      ],
+      "settings": {
+        "show_breadcrumb": false,
+        "parent_group_label": "Help",
+        "show_navigation": true,
+        "nav_menu": "document-nav",
+        "faq_group_heading": "",
+        "intro": "Quick answers about Dockers menswear in India: khakis, chinos, shirts, sizing, delivery, returns and exchanges on dockers.in.",
+        "item_spacing": 28
+      }
     }
   },
   "order": [
